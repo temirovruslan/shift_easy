@@ -1,0 +1,212 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+.stage{display:flex;flex-direction:column;gap:20px;padding:24px}
+.label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--color-text-tertiary);margin-bottom:8px}
+
+.card{background:var(--color-background-tertiary);border-radius:14px;overflow:hidden;border:0.5px solid var(--color-border-tertiary);display:grid;grid-template-columns:320px 1fr;min-height:440px}
+
+/* left panel */
+.left{background:#07101f;padding:44px 40px;display:flex;flex-direction:column;justify-content:center}
+.logo-box{width:48px;height:48px;background:#1d4ed8;border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.brand{font-size:28px;font-weight:700;color:#fff;letter-spacing:-.4px;margin-bottom:8px}
+.tagline{font-size:13px;color:#475569;line-height:1.7;margin-bottom:28px}
+.step-item{display:flex;align-items:flex-start;gap:12px;margin-bottom:16px}
+.step-icon{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.step-title{font-size:13px;font-weight:600;margin-bottom:2px}
+.step-sub{font-size:11px;color:#475569}
+
+/* right panel */
+.right{background:var(--color-background-primary);padding:44px 40px;display:flex;flex-direction:column;justify-content:center}
+.tabs{display:flex;gap:4px;background:var(--color-background-secondary);border-radius:10px;padding:3px;width:fit-content;margin-bottom:28px}
+.tab{padding:7px 20px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer}
+.tab.on{background:var(--color-background-primary);color:var(--color-text-primary);border:0.5px solid var(--color-border-secondary)}
+.tab.off{color:var(--color-text-secondary)}
+.steps-row{display:flex;align-items:center;gap:6px;margin-bottom:24px}
+.sdot{width:10px;height:10px;border-radius:50%}
+.sdot.done{background:#059669}
+.sdot.active{background:#1d4ed8;width:24px;border-radius:5px}
+.sdot.off{background:var(--color-border-secondary)}
+.step-lbl{font-size:12px;color:var(--color-text-tertiary);margin-left:4px}
+.title{font-size:23px;font-weight:700;color:var(--color-text-primary);letter-spacing:-.3px;margin-bottom:4px}
+.desc{font-size:13px;color:var(--color-text-secondary);margin-bottom:22px}
+.field{margin-bottom:14px}
+.flabel{font-size:12px;font-weight:500;color:var(--color-text-secondary);margin-bottom:5px}
+.finput{width:100%;background:var(--color-background-primary);border:1.5px solid var(--color-border-secondary);border-radius:9px;padding:11px 14px;font-size:14px;color:var(--color-text-primary)}
+.finput.focus{border-color:#1d4ed8}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn{width:100%;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:10px}
+.btn-blue{background:#1d4ed8;color:#fff}
+.btn-green{background:#059669;color:#fff}
+.lrow{text-align:center;font-size:13px;color:var(--color-text-secondary)}
+.lnk{color:#1d4ed8;font-weight:500;cursor:pointer}
+.pw-wrap{display:flex;gap:3px;margin-top:6px}
+.pw-seg{flex:1;height:3px;border-radius:2px}
+.site-box{border:1.5px solid var(--color-border-secondary);border-radius:10px;padding:14px;margin-bottom:14px}
+.site-box-title{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.summary-box{background:var(--color-background-secondary);border-radius:10px;padding:16px;margin-bottom:16px}
+.sum-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.sum-row:last-child{border-bottom:none}
+.sum-lbl{font-size:12px;color:var(--color-text-secondary)}
+.sum-val{font-size:12px;font-weight:600;color:var(--color-text-primary)}
+.success-icon{width:56px;height:56px;border-radius:50%;background:#dcfce7;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+</style>
+
+<div class="stage">
+
+  <!-- STEP 1 -->
+  <div>
+    <div class="label">Step 1 of 3 — Your account</div>
+    <div class="card">
+      <div class="left">
+        <div class="logo-box">
+          <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><rect x="3" y="12" width="20" height="12" rx="3" stroke="#93c5fd" stroke-width="1.5"/><path d="M8 12V8a5 5 0 0110 0v4" stroke="#93c5fd" stroke-width="1.5" stroke-linecap="round"/><circle cx="13" cy="17.5" r="1.8" fill="#93c5fd"/></svg>
+        </div>
+        <div class="brand">ShiftEasy</div>
+        <div class="tagline">Set up takes 2 minutes. Fill in your details and create your first construction site.</div>
+        <div class="step-item">
+          <div class="step-icon" style="background:#162044">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="#60a5fa" stroke-width="1.2"/><line x1="7" y1="4.5" x2="7" y2="9.5" stroke="#60a5fa" stroke-width="1.2" stroke-linecap="round"/><circle cx="7" cy="3" r=".8" fill="#60a5fa"/></svg>
+          </div>
+          <div><div class="step-title" style="color:#60a5fa">Step 1 — Your account</div><div class="step-sub">Name, company, email, password</div></div>
+        </div>
+        <div class="step-item">
+          <div class="step-icon" style="background:#1a1000">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1.5L8.5 5.5H13L9.8 7.8L10.8 11.5L7 9.3L3.2 11.5L4.2 7.8L1 5.5H5.5L7 1.5Z" stroke="#f59e0b" stroke-width="1.1" stroke-linejoin="round"/></svg>
+          </div>
+          <div><div class="step-title" style="color:#f59e0b">Step 2 — First site</div><div class="step-sub">Name the construction site and location</div></div>
+        </div>
+        <div class="step-item">
+          <div class="step-icon" style="background:#071e12">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="#30d158" stroke-width="1.2"/><path d="M4.5 7l2 2 3-3" stroke="#30d158" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div><div class="step-title" style="color:#30d158">Step 3 — Done</div><div class="step-sub">Start adding workers immediately</div></div>
+        </div>
+      </div>
+      <div class="right">
+        <div class="tabs">
+          <div class="tab off">Sign in</div>
+          <div class="tab on">Create account</div>
+        </div>
+        <div class="steps-row">
+          <div class="sdot active"></div>
+          <div class="sdot off"></div>
+          <div class="sdot off"></div>
+          <span class="step-lbl">Step 1 of 3 — Your account</span>
+        </div>
+        <div class="title">Create your account</div>
+        <div class="desc">You're the manager — workers are added after setup</div>
+        <div class="grid2">
+          <div class="field"><div class="flabel">Full name</div><div class="finput focus">Sara Chen</div></div>
+          <div class="field"><div class="flabel">Company name</div><div class="finput">ConstructCo Ltd</div></div>
+        </div>
+        <div class="field"><div class="flabel">Email address</div><div class="finput">sara@constructco.com</div></div>
+        <div class="field">
+          <div class="flabel">Password</div>
+          <div class="finput" style="letter-spacing:4px">••••••••••</div>
+          <div class="pw-wrap">
+            <div class="pw-seg" style="background:#059669"></div>
+            <div class="pw-seg" style="background:#059669"></div>
+            <div class="pw-seg" style="background:#059669"></div>
+            <div class="pw-seg" style="background:var(--color-border-tertiary)"></div>
+          </div>
+          <div style="font-size:11px;color:#059669;margin-top:4px">Strong</div>
+        </div>
+        <button class="btn btn-blue">Continue → Step 2</button>
+        <div class="lrow">Already have an account? <span class="lnk">Sign in</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div>
+    <div class="label">Step 2 of 3 — First construction site</div>
+    <div class="card">
+      <div class="left">
+        <div class="logo-box">
+          <svg width="26" height="26" viewBox="0 0 26 26" fill="none"><rect x="3" y="12" width="20" height="12" rx="3" stroke="#93c5fd" stroke-width="1.5"/><path d="M8 12V8a5 5 0 0110 0v4" stroke="#93c5fd" stroke-width="1.5" stroke-linecap="round"/><circle cx="13" cy="17.5" r="1.8" fill="#93c5fd"/></svg>
+        </div>
+        <div class="brand">ShiftEasy</div>
+        <div class="tagline">Set up takes 2 minutes. Fill in your details and create your first construction site.</div>
+        <div class="step-item">
+          <div class="step-icon" style="background:#071e12">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="#30d158" stroke-width="1.2"/><path d="M4.5 7l2 2 3-3" stroke="#30d158" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div><div class="step-title" style="color:#30d158">Step 1 — Your account</div><div class="step-sub">Name, company, email, password</div></div>
+        </div>
+        <div class="step-item">
+          <div class="step-icon" style="background:#1a1000">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1.5L8.5 5.5H13L9.8 7.8L10.8 11.5L7 9.3L3.2 11.5L4.2 7.8L1 5.5H5.5L7 1.5Z" stroke="#f59e0b" stroke-width="1.1" stroke-linejoin="round"/></svg>
+          </div>
+          <div><div class="step-title" style="color:#f59e0b">Step 2 — First site</div><div class="step-sub">Name the construction site and location</div></div>
+        </div>
+        <div class="step-item">
+          <div class="step-icon" style="background:#1a1a1a">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="#333" stroke-width="1.2"/><path d="M4.5 7l2 2 3-3" stroke="#333" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div><div class="step-title" style="color:#444">Step 3 — Done</div><div class="step-sub">Start adding workers immediately</div></div>
+        </div>
+      </div>
+      <div class="right">
+        <div class="tabs">
+          <div class="tab off">Sign in</div>
+          <div class="tab on">Create account</div>
+        </div>
+        <div class="steps-row">
+          <div class="sdot done"></div>
+          <div class="sdot active"></div>
+          <div class="sdot off"></div>
+          <span class="step-lbl">Step 2 of 3 — First construction site</span>
+        </div>
+        <div class="title">Your first site</div>
+        <div class="desc">You can add more sites later from the dashboard</div>
+        <div class="site-box">
+          <div class="site-box-title">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1.5L8.5 5.5H13L9.8 7.8L10.8 11.5L7 9.3L3.2 11.5L4.2 7.8L1 5.5H5.5L7 1.5Z" stroke="#f59e0b" stroke-width="1.1" stroke-linejoin="round"/></svg>
+            Construction site details
+          </div>
+          <div class="field"><div class="flabel">Site name</div><div class="finput focus">Block A — Foundation</div></div>
+          <div class="field" style="margin-bottom:0"><div class="flabel">Location / address</div><div class="finput">King Fahd Road, Riyadh</div></div>
+        </div>
+        <button class="btn btn-green">Continue → Step 3</button>
+        <div class="lrow">Already have an account? <span class="lnk">Sign in</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div>
+    <div class="label">Step 3 of 3 — Done</div>
+    <div class="card">
+      <div class="left" style="align-items:center;text-align:center">
+        <div style="width:64px;height:64px;border-radius:50%;background:#071e12;display:flex;align-items:center;justify-content:center;margin:0 auto 18px">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><path d="M6 16l8 8L26 8" stroke="#30d158" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="brand">You're all set!</div>
+        <div class="tagline" style="text-align:center">Company and first site created. Start adding workers from the dashboard.</div>
+      </div>
+      <div class="right">
+        <div class="tabs">
+          <div class="tab off">Sign in</div>
+          <div class="tab on">Create account</div>
+        </div>
+        <div class="steps-row">
+          <div class="sdot done"></div>
+          <div class="sdot done"></div>
+          <div class="sdot active"></div>
+          <span class="step-lbl">Step 3 of 3 — Ready</span>
+        </div>
+        <div class="title">Account created</div>
+        <div class="desc">Here's what was set up for you</div>
+        <div class="summary-box">
+          <div class="sum-row"><span class="sum-lbl">Manager</span><span class="sum-val">Sara Chen</span></div>
+          <div class="sum-row"><span class="sum-lbl">Company</span><span class="sum-val">ConstructCo Ltd</span></div>
+          <div class="sum-row"><span class="sum-lbl">Email</span><span class="sum-val" style="color:#1d4ed8">sara@constructco.com</span></div>
+          <div class="sum-row"><span class="sum-lbl">First site</span><span class="sum-val" style="color:#059669">Block A — Foundation</span></div>
+        </div>
+        <button class="btn btn-blue">Go to dashboard →</button>
+      </div>
+    </div>
+  </div>
+
+</div>
