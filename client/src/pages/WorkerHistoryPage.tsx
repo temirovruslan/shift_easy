@@ -474,3 +474,58 @@ const WorkerHistoryPage = () => {
 };
 
 export default WorkerHistoryPage;
+
+// ─── HOW THIS PAGE WORKS ─────────────────────────────────────────────────────
+//
+// OVERVIEW
+// This page shows a worker's shift history in 3 tabs:
+// "This week" → "Month" → "All time"
+// Each tab filters the same array of shifts differently.
+//
+// ── DATA FLOW ────────────────────────────────────────────────────────────────
+// 1. On mount, fetchShifts() calls the API and stores all shifts in allShifts[]
+// 2. completedShifts filters out any active shifts — history shows only done ones
+// 3. weeklyShifts, monthlyShifts are derived from completedShifts
+// 4. shiftsForTab picks which array to use based on activeTab (0, 1, or 2)
+//
+// ── TABS ─────────────────────────────────────────────────────────────────────
+// activeTab is a number: 0 = This week, 1 = Month, 2 = All time
+// Clicking a tab button sets activeTab → page re-renders with new data
+//
+// ── THIS WEEK TAB (activeTab === 0) ──────────────────────────────────────────
+// Always shows all 7 days Mon→Sun regardless of whether a shift exists.
+// weekDays is an array of 7 Date objects starting from this Monday.
+// For each day it looks for a matching shift by comparing toDateString().
+// If no shift that day → shows "—". If shift exists → shows duration + chevron.
+// Clicking a row opens ShiftDetail (notes, time, site, materials).
+// selectedShift tracks which row is open — clicking again closes it.
+//
+// ── MONTH TAB (activeTab === 1) ──────────────────────────────────────────────
+// Flat list of all shifts this calendar month.
+// Same expand/collapse pattern as This week using selectedShift.
+//
+// ── ALL TIME TAB (activeTab === 2) ───────────────────────────────────────────
+// Groups shifts by month into shiftsByMonth object.
+// Key is "YYYY-M" (e.g. "2026-4"), value is { label, shifts[] }.
+// sortedMonthKeys sorts months newest first.
+// Two levels of expand/collapse:
+//   Level 1 → selectedMonthKey opens a month group
+//   Level 2 → selectedShift opens a single shift inside that month
+//
+// ── STATS ROW ────────────────────────────────────────────────────────────────
+// Always shows stats for the CURRENT tab's shifts:
+// Total hours / Shift count / Average shift duration
+// These recalculate automatically when activeTab changes.
+//
+// ── HELPERS USED ─────────────────────────────────────────────────────────────
+// pad()             → forces 2-digit numbers for time display (9 → "09")
+// formatTime()      → "2026-05-06T08:05:00Z" → "08:05"
+// formatDate()      → Date object → "Monday, 6 May"
+// totalMinutes()    → adds up all shift durations in an array
+// avgMinutes()      → totalMinutes / shift count
+// toHours()         → minutes → whole hours (510 → 8)
+// toMins()          → leftover minutes after hours (510 → 30)
+// durationPct()     → duration as % of 8h day (480 min) for progress bar
+// getMondayMidnight()→ returns this Monday at 00:00:00 for weekly filter
+//
+// ─────────────────────────────────────────────────────────────────────────────

@@ -11,6 +11,7 @@ import ResetPasswordPage from "./pages/ResetPasswordPage"
 import ActivatePage from "./pages/ActivatePage"
 import ProtectedRoute from "./components/ProtectedRoute"
 import WorkerHistoryPage from "./pages/WorkerHistoryPage"
+import WorkerProfilePage from "./pages/WorkerProfilePage"
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
     <BrowserRouter>
       <Routes>
           <Route path='/' element={<LandingPage />} />
+          <Route path='/profile/worker' element={<WorkerProfilePage />} />
           <Route path='/login/worker' element={<WorkerLoginPage/>} />
           <Route path='/login/manager' element={<ManagerLoginPage/>} />
           <Route path='/register' element={<RegisterPage/>} />

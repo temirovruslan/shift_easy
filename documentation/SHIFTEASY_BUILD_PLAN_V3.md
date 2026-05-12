@@ -307,11 +307,11 @@ If client sends the time, a worker could fake when they started or stopped. Serv
 ### 2C — Frontend (Shifts)
 
 **Worker:**
-- [ ] Home page (no active shift) — greeting, site info card, Start button, stats (week/month), recent shifts list
-- [ ] Home page (active shift) — live timer display, progress bar, notes + materials form, Stop button
-- [ ] Site picker bottom sheet — appears only when worker has 2+ sites assigned
-- [ ] `hooks/useShift.ts` — checks for active shift on mount, runs setInterval every second if active, formats elapsed time as HH:MM:SS, cleans up on unmount
-- [ ] History page — 3 tabs (this week / this month / all time), each day row is compact with mini bar, tap to expand details, all time drills down by month
+- [x ] Home page (no active shift) — greeting, site info card, Start button, stats (week/month), recent shifts list
+- [x] Home page (active shift) — live timer display, progress bar, notes + materials form, Stop button
+- [x ] Site picker bottom sheet — appears only when worker has 2+ sites assigned
+- [x ] `hooks/useShift.ts` — checks for active shift on mount, runs setInterval every second if active, formats elapsed time as HH:MM:SS, cleans up on unmount
+- [x ] History page — 3 tabs (this week / this month / all time), each day row is compact with mini bar, tap to expand details, all time drills down by month
 - [ ] `api/shifts.ts` — one function per endpoint
 
 **Manager:**

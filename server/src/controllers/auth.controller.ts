@@ -76,7 +76,8 @@ export const forgotPassword = asyncHandler(async (req: Request, res: Response) =
 
     const rawToken = crypto.randomBytes(32).toString('hex')
     const hashedToken = crypto.createHash("sha256").update(rawToken).digest("hex")
-    await User.findOneAndUpdate(user._id, {
+    // changed code here
+    await User.findOneAndUpdate({ _id: user._id }, {
         inviteToken: hashedToken,
         inviteTokenExpires: new Date(Date.now() + 15 * 60 * 1000)
     })

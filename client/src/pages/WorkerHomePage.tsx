@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { getMyShift, startMyShift, stopMyShift } from "../api/shifts";
 import type { Shift } from "../types";
 import Loader from "../components/Loader";
+import { useNavigate } from "react-router-dom";
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 
@@ -68,7 +69,7 @@ const WorkerHomePage = () => {
   const [notes, setNotes] = useState("");
   const [materials, setMaterials] = useState("");
   const [submitted, setSubmitted] = useState(false);
-
+  const navigate = useNavigate();
   const refreshShifts = async () => {
     const res = await getMyShift();
     const data: Shift[] = res.data.data;
@@ -282,11 +283,14 @@ const WorkerHomePage = () => {
               {firstName}
             </h2>
           </div>
-          <div className="w-10 h-10 rounded-full bg-blue flex items-center justify-center">
+          <button
+            onClick={() => navigate("/profile/worker")}
+            className="w-10 h-10 rounded-full bg-blue flex items-center justify-center"
+          >
             <span className="text-sm font-bold text-white">
               {firstName?.slice(0, 2).toUpperCase()}
             </span>
-          </div>
+          </button>
         </div>
 
         {/* ── Site card ── */}

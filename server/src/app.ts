@@ -4,6 +4,7 @@ import morgan from "morgan";
 const app = express();
 import authRouter from "./routes/auth.routes";
 import shiftsRouter from "./routes/shifts.routes";
+import userRouter from "./routes/user.routes";
 import AppError from "./errors/AppError";
 import { Request, Response, NextFunction } from "express";
 
@@ -13,6 +14,7 @@ app.use(morgan("dev"));
 
 app.use("/api/auth", authRouter);
 app.use("/api/shifts", shiftsRouter);
+app.use("/api/user", userRouter);
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   if (err instanceof AppError) {
     res.status(err.statusCode).json({
