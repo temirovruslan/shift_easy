@@ -17,8 +17,7 @@ export const getActiveSites = async (req: Request, res: Response) => {
 
   const sites = await SiteModel.find({
     company: manager.company,
-    status: "active",
-  });
+  }).populate("workers", "name")
   res.status(200).json({ success: true, data: sites });
 };
 
@@ -67,6 +66,20 @@ export const archiveSite = async (req: Request, res: Response) => {
   const updateSite = await SiteModel.findOneAndUpdate(
     { _id, company },
     { status: "archived" },
+    { new: true },
+  );
+
+  if(!updateSite) throw new AppError("Something went wrong", 400)
+  res.status(200).json({ success: true, data: { updateSite } });
+};
+
+export const activateSite = async (req: Request, res: Response) => {
+  const _id = req.params.id;
+  const company = req.user.company;
+
+  const updateSite = await SiteModel.findOneAndUpdate(
+    { _id, company },
+    { status: "active" },
     { new: true },
   );
 

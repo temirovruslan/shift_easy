@@ -1,11 +1,11 @@
 import { useAuth } from "../context/AuthContext";
-import NavBar from "../components/NavBar";
 import { Play, Square } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getMyShift, startMyShift, stopMyShift } from "../api/shifts";
 import type { Shift } from "../types";
 import Loader from "../components/Loader";
 import { useNavigate } from "react-router-dom";
+import NavBarWorker from "../components/NavBar";
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 
@@ -266,7 +266,7 @@ const WorkerHomePage = () => {
             </button>
           </form>
         </div>
-        <NavBar />
+        <NavBarWorker />
       </div>
     );
 
@@ -368,7 +368,7 @@ const WorkerHomePage = () => {
           )}
         </div>
       </div>
-      <NavBar />
+      <NavBarWorker />
     </div>
   );
 };

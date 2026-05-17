@@ -2,7 +2,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Home, Clock, LogOut } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
-const NavBar = () => {
+const NavBarWorker = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { logout } = useAuth();
@@ -43,4 +43,4 @@ const NavBar = () => {
   );
 };
 
-export default NavBar;
+export default NavBarWorker;

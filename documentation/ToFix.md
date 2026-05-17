@@ -20,6 +20,9 @@
 
 - [] if selling app fix hours i put Math.floor insted of toFix(3) - so now it give clean number insted of real
 
+
+- [] In manager site page when click on details active workers are not shown correct
+
 <!-- BACKEND -->
 
 - [] worker can start - stop his shift from anywhere, he doesnt need to be Assigned for specific site and only start shift in there

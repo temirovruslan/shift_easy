@@ -12,6 +12,10 @@ import ActivatePage from "./pages/ActivatePage"
 import ProtectedRoute from "./components/ProtectedRoute"
 import WorkerHistoryPage from "./pages/WorkerHistoryPage"
 import WorkerProfilePage from "./pages/WorkerProfilePage"
+import ManagerSitePage from "./pages/ManagerSitePage"
+import ManagerSiteDetailPage from "./pages/ManagerSiteDetailPage"
+import ManagerShiftsPage from "./pages/ManagerShiftsPage"
+import ManagerShowListOfWorkersPage from "./pages/ManagerShowListOfWorkersPage"
 
 
 function App() {
@@ -31,9 +35,10 @@ function App() {
           <Route path='/worker/history' element={<ProtectedRoute role="worker"><WorkerHistoryPage/></ProtectedRoute>} />
 
           <Route path='/manager/dashboard' element={<ProtectedRoute role="manager"><ManagerDashboardPage/></ProtectedRoute>} />
-          <Route path='/manager/shifts' element={<ProtectedRoute role="manager"><div>manager/shifts</div></ProtectedRoute>} />
-          <Route path='/manager/workers' element={<ProtectedRoute role="manager"><div>manager/workers</div></ProtectedRoute>} />
-          <Route path='/manager/sites' element={<ProtectedRoute role="manager"><div>manager/sites</div></ProtectedRoute>} />
+          <Route path='/manager/shifts' element={<ProtectedRoute role="manager"><ManagerShiftsPage/></ProtectedRoute>} />
+          <Route path='/manager/workers' element={<ProtectedRoute role="manager"><ManagerShowListOfWorkersPage/></ProtectedRoute>} />
+          <Route path='/manager/sites' element={<ProtectedRoute role="manager"><ManagerSitePage/></ProtectedRoute>} />
+          <Route path='/manager/sites/:id' element={<ProtectedRoute role="manager"><ManagerSiteDetailPage/></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
   )

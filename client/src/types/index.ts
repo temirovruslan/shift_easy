@@ -3,6 +3,8 @@ export interface Site {
   _id: string;
   name: string;
   address: string;
+  status: "active" | "archived";
+  workers: { _id: string; name: string }[];
 }
 
 export interface Shift {

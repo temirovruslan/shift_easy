@@ -3,9 +3,9 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { getUser, userChangePassword } from "../api/user";
 import { useAuth } from "../context/AuthContext";
-import NavBar from "../components/NavBar";
 import Loader from "../components/Loader";
 import type { UserTypes } from "../types";
+import NavBarWorker from "../components/NavBar";
 
 const getInitials = (name: string) =>
   name
@@ -95,11 +95,12 @@ const WorkerProfilePage = () => {
   return (
     <div className="min-h-screen bg-bg px-5 pt-14 pb-20">
       <div className="max-w-sm mx-auto">
-
         {/* ── Avatar + name + badge ── */}
         <div className="flex flex-col items-center mb-8">
           <div className="w-16 h-16 rounded-full bg-blue flex items-center justify-center mb-3">
-            <span className="text-xl font-bold text-white">{getInitials(user.name)}</span>
+            <span className="text-xl font-bold text-white">
+              {getInitials(user.name)}
+            </span>
           </div>
           <h2 className="text-xl font-bold text-text mb-2">{user.name}</h2>
           <div className="flex items-center gap-1.5 bg-bg3 border border-border rounded-full px-3 py-1">
@@ -111,7 +112,9 @@ const WorkerProfilePage = () => {
         </div>
 
         {/* ── Account section ── */}
-        <p className="text-[10px] font-bold text-text3 uppercase tracking-widest mb-2">Account</p>
+        <p className="text-[10px] font-bold text-text3 uppercase tracking-widest mb-2">
+          Account
+        </p>
         <div className="bg-bg3 border border-border rounded-2xl mb-5 divide-y divide-border">
           {[
             { label: "Email", value: user.email },
@@ -119,7 +122,10 @@ const WorkerProfilePage = () => {
             { label: "Manager", value: managerName ?? "—" },
             { label: "Member since", value: formatMemberSince(user.createdAt) },
           ].map(({ label, value }) => (
-            <div key={label} className="flex justify-between items-center px-4 py-3">
+            <div
+              key={label}
+              className="flex justify-between items-center px-4 py-3"
+            >
               <span className="text-sm text-text3">{label}</span>
               <span className="text-sm font-semibold text-text">{value}</span>
             </div>
@@ -127,24 +133,35 @@ const WorkerProfilePage = () => {
         </div>
 
         {/* ── Settings section ── */}
-        <p className="text-[10px] font-bold text-text3 uppercase tracking-widest mb-2">Settings</p>
+        <p className="text-[10px] font-bold text-text3 uppercase tracking-widest mb-2">
+          Settings
+        </p>
         <div className="bg-bg3 border border-border rounded-2xl mb-5 divide-y divide-border">
-
           {/* Change password row + inline form */}
           <div>
             <button
-              onClick={() => { setShowChangePassword((prev) => !prev); setPwError(null); setPwSuccess(false); }}
+              onClick={() => {
+                setShowChangePassword((prev) => !prev);
+                setPwError(null);
+                setPwSuccess(false);
+              }}
               className="flex justify-between items-center px-4 py-3.5 w-full text-left"
             >
-              <span className="text-sm font-semibold text-text">Change password</span>
-              {showChangePassword
-                ? <ChevronDown size={16} className="text-text3" />
-                : <ChevronRight size={16} className="text-text3" />
-              }
+              <span className="text-sm font-semibold text-text">
+                Change password
+              </span>
+              {showChangePassword ? (
+                <ChevronDown size={16} className="text-text3" />
+              ) : (
+                <ChevronRight size={16} className="text-text3" />
+              )}
             </button>
 
             {showChangePassword && (
-              <form onSubmit={handleChangePassword} className="px-4 pb-4 flex flex-col gap-3">
+              <form
+                onSubmit={handleChangePassword}
+                className="px-4 pb-4 flex flex-col gap-3"
+              >
                 <input
                   type="password"
                   placeholder="Current password"
@@ -167,7 +184,11 @@ const WorkerProfilePage = () => {
                   className="w-full bg-bg2 border border-border rounded-xl px-4 py-3 text-sm text-text placeholder:text-text3 outline-none focus:border-blue/50"
                 />
                 {pwError && <p className="text-xs text-red">{pwError}</p>}
-                {pwSuccess && <p className="text-xs text-green">Password updated successfully</p>}
+                {pwSuccess && (
+                  <p className="text-xs text-green">
+                    Password updated successfully
+                  </p>
+                )}
                 <button
                   type="submit"
                   disabled={pwLoading}
@@ -181,7 +202,9 @@ const WorkerProfilePage = () => {
 
           {/* Notifications toggle */}
           <div className="flex justify-between items-center px-4 py-3.5">
-            <span className="text-sm font-semibold text-text">Notifications</span>
+            <span className="text-sm font-semibold text-text">
+              Notifications
+            </span>
             <button
               onClick={() => setNotifications((prev) => !prev)}
               className={`w-11 h-6 rounded-full transition-colors ${notifications ? "bg-blue" : "bg-border"}`}
@@ -200,9 +223,8 @@ const WorkerProfilePage = () => {
         >
           Sign out
         </button>
-
       </div>
-      <NavBar />
+      <NavBarWorker />
     </div>
   );
 };

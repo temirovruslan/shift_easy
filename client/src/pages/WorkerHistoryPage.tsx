@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import NavBar from "../components/NavBar";
 import { getMyShift } from "../api/shifts";
 import type { Shift } from "../types";
 import Loader from "../components/Loader";
 import { ChevronDown } from "lucide-react";
+import NavBarWorker from "../components/NavBar";
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 
@@ -467,7 +467,7 @@ const WorkerHistoryPage = () => {
             })}
           </div>
         )}
-        <NavBar />
+        <NavBarWorker />
       </div>
     </div>
   );

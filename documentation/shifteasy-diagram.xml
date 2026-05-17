@@ -1,0 +1,83 @@
+<mxGraphModel>
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+
+    <mxCell id="2" value="Company" style="rounded=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="500" y="100" width="160" height="60" as="geometry" />
+    </mxCell>
+
+    <mxCell id="3" value="Manager (User)" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="200" y="100" width="160" height="60" as="geometry" />
+    </mxCell>
+
+    <mxCell id="4" value="Site" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="200" y="280" width="160" height="60" as="geometry" />
+    </mxCell>
+
+    <mxCell id="5" value="Worker (User)" style="rounded=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="500" y="280" width="160" height="60" as="geometry" />
+    </mxCell>
+
+    <mxCell id="6" value="Shift" style="rounded=1;fillColor=#e1d5e7;strokeColor=#9673a6;fontSize=13;fontStyle=1;" vertex="1" parent="1">
+      <mxGeometry x="350" y="460" width="160" height="60" as="geometry" />
+    </mxCell>
+
+    <mxCell id="7" value="belongs to" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="3" target="2" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <mxCell id="8" value="belongs to" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="4" target="2" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <mxCell id="9" value="belongs to" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="5" target="2" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <mxCell id="10" value="site.workers / worker.sites" style="edgeStyle=orthogonalEdgeStyle;dashed=1;" edge="1" source="4" target="5" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <mxCell id="11" value="belongs to" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="6" target="5" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <mxCell id="12" value="at site" style="edgeStyle=orthogonalEdgeStyle;" edge="1" source="6" target="4" parent="1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <mxCell id="13" value="AUTH (no token)" style="rounded=1;fillColor=#f5f5f5;strokeColor=#666;fontSize=12;fontStyle=1;verticalAlign=top;align=left;" vertex="1" parent="1">
+      <mxGeometry x="820" y="60" width="340" height="120" as="geometry" />
+    </mxCell>
+
+    <mxCell id="14" value="POST /api/auth/register  → creates Manager + Company&#xa;POST /api/auth/login  → returns JWT token&#xa;POST /api/auth/forgot-password&#xa;POST /api/auth/reset-password/:token" style="text;html=0;align=left;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="830" y="90" width="320" height="80" as="geometry" />
+    </mxCell>
+
+    <mxCell id="15" value="MANAGER (token + manager role)" style="rounded=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=12;fontStyle=1;verticalAlign=top;align=left;" vertex="1" parent="1">
+      <mxGeometry x="820" y="210" width="340" height="170" as="geometry" />
+    </mxCell>
+
+    <mxCell id="16" value="GET    /api/site  → list all sites&#xa;POST   /api/site  → create site&#xa;GET    /api/site/archived  → archived&#xa;GET    /api/site/:id  → single site + workers&#xa;PATCH  /api/site/:id  → edit name/address&#xa;PATCH  /api/site/archive/:id  → archive&#xa;POST   /api/worker  → create worker + assign to site" style="text;html=0;align=left;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="830" y="240" width="320" height="130" as="geometry" />
+    </mxCell>
+
+    <mxCell id="17" value="WORKER (token only)" style="rounded=1;fillColor=#f8cecc;strokeColor=#b85450;fontSize=12;fontStyle=1;verticalAlign=top;align=left;" vertex="1" parent="1">
+      <mxGeometry x="820" y="410" width="340" height="150" as="geometry" />
+    </mxCell>
+
+    <mxCell id="18" value="GET  /api/user/me  → own profile&#xa;POST /api/user/change-password&#xa;GET  /api/shifts/my  → active shift&#xa;POST /api/shifts/start  → start shift&#xa;POST /api/shifts/stop  → stop shift&#xa;GET  /api/shifts  → shift history" style="text;html=0;align=left;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="830" y="440" width="320" height="110" as="geometry" />
+    </mxCell>
+
+    <mxCell id="19" value="WHO CREATES WHAT" style="rounded=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=12;fontStyle=1;verticalAlign=top;align=left;" vertex="1" parent="1">
+      <mxGeometry x="820" y="590" width="340" height="160" as="geometry" />
+    </mxCell>
+
+    <mxCell id="20" value="1. Manager registers → Company + Manager created&#xa;2. Manager logs in → gets JWT token&#xa;3. Manager POST /api/site → Site created&#xa;   (company taken from token automatically)&#xa;4. Manager POST /api/worker → Worker created&#xa;   + worker pushed into site.workers[ ]&#xa;   + worker.sites[ ] = [siteId]&#xa;5. Worker logs in → gets own JWT token&#xa;6. Worker POST /api/shifts/start → Shift created" style="text;html=0;align=left;fontSize=11;" vertex="1" parent="1">
+      <mxGeometry x="830" y="620" width="320" height="120" as="geometry" />
+    </mxCell>
+
+  </root>
+</mxGraphModel>
