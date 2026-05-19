@@ -1,36 +1,48 @@
-import mongoose, { Document } from 'mongoose'
+import mongoose, { Document } from "mongoose";
 
 // IUser — TypeScript interface for a User document [1]
 export interface IUser extends Document {
-    name:               string
-    email:              string
-    password:           string
-    role:               'worker' | 'manager'
-    company:            mongoose.Types.ObjectId
-    sites:              mongoose.Types.ObjectId[]
-    occupation?:        string                  // [2]
-    isActivated:        boolean                 // [3]
-    inviteToken?:       string                  // [4]
-    inviteTokenExpires?: Date
+  name: string;
+  email: string;
+  password: string;
+  role: "worker" | "manager";
+  company: mongoose.Types.ObjectId;
+  sites: mongoose.Types.ObjectId[];
+  occupation?: string; // [2]
+  isActivated: boolean; // [3]
+  isArchived: boolean;
+  inviteToken?: string; // [4]
+  inviteTokenExpires?: Date;
 }
 
 const userSchema = new mongoose.Schema<IUser>(
-    {
-        name:     { type: String, required: true, trim: true },
-        email:    { type: String, required: true, unique: true, lowercase: true, trim: true }, // [5]
-        password: { type: String, required: true }, // [6]
-        role:     { type: String, enum: ['worker', 'manager'], required: true },
-        company:  { type: mongoose.Schema.Types.ObjectId, ref: 'Company', required: true },
-        sites:    [{ type: mongoose.Schema.Types.ObjectId, ref: 'Site' }],
-        occupation:         { type: String, trim: true },
-        isActivated:        { type: Boolean, default: false },  // [3]
-        inviteToken:        { type: String },                   // [4]
-        inviteTokenExpires: { type: Date },
+  {
+    name: { type: String, required: true, trim: true },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+    }, // [5]
+    password: { type: String, required: true }, // [6]
+    role: { type: String, enum: ["worker", "manager"], required: true },
+    company: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Company",
+      required: true,
     },
-    { timestamps: true }
-)
+    sites: [{ type: mongoose.Schema.Types.ObjectId, ref: "Site" }],
+    occupation: { type: String, trim: true },
+    isActivated: { type: Boolean, default: false }, // [3]
+    isArchived: { type: Boolean, default: false }, // [3]
+    inviteToken: { type: String }, // [4]
+    inviteTokenExpires: { type: Date },
+  },
+  { timestamps: true },
+);
 
-export default mongoose.model<IUser>('User', userSchema)
+export default mongoose.model<IUser>("User", userSchema);
 
 // ─── NOTES ───────────────────────────────────────────────────────────────────
 // [1] IUser extends Document — your fields + built-in MongoDB fields (_id, save()...)

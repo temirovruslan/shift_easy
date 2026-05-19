@@ -23,6 +23,12 @@
 
 - [] In manager site page when click on details active workers are not shown correct
 
+- [] Resend  invite email - fix it dosnt show proper pop up
+
+
 <!-- BACKEND -->
 
 - [] worker can start - stop his shift from anywhere, he doesnt need to be Assigned for specific site and only start shift in there
+
+
+- [] Email invitation better layout

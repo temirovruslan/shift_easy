@@ -13,6 +13,6 @@ router.post("/register", validate(registerSchema), register);
 router.post("/login", login);
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password/:token", resetPassword);
-router.post("/activete/:token", activate);
+router.post("/activate/:token", activate);
 
 export default router;
