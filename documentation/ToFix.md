@@ -40,3 +40,13 @@
 wants to change just name In that case 
 
 - [] User might close app While he's working and the time should be saved So when he gets into the application time should As ifzz He didn't close the application so that the time should be saved running Without user is in the application because the battery die The phone can be broken or something like that or accidentally they close the application
+
+<!-- FUTURE FEATURES -->
+
+- [] Dashboard stat cards delta indicators — "+1 vs yesterday" on On shift now card (compare active shifts today vs same time yesterday), "+8h vs avg" on Total hours today (rolling daily average from shift history), "On track" on This week card (compare current week progress vs previous weeks average). All computable from existing shift data.
+
+- [] Manager Shifts page — Custom date range picker (calendar with range selection, "From" and "To" date inputs, Apply range button). Skipped for now due to complexity, needs a calendar library or custom build.
+
+- [] Worker shift history page — worker should be able to see their own past shifts with date, site, duration, notes
+
+- [] Push notifications — notify manager when a worker starts or stops a shift
