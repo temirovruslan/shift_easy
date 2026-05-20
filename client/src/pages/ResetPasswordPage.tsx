@@ -16,7 +16,7 @@ const ResetPasswordPage = () => {
 
   const handleResetPassword = async () => {
     try {
-      const res = await resetPassword({ password: password1 }, token);
+      await resetPassword({ password: password1 }, token);
       setSuccess(true);
     } catch (err: any) {
       setError(err?.response?.data?.message || "Something went wrong");

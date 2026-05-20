@@ -6,7 +6,6 @@ import Button from "../components/ButtonComponent";
 import Input from "../components/InputComponent";
 import { login as loginManager } from "../api/auth";
 import { useAuth } from "../context/AuthContext";
-import ProtectedRoute from "../components/ProtectedRoute";
 
 const ManagerLoginPage = () => {
   const [email, setEmail] = useState("");
