@@ -14,3 +14,8 @@ export const stopMyShift = async (data: any) => {
   const res = await api.post("/shifts/stop", data);
   return res.data;
 };
+
+export const getAllShifts = async () => {
+  const res = await api.get("/shifts");
+  return res.data;
+};

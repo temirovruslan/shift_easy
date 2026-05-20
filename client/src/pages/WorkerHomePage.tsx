@@ -2,6 +2,7 @@ import { useAuth } from "../context/AuthContext";
 import { Play, Square } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getMyShift, startMyShift, stopMyShift } from "../api/shifts";
+import { getUser } from "../api/user";
 import type { Shift } from "../types";
 import Loader from "../components/Loader";
 import { useNavigate } from "react-router-dom";
@@ -69,6 +70,7 @@ const WorkerHomePage = () => {
   const [notes, setNotes] = useState("");
   const [materials, setMaterials] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [profile, setProfile] = useState<any>(null);
   const navigate = useNavigate();
   const refreshShifts = async () => {
     const res = await getMyShift();
@@ -79,16 +81,17 @@ const WorkerHomePage = () => {
   };
 
   useEffect(() => {
-    const fetchShifts = async () => {
+    const fetchAll = async () => {
       try {
-        await refreshShifts();
+        const [, profileRes] = await Promise.all([refreshShifts(), getUser()]);
+        setProfile(profileRes.data);
       } catch (error) {
         console.error(error);
       } finally {
         setLoading(false);
       }
     };
-    fetchShifts();
+    fetchAll();
   }, []);
 
   useEffect(() => {
@@ -104,7 +107,7 @@ const WorkerHomePage = () => {
 
   const now = new Date();
   const firstName = user?.name.split(" ")[0];
-  const assignedSite = shifts[0]?.site; // [9]
+  const assignedSite = profile?.sites?.[0] ?? shifts[0]?.site;
 
   const completedShifts = shifts.filter((s) => s.status === "completed");
   const completedCount = completedShifts.length;
@@ -122,6 +125,7 @@ const WorkerHomePage = () => {
   const notesValid = notes.trim().length >= 5;
 
   const shiftStart = async () => {
+    if (!assignedSite) return;
     try {
       await startMyShift({ siteId: assignedSite._id });
       await refreshShifts();
@@ -311,16 +315,27 @@ const WorkerHomePage = () => {
         )}
 
         {/* ── Start shift ── */}
-        <button
-          onClick={shiftStart}
-          className="w-full bg-green-d border border-green-border rounded-2xl py-6 flex flex-col items-center gap-2 mb-3 active:scale-[0.98] transition-transform"
-        >
-          <div className="w-10 h-10 rounded-full border border-green flex items-center justify-center">
-            <Play size={18} className="text-green fill-green" />
+        {assignedSite ? (
+          <button
+            onClick={shiftStart}
+            className="w-full bg-green-d border border-green-border rounded-2xl py-6 flex flex-col items-center gap-2 mb-3 active:scale-[0.98] transition-transform"
+          >
+            <div className="w-10 h-10 rounded-full border border-green flex items-center justify-center">
+              <Play size={18} className="text-green fill-green" />
+            </div>
+            <span className="text-base font-bold text-green">Start shift</span>
+            <span className="text-xs text-text2">{assignedSite.name}</span>
+          </button>
+        ) : (
+          <div className="w-full bg-bg3 border border-border rounded-2xl py-6 flex flex-col items-center gap-2 mb-3">
+            <span className="text-sm font-semibold text-text3">
+              Not assigned to any site
+            </span>
+            <span className="text-xs text-text3">
+              Ask your manager to assign you
+            </span>
           </div>
-          <span className="text-base font-bold text-green">Start shift</span>
-          <span className="text-xs text-text2">{assignedSite?.name}</span>
-        </button>
+        )}
 
         {/* ── Stats ── */}
         <div className="grid grid-cols-2 gap-3 mb-6">

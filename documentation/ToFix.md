@@ -25,10 +25,18 @@
 
 - [] Resend  invite email - fix it dosnt show proper pop up
 
+- [] Fix the Shifts manager page grouping might be wrong (logic)
 
+- [] Resend invite email to active worker already is a bug, if active there should be dif logic
 <!-- BACKEND -->
 
 - [] worker can start - stop his shift from anywhere, he doesnt need to be Assigned for specific site and only start shift in there
 
 
 - [] Email invitation better layout
+
+
+- [] Edit worker from manager side gives error, logic should be diff ex manager 
+wants to change just name In that case 
+
+- [] User might close app While he's working and the time should be saved So when he gets into the application time should As ifzz He didn't close the application so that the time should be saved running Without user is in the application because the battery die The phone can be broken or something like that or accidentally they close the application
