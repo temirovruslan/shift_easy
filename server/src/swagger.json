@@ -1,0 +1,657 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "ShiftEasy API",
+    "description": "### Shift management platform for field teams — track workers, sites and hours in real time.\n\n---\n\n## 👋 Not a developer? No problem.\n\n> You can **test every endpoint live** — right here on this page.\n\n---\n\n## ⚡ 4 steps to get started\n\n**1️⃣ Register** *(first time only)*\n→ Open `POST /api/auth/register` → click `Try it out` → click `Execute`\n→ ⚠️ This creates a **manager** account — not a worker\n\n**2️⃣ Login and get your token**\n→ Open `POST /api/auth/login` → click `Try it out` → click `Execute`\n→ Find the `token` field in the response and **copy it**\n\n**3️⃣ Paste it in `Authorize`**\n→ Click the green `Authorize 🔓` button at the **top right of this page**\n→ Paste your `token` into the **Value** field → click `Authorize` → click `Close`\n→ ✅ Done — every request now sends your token automatically\n\n**4️⃣ Try any endpoint**\n→ Click any endpoint row → `Try it out` → fill in the fields → `Execute`\n→ See the real response from the server instantly\n\n---\n\n## 📱 What ShiftEasy does\n\n| | Feature | In plain English |\n|---|---|---|\n| ⏱️ | **Shift tracking** | Workers clock in and out from their phone |\n| 📊 | **Live dashboard** | Manager sees who is on site right now |\n| 👷 | **Worker management** | Invite workers by email, assign to sites |\n| 🏗️ | **Site management** | Create and manage multiple work locations |\n| 🔒 | **Role-based access** | Managers and workers see different things |\n\n---\n\n> 🔒 `Lock icon` next to an endpoint = login required\n\n> 🔓 No lock = public endpoint — no token needed `(register, login, forgot password)`",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000",
+      "description": "Local development server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "SuccessResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean", "example": true },
+          "data": { "type": "object" }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean", "example": false },
+          "message": { "type": "string" }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/api/auth/register": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Register Manager",
+        "description": "Creates a new **manager** account along with a company and first site.\n\n> ⚠️ **This registers you as a MANAGER — not a worker.**\n\n**As a manager you can:**\n- ✅ Create and manage sites\n- ✅ Invite workers by email\n- ✅ View the live dashboard\n- ✅ See all shifts and hours\n\n**Workers are invited by the manager** — they receive an email with a link to activate their account. Workers can then start and stop shifts from the mobile app.\n\n> To test worker endpoints (`Start Shift`, `Stop Shift`) you need to invite a worker first and log in as that worker.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "email", "password", "companyName", "siteName", "siteAddress"],
+                "properties": {
+                  "name": { "type": "string", "example": "John Smith" },
+                  "email": { "type": "string", "example": "manager@example.com" },
+                  "password": { "type": "string", "example": "secret123" },
+                  "companyName": { "type": "string", "example": "BuildCo Ltd" },
+                  "siteName": { "type": "string", "example": "Block A" },
+                  "siteAddress": { "type": "string", "example": "123 Main Street, London" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Manager registered successfully" },
+          "400": { "description": "Validation error" }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Login",
+        "description": "Authenticates a user (manager or worker) and returns a JWT token.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email", "password"],
+                "properties": {
+                  "email": { "type": "string", "example": "manager@example.com" },
+                  "password": { "type": "string", "example": "secret123" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "token": { "type": "string" },
+                        "role": { "type": "string", "example": "manager" },
+                        "name": { "type": "string", "example": "John Smith" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Invalid credentials" }
+        }
+      }
+    },
+    "/api/auth/forgot-password": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Forgot Password",
+        "description": "Sends a password reset email to the user.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["email"],
+                "properties": {
+                  "email": { "type": "string", "example": "manager@example.com" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Reset email sent" },
+          "404": { "description": "User not found" }
+        }
+      }
+    },
+    "/api/auth/reset-password/{token}": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Reset Password",
+        "description": "Resets the user's password using the token from the email link.",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Password reset token from email"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["password", "confirmPassword"],
+                "properties": {
+                  "password": { "type": "string", "example": "newSecret123" },
+                  "confirmPassword": { "type": "string", "example": "newSecret123" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Password reset successfully" },
+          "400": { "description": "Invalid or expired token" }
+        }
+      }
+    },
+    "/api/auth/activate/{token}": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Activate Account",
+        "description": "Worker activates their account by setting a password after receiving an invite email.",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Activation token from invite email"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["password", "confirmPassword"],
+                "properties": {
+                  "password": { "type": "string", "example": "myPassword123" },
+                  "confirmPassword": { "type": "string", "example": "myPassword123" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Account activated successfully" },
+          "400": { "description": "Invalid or expired token" }
+        }
+      }
+    },
+    "/api/user/me": {
+      "get": {
+        "tags": ["User"],
+        "summary": "Get Current User",
+        "description": "Returns the profile of the currently authenticated user.",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "User profile returned" },
+          "401": { "description": "Unauthorized" }
+        }
+      }
+    },
+    "/api/user/change-password": {
+      "post": {
+        "tags": ["User"],
+        "summary": "Change Password",
+        "description": "Allows an authenticated user to change their current password.",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["currentPassword", "newPassword"],
+                "properties": {
+                  "currentPassword": { "type": "string", "example": "oldSecret123" },
+                  "newPassword": { "type": "string", "example": "newSecret456" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Password changed successfully" },
+          "400": { "description": "Incorrect current password" }
+        }
+      }
+    },
+    "/api/shifts/start": {
+      "post": {
+        "tags": ["Shifts"],
+        "summary": "Start Shift",
+        "description": "Worker starts a shift at a specific site.",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["siteId"],
+                "properties": {
+                  "siteId": { "type": "string", "example": "64abc123def456" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Shift started" },
+          "400": { "description": "Already on shift" }
+        }
+      }
+    },
+    "/api/shifts/stop": {
+      "post": {
+        "tags": ["Shifts"],
+        "summary": "Stop Shift",
+        "description": "Worker stops their active shift and submits notes.",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["notes"],
+                "properties": {
+                  "notes": { "type": "string", "example": "Completed foundation work on east side." },
+                  "materials": { "type": "string", "example": "Cement x5, Rebar x20" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Shift stopped" },
+          "400": { "description": "No active shift found" }
+        }
+      }
+    },
+    "/api/shifts/my": {
+      "get": {
+        "tags": ["Shifts"],
+        "summary": "Get My Shifts",
+        "description": "Returns all shifts for the currently authenticated worker.",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "List of worker's shifts" }
+        }
+      }
+    },
+    "/api/shifts": {
+      "get": {
+        "tags": ["Shifts"],
+        "summary": "Get All Shifts",
+        "description": "Returns all shifts across all workers. Manager only.",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "List of all shifts" },
+          "403": { "description": "Manager access required" }
+        }
+      }
+    },
+    "/api/shifts/{id}": {
+      "get": {
+        "tags": ["Shifts"],
+        "summary": "Get Shift by ID",
+        "description": "Returns a single shift by its ID. Manager only.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Shift ID"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Shift data" },
+          "404": { "description": "Shift not found" }
+        }
+      }
+    },
+    "/api/site": {
+      "post": {
+        "tags": ["Sites"],
+        "summary": "Create Site",
+        "description": "Creates a new work site. Manager only.",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "address"],
+                "properties": {
+                  "name": { "type": "string", "example": "Block A" },
+                  "address": { "type": "string", "example": "45 Industrial Road, Manchester" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Site created" }
+        }
+      },
+      "get": {
+        "tags": ["Sites"],
+        "summary": "Get All Sites",
+        "description": "Returns all active sites. Manager only.",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "List of active sites" }
+        }
+      }
+    },
+    "/api/site/archived": {
+      "get": {
+        "tags": ["Sites"],
+        "summary": "Get All Archived Sites",
+        "description": "Returns all archived (inactive) sites. Manager only.",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "List of archived sites" }
+        }
+      }
+    },
+    "/api/site/{id}": {
+      "get": {
+        "tags": ["Sites"],
+        "summary": "Get Site by ID",
+        "description": "Returns a single site by ID. Manager only.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Site ID"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Site data" },
+          "404": { "description": "Site not found" }
+        }
+      },
+      "patch": {
+        "tags": ["Sites"],
+        "summary": "Update Site",
+        "description": "Updates a site's name or address. Manager only.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Site ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string", "example": "Block B" },
+                  "address": { "type": "string", "example": "99 New Street, London" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Site updated" },
+          "404": { "description": "Site not found" }
+        }
+      }
+    },
+    "/api/site/archive/{id}": {
+      "patch": {
+        "tags": ["Sites"],
+        "summary": "Archive Site",
+        "description": "Archives (deactivates) a site. Manager only.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Site ID"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Site archived" },
+          "404": { "description": "Site not found" }
+        }
+      }
+    },
+    "/api/site/activate/{id}": {
+      "patch": {
+        "tags": ["Sites"],
+        "summary": "Activate Site",
+        "description": "Restores an archived site back to active. Manager only.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Site ID"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Site activated" },
+          "404": { "description": "Site not found" }
+        }
+      }
+    },
+    "/api/worker": {
+      "post": {
+        "tags": ["Workers"],
+        "summary": "Create Worker",
+        "description": "Creates a new worker and sends them an invite email. Manager only.",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "email", "occupation"],
+                "properties": {
+                  "name": { "type": "string", "example": "Ahmed Al-Rashid" },
+                  "email": { "type": "string", "example": "worker@example.com" },
+                  "occupation": { "type": "string", "example": "Electrician" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Worker created and invite sent" }
+        }
+      },
+      "get": {
+        "tags": ["Workers"],
+        "summary": "Get All Workers",
+        "description": "Returns all active workers. Manager only.",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "List of workers" }
+        }
+      }
+    },
+    "/api/worker/archived": {
+      "get": {
+        "tags": ["Workers"],
+        "summary": "Get Archived Workers",
+        "description": "Returns all archived workers. Manager only.",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "List of archived workers" }
+        }
+      }
+    },
+    "/api/worker/{id}": {
+      "get": {
+        "tags": ["Workers"],
+        "summary": "Get Worker by ID",
+        "description": "Returns a single worker's details. Manager only.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Worker ID"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Worker data" },
+          "404": { "description": "Worker not found" }
+        }
+      },
+      "delete": {
+        "tags": ["Workers"],
+        "summary": "Archive Worker",
+        "description": "Soft-deletes (archives) a worker. They can be restored later. Manager only.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Worker ID"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Worker archived" },
+          "404": { "description": "Worker not found" }
+        }
+      }
+    },
+    "/api/worker/restore/{id}": {
+      "patch": {
+        "tags": ["Workers"],
+        "summary": "Restore Worker",
+        "description": "Restores an archived worker back to active. Manager only.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Worker ID"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Worker restored" },
+          "404": { "description": "Worker not found" }
+        }
+      }
+    },
+    "/api/worker/assign/{siteId}": {
+      "post": {
+        "tags": ["Workers"],
+        "summary": "Assign Worker to Site",
+        "description": "Assigns one or more workers to a specific site. Manager only.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "siteId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Site ID to assign workers to"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["workerIds"],
+                "properties": {
+                  "workerIds": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "example": ["64abc111", "64abc222"]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Workers assigned to site" }
+        }
+      }
+    },
+    "/api/worker/{id}/invite": {
+      "post": {
+        "tags": ["Workers"],
+        "summary": "Send Invite Email",
+        "description": "Resends the activation invite email to a worker. Manager only.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Worker ID"
+          }
+        ],
+        "responses": {
+          "200": { "description": "Invite email sent" },
+          "404": { "description": "Worker not found" }
+        }
+      }
+    }
+  }
+}

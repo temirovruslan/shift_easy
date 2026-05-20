@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import morgan from "morgan";
+import swaggerUi from "swagger-ui-express";
+import swaggerDocument from "./swagger.json";
 const app = express();
 import AppError from "./errors/AppError";
 import { Request, Response, NextFunction } from "express";
@@ -14,6 +16,9 @@ import workerRouter from './routes/worker.routes'
 app.use(cors({ origin: process.env.CLIENT_URL }));
 app.use(express.json());
 app.use(morgan("dev"));
+
+// API docs
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // routers
 app.use("/api/auth", authRouter);

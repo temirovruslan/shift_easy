@@ -50,3 +50,5 @@ wants to change just name In that case
 - [] Worker shift history page — worker should be able to see their own past shifts with date, site, duration, notes
 
 - [] Push notifications — notify manager when a worker starts or stops a shift
+
+- []  Swager doc logic is incrorect
