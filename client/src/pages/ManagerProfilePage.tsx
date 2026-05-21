@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronDown, ChevronRight, Eye, EyeOff } from "lucide-react";
-import { getUser, userChangePassword } from "../api/user";
+import { ChevronDown, ChevronRight, Eye, EyeOff, Pencil } from "lucide-react";
+import { getUser, updateProfile, userChangePassword } from "../api/user";
 import { useAuth } from "../context/AuthContext";
 import NavbarManager from "../components/NavbarManager";
 import Loader from "../components/Loader";
@@ -57,6 +57,12 @@ const ManagerProfilePage = () => {
   const [user, setUser] = useState<UserTypes | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
+  const [showEditProfile, setShowEditProfile] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+  const [editError, setEditError] = useState<string | null>(null);
+  const [editSaving, setEditSaving] = useState(false);
+
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -78,6 +84,23 @@ const ManagerProfilePage = () => {
     };
     fetchData();
   }, []);
+
+  const handleEditProfile = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setEditError(null);
+    if (!editName.trim()) { setEditError("Name is required"); return; }
+    if (!editEmail.trim()) { setEditError("Email is required"); return; }
+    try {
+      setEditSaving(true);
+      const res = await updateProfile({ name: editName.trim(), email: editEmail.trim() });
+      setUser(res.data);
+      setShowEditProfile(false);
+    } catch (err: any) {
+      setEditError(err.response?.data?.message ?? "Something went wrong");
+    } finally {
+      setEditSaving(false);
+    }
+  };
 
   const handleChangePassword = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -126,12 +149,24 @@ const ManagerProfilePage = () => {
             </span>
           </div>
           <h2 className="text-xl font-bold text-text mb-2">{user.name}</h2>
-          <div className="flex items-center gap-1.5 bg-bg3 border border-border rounded-full px-3 py-1">
+          <div className="flex items-center gap-1.5 bg-bg3 border border-border rounded-full px-3 py-1 mb-3">
             <div className="w-1.5 h-1.5 rounded-full bg-green" />
             <span className="text-xs text-text2 font-medium">
               Manager · {user.company?.name ?? "—"}
             </span>
           </div>
+          <button
+            onClick={() => {
+              setEditName(user.name);
+              setEditEmail(user.email);
+              setEditError(null);
+              setShowEditProfile(true);
+            }}
+            className="flex items-center gap-1.5 text-sm font-semibold text-blue"
+          >
+            <Pencil size={14} />
+            Edit profile
+          </button>
         </div>
 
         {/* Account section */}
@@ -224,6 +259,48 @@ const ManagerProfilePage = () => {
       </div>
 
       <NavbarManager />
+
+      {/* Edit profile sheet */}
+      {showEditProfile && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center">
+          <div
+            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+            onClick={() => setShowEditProfile(false)}
+          />
+          <div className="relative bg-bg border-t border-border rounded-t-3xl w-full max-w-sm px-5 pt-4 pb-10">
+            <div className="flex justify-center mb-4">
+              <div className="w-10 h-1 rounded-full bg-border" />
+            </div>
+            <h2 className="text-lg font-bold text-text mb-5">Edit Profile</h2>
+            <form onSubmit={handleEditProfile} className="flex flex-col gap-3">
+              {[
+                { label: "Full name", value: editName, onChange: setEditName, type: "text" },
+                { label: "Email", value: editEmail, onChange: setEditEmail, type: "email" },
+              ].map(({ label, value, onChange, type }) => (
+                <div key={label} className="flex flex-col gap-1.5">
+                  <label className="text-[10px] font-bold text-text3 uppercase tracking-widest px-1">
+                    {label}
+                  </label>
+                  <input
+                    type={type}
+                    value={value}
+                    onChange={(e) => onChange(e.target.value)}
+                    className="bg-bg3 border border-border rounded-2xl px-4 py-3.5 text-sm text-text outline-none focus:border-blue/50 transition-colors"
+                  />
+                </div>
+              ))}
+              {editError && <p className="text-xs text-red px-1">{editError}</p>}
+              <button
+                type="submit"
+                disabled={editSaving}
+                className="w-full bg-blue rounded-2xl py-4 text-sm font-bold text-white disabled:opacity-50 mt-1"
+              >
+                {editSaving ? "Saving..." : "Save changes"}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

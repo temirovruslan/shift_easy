@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   BarChart,
   Bar,
@@ -51,6 +52,7 @@ const getGreeting = () => {
 };
 
 const ManagerDashboardPage = () => {
+  const navigate = useNavigate();
   const [managerInfo, setManagerInfo] = useState<any>(null);
   const [shiftsWorker, setShiftsWorker] = useState<any[]>([]);
   const [sitesInfo, setSitesinfo] = useState<any[]>([]);
@@ -125,9 +127,12 @@ const ManagerDashboardPage = () => {
                 </span>
               </div>
             )}
-            <div className="w-9 h-9 rounded-full bg-blue flex items-center justify-center text-sm font-bold text-white shrink-0">
+            <button
+              onClick={() => navigate("/manager/profile")}
+              className="w-9 h-9 rounded-full bg-blue flex items-center justify-center text-sm font-bold text-white shrink-0 active:opacity-70 transition-opacity"
+            >
               {managerInfo ? getInitials(managerInfo.name) : "—"}
-            </div>
+            </button>
           </div>
         </div>
 

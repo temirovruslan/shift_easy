@@ -20,6 +20,24 @@ export const userProfile = async (req: Request, res: Response) => {
   res.json({ success: true, data: user });
 };
 
+export const updateProfile = async (req: Request, res: Response) => {
+  const { name, email } = req.body;
+
+  const existing = await UserModel.findOne({ email, _id: { $ne: req.user._id } });
+  if (existing) {
+    res.status(409).json({ success: false, message: "Email is already in use by another account" });
+    return;
+  }
+
+  const updated = await UserModel.findByIdAndUpdate(
+    req.user._id,
+    { name, email },
+    { new: true }
+  ).select("-password -inviteToken -inviteTokenExpires");
+
+  res.json({ success: true, data: updated });
+};
+
 export const changePassword = async (req: Request, res: Response) => {
   const { currentPassword, newPassword } = req.body;
   const user = await UserModel.findById(req.user._id);
