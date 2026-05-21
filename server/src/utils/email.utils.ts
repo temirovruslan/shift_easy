@@ -1,9 +1,9 @@
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+const getResend = () => new Resend(process.env.RESEND_API_KEY);
 
 export const sendPasswordResetEmail = async (to: string, resetLink: string) => {
-  await resend.emails.send({
+  await getResend().emails.send({
     from: "ShiftEasy <onboarding@resend.dev>",
     to,
     subject: "Reset your ShiftEasy password",
@@ -41,7 +41,7 @@ export const sendPasswordResetEmail = async (to: string, resetLink: string) => {
 };
 
 export const sendInviteEmail = async (to: string, name: string, inviteLink: string) => {
-  await resend.emails.send({
+  await getResend().emails.send({
     from: "ShiftEasy <onboarding@resend.dev>",
     to,
     subject: "You've been invited to ShiftEasy",
