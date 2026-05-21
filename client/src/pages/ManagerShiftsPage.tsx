@@ -429,27 +429,23 @@ const ManagerShiftsPage = () => {
         {/* Stats */}
         <div className="grid grid-cols-3 gap-2 mb-5">
           <div
-            className={`border rounded-2xl px-3 py-4 flex flex-col items-center transition-colors ${
-              onShift > 0
-                ? "bg-green/4 border-green/25"
-                : "bg-bg3 border-border"
+            className={`border rounded-xl px-3 py-3 transition-colors ${
+              onShift > 0 ? "bg-green/4 border-green/25" : "bg-bg3 border-border"
             }`}
           >
-            <p
-              className={`text-2xl font-bold ${onShift > 0 ? "text-green" : "text-text"}`}
-            >
+            <p className={`text-xl font-bold leading-tight ${onShift > 0 ? "text-green" : "text-text"}`}>
               {onShift}
             </p>
             <p className="text-[10px] text-text3 font-medium mt-1">On shift</p>
           </div>
-          <div className="bg-bg3 border border-border rounded-2xl px-3 py-4 flex flex-col items-center">
-            <p className="text-2xl font-bold text-blue">
+          <div className="bg-bg3 border border-border rounded-xl px-3 py-3">
+            <p className="text-xl font-bold text-blue leading-tight">
               {formatDuration(todayMinutes)}
             </p>
             <p className="text-[10px] text-text3 font-medium mt-1">Today</p>
           </div>
-          <div className="bg-bg3 border border-border rounded-2xl px-3 py-4 flex flex-col items-center">
-            <p className="text-2xl font-bold text-text">
+          <div className="bg-bg3 border border-border rounded-xl px-3 py-3">
+            <p className="text-xl font-bold text-text leading-tight">
               {formatDuration(weekMinutes)}
             </p>
             <p className="text-[10px] text-text3 font-medium mt-1">This week</p>

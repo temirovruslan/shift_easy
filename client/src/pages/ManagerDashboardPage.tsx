@@ -137,7 +137,7 @@ const ManagerDashboardPage = () => {
         </div>
 
         {/* 4 stat cards */}
-        <div className="grid grid-cols-2 gap-2 mb-5 mx-10">
+        <div className="grid grid-cols-2 gap-2 mb-5">
           <div
             className={`border rounded-xl px-3.5 py-3 transition-colors ${
               onShiftNow > 0
@@ -145,41 +145,29 @@ const ManagerDashboardPage = () => {
                 : "bg-bg3 border-border"
             }`}
           >
-            <p
-              className={`text-2xl font-bold leading-tight ${onShiftNow > 0 ? "text-green" : "text-text"}`}
-            >
+            <p className={`text-xl font-bold leading-tight ${onShiftNow > 0 ? "text-green" : "text-text"}`}>
               {onShiftNow}
             </p>
-            <p className="text-[10px] text-text3 font-medium mt-1">
-              On shift now
-            </p>
+            <p className="text-[10px] text-text3 font-medium mt-1">On shift now</p>
           </div>
           <div className="bg-bg3 border border-border rounded-xl px-3.5 py-3">
-            <p className="text-2xl font-bold text-blue leading-tight">
+            <p className="text-xl font-bold text-blue leading-tight">
               {formatDuration(todayMinutes)}
             </p>
-            <p className="text-[10px] text-text3 font-medium mt-1">
-              Total hours today
-            </p>
+            <p className="text-[10px] text-text3 font-medium mt-1">Total hours today</p>
           </div>
           <div className="bg-bg3 border border-border rounded-xl px-3.5 py-3">
-            <p className="text-2xl font-bold text-text leading-tight">
-              {workers.length}
-            </p>
-            <p className="text-[10px] text-text3 font-medium mt-1">
-              Total workers
-            </p>
+            <p className="text-xl font-bold text-text leading-tight">{workers.length}</p>
+            <p className="text-[10px] text-text3 font-medium mt-1">Total workers</p>
             <p className="text-[10px] text-text3/50 mt-0.5">
               {sitesInfo.length} site{sitesInfo.length !== 1 ? "s" : ""}
             </p>
           </div>
           <div className="bg-bg3 border border-border rounded-xl px-3.5 py-3">
-            <p className="text-2xl font-bold text-text leading-tight">
+            <p className="text-xl font-bold text-text leading-tight">
               {formatDuration(weekMinutes)}
             </p>
-            <p className="text-[10px] text-text3 font-medium mt-1">
-              This week total
-            </p>
+            <p className="text-[10px] text-text3 font-medium mt-1">This week total</p>
           </div>
         </div>
 
