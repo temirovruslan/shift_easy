@@ -36,7 +36,7 @@ const AddWorkerSheet = ({
     setError(null);
     try {
       setLoading(true);
-      const res = await createWorker({ name, email, occupation });
+      await createWorker({ name, email, occupation });
       onCreated();
       onClose();
     } catch (err: any) {
