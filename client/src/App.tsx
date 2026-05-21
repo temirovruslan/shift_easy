@@ -17,6 +17,7 @@ import ManagerSiteDetailPage from "./pages/ManagerSiteDetailPage"
 import ManagerShiftsPage from "./pages/ManagerShiftsPage"
 import ManagerShowListOfWorkersPage from "./pages/ManagerShowListOfWorkersPage"
 import ManagerShowListOfWorkersPageDetail from "./pages/ManagerShowListOfWorkersPageDetail"
+import ManagerProfilePage from "./pages/ManagerProfilePage"
 
 
 function App() {
@@ -41,6 +42,7 @@ function App() {
           <Route path='/manager/worker/:id' element={<ProtectedRoute role="manager"><ManagerShowListOfWorkersPageDetail/></ProtectedRoute>} />
           <Route path='/manager/sites' element={<ProtectedRoute role="manager"><ManagerSitePage/></ProtectedRoute>} />
           <Route path='/manager/sites/:id' element={<ProtectedRoute role="manager"><ManagerSiteDetailPage/></ProtectedRoute>} />
+          <Route path='/manager/profile' element={<ProtectedRoute role="manager"><ManagerProfilePage/></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
   )
