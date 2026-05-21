@@ -14,7 +14,6 @@ const ManagerLoginPage = () => {
 
   const navigate = useNavigate();
   const { login } = useAuth();
-  console.log(useAuth)
   const managerLogin = async () => {
     try {
       const res = await loginManager({

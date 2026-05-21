@@ -41,6 +41,18 @@ wants to change just name In that case
 
 - [] User might close app While he's working and the time should be saved So when he gets into the application time should As ifzz He didn't close the application so that the time should be saved running Without user is in the application because the battery die The phone can be broken or something like that or accidentally they close the application
 
+- [] Profile page for manager
+
+- [] Add React Query (TanStack Query) for client-side caching — currently every page navigation re-fetches all data from API. React Query caches responses and returns them instantly on revisit, only refetching in background when stale. Install: `npm install @tanstack/react-query`. Wrap app in `QueryClientProvider`, replace `useEffect` + `useState` fetches with `useQuery` hooks. Set `staleTime: 60_000` (1 min) on stable data like workers/sites, shorter on shifts. Invalidate cache after mutations (e.g. after adding a worker call `queryClient.invalidateQueries`).
+
+- [] When the worker gets into the manager login accidentally he should be notified It just gets him out from to the main page without saying anything
+
+- [] Check all the inputs and make it user friendly
+
+- [x] log out btn for manager
+
+
+
 <!-- FUTURE FEATURES -->
 
 - [] Dashboard stat cards delta indicators — "+1 vs yesterday" on On shift now card (compare active shifts today vs same time yesterday), "+8h vs avg" on Total hours today (rolling daily average from shift history), "On track" on This week card (compare current week progress vs previous weeks average). All computable from existing shift data.
