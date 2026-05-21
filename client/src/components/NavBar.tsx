@@ -43,25 +43,28 @@ const NavBarWorker = () => {
         <div className="fixed inset-0 z-50 flex items-end justify-center">
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowConfirm(false)} />
           <div className="relative bg-bg border-t border-border rounded-t-3xl w-full max-w-sm px-5 pt-6 pb-10">
-            <div className="flex justify-center mb-5">
-              <div className="w-12 h-12 rounded-2xl bg-red/10 flex items-center justify-center">
-                <LogOut size={22} className="text-red" />
+            <div className="flex justify-center mb-4">
+              <div className="w-10 h-1 rounded-full bg-border" />
+            </div>
+            <div className="flex justify-center mb-4">
+              <div className="w-12 h-12 rounded-2xl bg-blue/10 flex items-center justify-center">
+                <LogOut size={22} className="text-blue" />
               </div>
             </div>
-            <h2 className="text-lg font-bold text-text text-center mb-1">Sign out?</h2>
+            <h2 className="text-lg font-bold text-text text-center mb-1">Leaving so soon?</h2>
             <p className="text-sm text-text3 text-center mb-6">
-              You'll need to sign in again to access your account.
+              You can always sign back in to your account.
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setShowConfirm(false)}
-                className="flex-1 py-3.5 rounded-2xl bg-bg3 border border-border text-sm font-bold text-text"
+                className="flex-1 py-3.5 rounded-2xl bg-blue text-sm font-bold text-white"
               >
-                Cancel
+                Stay
               </button>
               <button
                 onClick={() => { logout(); navigate("/"); }}
-                className="flex-1 py-3.5 rounded-2xl bg-red text-sm font-bold text-white"
+                className="flex-1 py-3.5 rounded-2xl bg-bg3 border border-border text-sm font-bold text-text3"
               >
                 Sign out
               </button>
