@@ -16,10 +16,14 @@ const WorkerLoginPage = () => {
   const workerLogin = async () => {
     try {
       const res = await loginWorker({ email, password });
+      if (res.data.role !== "worker") {
+        setError("This is the worker login. Your account is a manager account — please use the manager sign in page.");
+        return;
+      }
       login({ name: res.data.name, role: res.data.role }, res.data.token);
       navigate("/worker/home");
-    } catch (error) {
-      console.log(error);
+    } catch (err: any) {
+      setError(err?.response?.data?.message || "Wrong email or password. Please try again.");
     }
   };
 

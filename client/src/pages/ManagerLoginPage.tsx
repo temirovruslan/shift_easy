@@ -16,15 +16,15 @@ const ManagerLoginPage = () => {
   const { login } = useAuth();
   const managerLogin = async () => {
     try {
-      const res = await loginManager({
-        email,
-        password,
-      });
+      const res = await loginManager({ email, password });
+      if (res.data.role !== "manager") {
+        setError("This is the manager login. Your account is a worker account — please use the worker sign in page.");
+        return;
+      }
       login({ name: res.data.name, role: res.data.role }, res.data.token);
-      navigate('/manager/dashboard')
-      return res.data.token;
+      navigate("/manager/dashboard");
     } catch (err: any) {
-      setError(err?.response?.data?.message || "Something went wrong");
+      setError(err?.response?.data?.message || "Wrong email or password. Please try again.");
     }
   };
 
