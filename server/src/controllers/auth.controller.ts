@@ -56,7 +56,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
     }
 
     if (!user.isActivated) {
-        throw new AppError("User does not exist", 403)
+        throw new AppError("Account not activated. Check your invite email to set your password.", 403)
     }
     const token = generateToken(user._id.toString())
 
