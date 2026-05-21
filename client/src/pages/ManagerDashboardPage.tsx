@@ -12,6 +12,7 @@ import { getUser } from "../api/user";
 import { getAllShifts } from "../api/shifts";
 import { getSites } from "../api/sites";
 import { getAllWorkers } from "../api/worker";
+import Loader from "../components/Loader";
 
 const getMondayMidnight = () => {
   const d = new Date();
@@ -44,7 +45,7 @@ const getInitials = (name: string) =>
 
 const getGreeting = () => {
   const h = new Date().getHours();
-  if (h < 12) return "Good morning";
+  if (h < 12) return "Good morning 👋";
   if (h < 18) return "Good afternoon";
   return "Good evening";
 };
@@ -78,7 +79,7 @@ const ManagerDashboardPage = () => {
     fetchUserInfo();
   }, []);
 
-  if (loading) return null;
+  if (loading) return <Loader />;
 
   const todayMidnight = new Date();
   todayMidnight.setHours(0, 0, 0, 0);

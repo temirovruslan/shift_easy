@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+html {
+  font-size: 17px;
+}
+
 @theme {
   --color-bg: #0a0a0f;
   --color-bg2: #111118;

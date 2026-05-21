@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { getWorker, removeWorker, sendInvite, updateWorker } from "../api/worker";
 import NavbarManager from "../components/NavbarManager";
+import Loader from "../components/Loader";
 
 const ConfirmRemoveSheet = ({
   workerName,
@@ -52,6 +53,7 @@ const ManagerShowListOfWorkersPageDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [worker, setWorker] = useState<any>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [removing, setRemoving] = useState(false);
   const [inviting, setInviting] = useState(false);
@@ -69,11 +71,14 @@ const ManagerShowListOfWorkersPageDetail = () => {
         setWorker(res.data);
       } catch (error) {
         console.error(error);
+      } finally {
+        setIsLoaded(true);
       }
     };
     fetchWorker();
   }, [id]);
 
+  if (!isLoaded) return <Loader />;
   if (!worker) return null;
 
   const initials = worker.name

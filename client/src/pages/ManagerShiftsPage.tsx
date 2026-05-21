@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { ChevronDown, ChevronUp, RefreshCw } from "lucide-react";
 import NavbarManager from "../components/NavbarManager";
+import Loader from "../components/Loader";
 import { getAllShifts } from "../api/shifts";
 import { getAllWorkers } from "../api/worker";
 import { getSites } from "../api/sites";
@@ -299,7 +300,7 @@ const ManagerShiftsPage = () => {
     return `Updated ${Math.floor(sec / 60)}m ago`;
   };
 
-  if (loading) return null;
+  if (loading) return <Loader />;
 
   const todayMidnight = new Date();
   todayMidnight.setHours(0, 0, 0, 0);

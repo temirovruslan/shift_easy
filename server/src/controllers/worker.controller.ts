@@ -90,6 +90,8 @@ export const assignWorker = async (req: Request, res: Response) => {
   await SiteModel.findByIdAndUpdate(siteId, {
     $addToSet: { workers: { $each: workerIds } },
   });
+
+  res.status(200).json({ success: true });
 };
 
 export const removeWorker = async (req: Request, res: Response) => {
