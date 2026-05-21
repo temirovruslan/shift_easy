@@ -4,7 +4,7 @@ const getClient = () => new BrevoClient({ apiKey: process.env.BREVO_API_KEY! });
 
 export const sendPasswordResetEmail = async (to: string, resetLink: string) => {
   await getClient().transactionalEmails.sendTransacEmail({
-    sender: { name: "ShiftEasy", email: "rururuhan995@gmail.com" },
+    sender: { name: "ShiftEasy", email: "noreply@shifteasy.site" },
     to: [{ email: to }],
     subject: "Reset your ShiftEasy password",
     htmlContent: `
@@ -38,7 +38,7 @@ export const sendPasswordResetEmail = async (to: string, resetLink: string) => {
 
 export const sendInviteEmail = async (to: string, name: string, inviteLink: string) => {
   await getClient().transactionalEmails.sendTransacEmail({
-    sender: { name: "ShiftEasy", email: "rururuhan995@gmail.com" },
+    sender: { name: "ShiftEasy", email: "noreply@shifteasy.site" },
     to: [{ email: to }],
     subject: "You've been invited to ShiftEasy",
     htmlContent: `
