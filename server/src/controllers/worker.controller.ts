@@ -38,7 +38,7 @@ export const createWorker = async (req: Request, res: Response) => {
     isActivated: false,
     occupation,
     inviteToken: hashedToken,
-    inviteTokenExpires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+    inviteTokenExpires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
   });
 
   if (siteId) {
@@ -145,7 +145,7 @@ export const sendInvite = async (req: Request, res: Response) => {
 
   await user.updateOne({
     inviteToken: hashedToken,
-    inviteTokenExpires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+    inviteTokenExpires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
   });
 
   const inviteLink = `${process.env.CLIENT_URL}/activate/${rawToken}`;
