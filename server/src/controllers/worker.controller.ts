@@ -48,7 +48,9 @@ export const createWorker = async (req: Request, res: Response) => {
   }
 
   const inviteLink = `${process.env.CLIENT_URL}/activate/${rawToken}`;
-  await sendInviteEmail(worker.email, worker.name, inviteLink);
+  sendInviteEmail(worker.email, worker.name, inviteLink).catch((err) =>
+    console.error("Invite email failed:", err),
+  );
 
   res.status(201).json({ success: true, data: worker });
 };
@@ -147,7 +149,9 @@ export const sendInvite = async (req: Request, res: Response) => {
   });
 
   const inviteLink = `${process.env.CLIENT_URL}/activate/${rawToken}`;
-  await sendInviteEmail(user.email, user.name, inviteLink);
+  sendInviteEmail(user.email, user.name, inviteLink).catch((err) =>
+    console.error("Invite email failed:", err),
+  );
   res.status(200).json({ success: true, message: "Invite sent" });
 };
 
