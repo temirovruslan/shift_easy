@@ -13,7 +13,13 @@ import shiftsRouter from "./routes/shifts.routes";
 import userRouter from "./routes/user.routes";
 import siteRouter from "./routes/site.routes";
 import workerRouter from './routes/worker.routes'
-app.use(cors({ origin: process.env.CLIENT_URL }));
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  "http://localhost:8081",
+  "http://localhost:8082",
+  "http://localhost:5173",
+].filter((o): o is string => Boolean(o));
+app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
 app.use(morgan("dev"));
 
