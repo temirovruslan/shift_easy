@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { LayoutGrid, Clock, Users, Star, LogOut } from "lucide-react";
+import { LayoutGrid, Calendar, Users, MapPin, LogOut } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 const NAV_ITEMS = [
   { label: "Dashboard", icon: LayoutGrid, path: "/manager/dashboard" },
-  { label: "Shifts", icon: Clock, path: "/manager/shifts" },
+  { label: "Shifts", icon: Calendar, path: "/manager/shifts" },
   { label: "Workers", icon: Users, path: "/manager/workers" },
-  { label: "Sites", icon: Star, path: "/manager/sites" },
+  { label: "Sites", icon: MapPin, path: "/manager/sites" },
 ];
 
 const NavbarManager = () => {
