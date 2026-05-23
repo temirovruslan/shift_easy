@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ChevronLeft, CheckCircle } from "lucide-react";
 import Button from "../components/ButtonComponent";
 import Input from "../components/InputComponent";
-import { register as registerApi } from "../api/auth";
+import { register as registerApi, checkEmail as checkEmailApi } from "../api/auth";
 import { useAuth } from "../context/AuthContext";
 
 const RegisterPage = () => {
@@ -11,6 +11,7 @@ const RegisterPage = () => {
   const [step, setStep] = useState(1);
   const [error, setError] = useState("");
   const [error2, setError2] = useState("");
+  const [checkingEmail, setCheckingEmail] = useState(false);
 
   const [name, setName] = useState("");
   const [company, setCompany] = useState("");
@@ -88,7 +89,7 @@ const RegisterPage = () => {
         {step === 1 && (
           <form
             className="flex flex-col gap-4"
-            onSubmit={(e) => {
+            onSubmit={async (e) => {
               e.preventDefault();
               if (!name || name.length < 2) {
                 setError("Name must be at least 2 characters");
@@ -98,15 +99,32 @@ const RegisterPage = () => {
                 setError("Company name is required");
                 return;
               }
-              if (!email) {
-                setError("Email is required");
+              if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                setError("Enter a valid email address");
                 return;
               }
               if (!password || password.length < 8) {
                 setError("Password must be at least 8 characters");
                 return;
               }
+              if (!/\d/.test(password)) {
+                setError("Password must contain at least one number");
+                return;
+              }
               setError("");
+              setCheckingEmail(true);
+              try {
+                const res = await checkEmailApi(email);
+                if (!res.available) {
+                  setError("An account with this email already exists");
+                  setCheckingEmail(false);
+                  return;
+                }
+              } catch {
+                // endpoint unavailable — let registration catch duplicates
+              } finally {
+                setCheckingEmail(false);
+              }
               setStep(2);
             }}
           >
@@ -139,7 +157,7 @@ const RegisterPage = () => {
               placeholder="••••••••"
             />
             {error && <p className="text-xs text-red">{error}</p>}
-            <Button label="Continue →" color="bg-blue" type="submit" />
+            <Button label={checkingEmail ? "Checking…" : "Continue →"} color="bg-blue" type="submit" disabled={checkingEmail} />
             <p className="text-xs text-text3 text-center -mt-1">
               Have an account?{" "}
               <span

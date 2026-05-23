@@ -2,6 +2,7 @@ import { Router } from "express";
 const router = Router();
 import {
   register,
+  checkEmail,
   login,
   forgotPassword,
   resetPassword,
@@ -9,6 +10,7 @@ import {
 } from "../controllers/auth.controller";
 import validate from "../middleware/validate.middleware";
 import { registerSchema } from "../schemas/auth.schema";
+router.post("/check-email", checkEmail);
 router.post("/register", validate(registerSchema), register);
 router.post("/login", login);
 router.post("/forgot-password", forgotPassword);
