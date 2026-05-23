@@ -1,0 +1,42 @@
+{
+  "expo": {
+    "name": "ShiftEasy",
+    "slug": "shifteasy",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.shifteasy.app"
+    },
+    "android": {
+      "package": "com.shifteasy.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-font",
+      "expo-updates"
+    ],
+    "updates": {
+      "url": "https://u.expo.dev/4109ca68-ccbf-4686-9107-652983e46eaa",
+      "enabled": true,
+      "fallbackToCacheTimeout": 0,
+      "checkAutomatically": "ON_LOAD"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "4109ca68-ccbf-4686-9107-652983e46eaa"
+      }
+    }
+  }
+}

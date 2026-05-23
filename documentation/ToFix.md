@@ -1,5 +1,7 @@
 <!-- FRONTEND -->
 
+- [] choose font proper
+
 - [] In main landing page can be PC version as well since the managers are entering from PC frontend
 
 - [x] Doesnt navigate properly
@@ -51,7 +53,9 @@ wants to change just name In that case
 
 - [x] log out btn for manager
 
+- [] rewrite in react native
 
+- [] rewrite data fetch in client - react query
 
 <!-- FUTURE FEATURES -->
 
@@ -64,3 +68,11 @@ wants to change just name In that case
 - [] Push notifications — notify manager when a worker starts or stops a shift
 
 - []  Swager doc logic is incrorect
+
+
+
+----- Other quations ---------
+
+
+
+- [] The data should be saved very carefully so the manager the company will not lose it so it will not get lost somewhere if the let's say something happens the database crashes or something like that so we should make 100% assure that they have data and one thing you can save the data every day somewhere
