@@ -10,6 +10,12 @@ import Site from "../models/Site.model";
 import { generateToken } from "../utils/jwt.utils";
 
 
+export const checkEmail = asyncHandler(async (req: Request, res: Response) => {
+    const { email } = req.body
+    const exists = await User.findOne({ email })
+    res.status(200).json({ available: !exists })
+})
+
 export const register = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const { name, email, password, companyName, siteName, siteAddress } = req.body
 
