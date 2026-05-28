@@ -8,7 +8,7 @@ import NavbarManager from "../components/NavbarManager";
 import Loader from "../components/Loader";
 import {
   getAllWorkers, createWorker, getArchivedWorkers,
-  restoreWorker, getWorker, removeWorker,
+  getWorker, removeWorker,
 } from "../api/worker";
 import { getSites } from "../api/sites";
 
@@ -328,7 +328,7 @@ const AddWorkerModal = ({
 const ManagerShowListOfWorkersPage = () => {
   const navigate = useNavigate();
   const [workers, setWorkers] = useState<any[]>([]);
-  const [archivedWorkers, setArchivedWorkers] = useState<any[]>([]);
+  const [_archivedWorkers, setArchivedWorkers] = useState<any[]>([]);
   const [sites, setSites] = useState<any[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
