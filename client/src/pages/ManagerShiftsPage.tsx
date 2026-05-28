@@ -848,7 +848,7 @@ const ManagerShiftsPage = () => {
             )}
 
             {grouped.map((group) => (
-              <div key={group.worker._id} className="mb-4">
+              <div key={`${group.worker._id}_${group.date}`} className="mb-4">
                 <div className="flex items-center gap-2.5 mb-2.5">
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0 ${group.shifts.some((s) => s.status === "active") ? "bg-blue ring-2 ring-blue/20" : "bg-text3/60"}`}>
                     {getInitials(group.worker.name)}
