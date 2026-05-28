@@ -10,11 +10,11 @@ import NavBarWorker from "../components/NavBar";
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 
-const pad = (n: number) => String(n).padStart(2, "0"); // [1]
+const pad = (n: number) => String(n).padStart(2, "0");
 
 const formatTime = (dateStr: string) => {
   const d = new Date(dateStr);
-  return `${pad(d.getHours())}:${pad(d.getMinutes())}`; // [2]
+  return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
 };
 
 const formatDate = (dateStr: string) => {
@@ -22,18 +22,18 @@ const formatDate = (dateStr: string) => {
   const today = new Date();
   const yesterday = new Date();
   yesterday.setDate(today.getDate() - 1);
-  if (date.toDateString() === today.toDateString()) return "Today"; // [3]
+  if (date.toDateString() === today.toDateString()) return "Today";
   if (date.toDateString() === yesterday.toDateString()) return "Yesterday";
   return date.toLocaleDateString("en-GB", {
     weekday: "short",
     day: "numeric",
     month: "short",
-  }); // [4]
+  });
 };
 
 const formatDuration = (minutes: number) => {
   const h = Math.floor(minutes / 60);
-  const m = minutes % 60; // [5]
+  const m = minutes % 60;
   return m > 0 ? `${h}h ${m}m` : `${h}h`;
 };
 
@@ -41,21 +41,21 @@ const formatElapsed = (seconds: number) => {
   const h = Math.floor(seconds / 3600);
   const m = Math.floor((seconds % 3600) / 60);
   const s = seconds % 60;
-  return `${pad(h)}:${pad(m)}:${pad(s)}`; // [12]
+  return `${pad(h)}:${pad(m)}:${pad(s)}`;
 };
 
 const getMondayMidnight = () => {
   const d = new Date();
-  const diff = d.getDay() === 0 ? 6 : d.getDay() - 1; // [6]
+  const diff = d.getDay() === 0 ? 6 : d.getDay() - 1;
   d.setDate(d.getDate() - diff);
-  d.setHours(0, 0, 0, 0); // [7]
+  d.setHours(0, 0, 0, 0);
   return d;
 };
 
 const sumHours = (shifts: Shift[], filter: (s: Shift) => boolean) =>
   Math.round(
     shifts.filter(filter).reduce((acc, s) => acc + (s.duration || 0), 0) / 60,
-  ); // [8]
+  );
 
 // ─── PAGE ─────────────────────────────────────────────────────────────────────
 
@@ -100,7 +100,7 @@ const WorkerHomePage = () => {
     const tick = () => setElapsed(Math.floor((Date.now() - start) / 1000));
     tick();
     const id = setInterval(tick, 1000);
-    return () => clearInterval(id); // [13]
+    return () => clearInterval(id);
   }, [currentShift]);
 
   if (loading) return <Loader />;
@@ -116,7 +116,7 @@ const WorkerHomePage = () => {
     0,
   );
   const avgShiftMinutes =
-    completedCount > 0 ? totalCompletedMinutes / completedCount : 480; // [14]
+    completedCount > 0 ? totalCompletedMinutes / completedCount : 480;
   const progressPct = Math.min(
     Math.round((elapsed / 60 / avgShiftMinutes) * 100),
     100,
@@ -163,7 +163,6 @@ const WorkerHomePage = () => {
     return (
       <div className="min-h-screen bg-bg px-5 pt-14 pb-20">
         <div className="max-w-sm mx-auto">
-          {/* ── Header ── */}
           <div className="flex items-center justify-between mb-6">
             <div>
               <p className="text-sm text-text2 mb-0.5">Shift in progress</p>
@@ -177,7 +176,6 @@ const WorkerHomePage = () => {
             </div>
           </div>
 
-          {/* ── Timer card ── */}
           <div className="bg-blue/10 border border-blue/20 rounded-2xl p-6 mb-3 flex flex-col items-center text-center">
             <p className="text-[10px] text-blue uppercase tracking-widest mb-3">
               Elapsed time
@@ -193,8 +191,6 @@ const WorkerHomePage = () => {
                 year: "numeric",
               })}
             </p>
-
-            {/* ── Progress bar ── */}
             <div className="mt-5 w-full">
               <span className="text-xs text-text3 block mb-2">
                 {progressPct}% of your average shift
@@ -208,7 +204,6 @@ const WorkerHomePage = () => {
             </div>
           </div>
 
-          {/* ── Site card ── */}
           <div className="bg-bg3 border border-border rounded-2xl p-4 mb-4">
             <p className="text-[10px] text-text3 uppercase tracking-widest mb-2">
               Site
@@ -218,7 +213,6 @@ const WorkerHomePage = () => {
             </p>
           </div>
 
-          {/* ── Notes & stop ── */}
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -279,7 +273,6 @@ const WorkerHomePage = () => {
   return (
     <div className="min-h-screen bg-bg px-5 pt-14 pb-20">
       <div className="max-w-sm mx-auto">
-        {/* ── Header ── */}
         <div className="flex items-center justify-between mb-6">
           <div>
             <p className="text-sm text-text2">Hello 👋</p>
@@ -297,7 +290,6 @@ const WorkerHomePage = () => {
           </button>
         </div>
 
-        {/* ── Site card ── */}
         {assignedSite && (
           <div className="bg-bg3 border border-border rounded-2xl p-4 mb-3">
             <p className="text-[10px] text-text3 uppercase tracking-widest mb-2">
@@ -314,7 +306,6 @@ const WorkerHomePage = () => {
           </div>
         )}
 
-        {/* ── Start shift ── */}
         {assignedSite ? (
           <button
             onClick={shiftStart}
@@ -337,7 +328,6 @@ const WorkerHomePage = () => {
           </div>
         )}
 
-        {/* ── Stats ── */}
         <div className="grid grid-cols-2 gap-3 mb-6">
           {[
             { value: weeklyHours, label: "This week" },
@@ -353,34 +343,29 @@ const WorkerHomePage = () => {
           ))}
         </div>
 
-        {/* ── Recent shifts ── */}
         <p className="text-[10px] font-bold text-text3 uppercase tracking-widest mb-3">
           Recent shifts
         </p>
         <div className="flex flex-col gap-2">
-          {shifts.slice(0, 3).map(
-            (
-              shift, // [11]
-            ) => (
-              <div
-                key={shift._id}
-                className="flex items-center justify-between py-3 border-b border-border"
-              >
-                <div>
-                  <p className="text-sm font-semibold text-text">
-                    {formatDate(shift.startTime)}
-                  </p>
-                  <p className="text-xs text-text2 mt-0.5">
-                    {formatTime(shift.startTime)}–{formatTime(shift.endTime)} ·{" "}
-                    {shift.site?.name}
-                  </p>
-                </div>
-                <span className="text-sm font-bold text-blue">
-                  {formatDuration(shift.duration)}
-                </span>
+          {shifts.slice(0, 3).map((shift) => (
+            <div
+              key={shift._id}
+              className="flex items-center justify-between py-3 border-b border-border"
+            >
+              <div>
+                <p className="text-sm font-semibold text-text">
+                  {formatDate(shift.startTime)}
+                </p>
+                <p className="text-xs text-text2 mt-0.5">
+                  {formatTime(shift.startTime)}–{formatTime(shift.endTime)} ·{" "}
+                  {shift.site?.name}
+                </p>
               </div>
-            ),
-          )}
+              <span className="text-sm font-bold text-blue">
+                {formatDuration(shift.duration)}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
       <NavBarWorker />
@@ -389,48 +374,3 @@ const WorkerHomePage = () => {
 };
 
 export default WorkerHomePage;
-
-// ─── NOTES ───────────────────────────────────────────────────────────────────
-// [1]  pad — forces 2 digits. 9 → "09", 45 → "45". Used so time looks like
-//      08:05 not 8:5.
-//
-// [2]  formatTime — converts "2026-05-06T08:05:00Z" → "08:05".
-//      new Date() first, then pull hours and minutes.
-//
-// [3]  formatDate — returns "Today" / "Yesterday" for recent shifts,
-//      otherwise "Tue, 6 May". toDateString() strips the time so
-//      two dates on the same day are equal.
-//
-// [4]  toLocaleDateString("en-GB") — formats as "Tue, 6 May".
-//      "en-GB" = British English format (day before month).
-//
-// [5]  % is remainder (modulo). 510 % 60 = 30 leftover minutes.
-//      Math.floor(510 / 60) = 8 hours. Result: "8h 30m".
-//
-// [6]  getDay() returns 0=Sun, 1=Mon ... 6=Sat.
-//      Sunday is treated as 6 (end of week), not 0 (start).
-//      This gives us how many days back Monday is.
-//
-// [7]  setHours(0,0,0,0) — resets time to midnight exactly.
-//      So we compare from Monday 00:00:00, not Monday 14:32:07.
-//
-// [8]  sumHours — filters shifts by a condition, adds up durations
-//      (in minutes), divides by 60 to get hours. Both weeklyHours
-//      and monthlyHours call this with different filter conditions.
-//
-// [9]  shifts[0]?.site — takes the site from the first shift.
-//      The ?. means: if shifts is empty, don't crash — return undefined.
-//
-// [11] key={shift._id} — React needs a unique key per list item to track
-//      changes efficiently. We use MongoDB's _id, not the array index.
-//
-// [12] formatElapsed — converts raw seconds to HH:MM:SS for the live timer.
-//      e.g. 3723 → "01:02:03".
-//
-// [13] clearInterval cleanup — when the component unmounts or currentShift
-//      changes, the old interval is cleared so it doesn't keep ticking
-//      in the background.
-//
-// [14] avgShiftMinutes — average duration of all completed shifts in minutes.
-//      Falls back to 480 (8 hours) if no completed shifts exist yet.
-// ─────────────────────────────────────────────────────────────────────────────

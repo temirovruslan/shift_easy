@@ -243,7 +243,7 @@ export default function DashboardScreen() {
               <View style={{ flex: 1, minWidth: "45%", backgroundColor: colors.bg3, borderWidth: 1, borderColor: colors.line, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12 }}>
                 <Text style={{ fontSize: 20, fontFamily: fonts.bold, color: colors.text, lineHeight: 24 }}>{workers.length}</Text>
                 <Text style={{ fontSize: 10, color: colors.text3, marginTop: 4, fontFamily: fonts.medium }}>Total workers</Text>
-                <Text style={{ fontSize: 10, color: colors.text3 + "80", marginTop: 2 }}>{sites.length} site{sites.length !== 1 ? "s" : ""}</Text>
+                <Text style={{ fontSize: 10, color: colors.text3 + "80", marginTop: 2 }}>{sites.length} project{sites.length !== 1 ? "s" : ""}</Text>
               </View>
               <View style={{ flex: 1, minWidth: "45%", backgroundColor: colors.bg3, borderWidth: 1, borderColor: colors.line, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12 }}>
                 <Text style={{ fontSize: 20, fontFamily: fonts.bold, color: colors.text, lineHeight: 24 }}>{formatDuration(weekMinutes)}</Text>
@@ -312,10 +312,10 @@ export default function DashboardScreen() {
               <WeekChart shifts={shifts} weekMinutes={weekMinutes} />
             </View>
 
-            {/* Sites */}
+            {/* Projects */}
             {sites.length > 0 && (
               <>
-                <Text style={{ fontSize: 10, fontFamily: fonts.bold, color: colors.text3, textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 12 }}>Sites</Text>
+                <Text style={{ fontSize: 10, fontFamily: fonts.bold, color: colors.text3, textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 12 }}>Projects</Text>
                 <View style={{ backgroundColor: colors.bg3, borderWidth: 1, borderColor: colors.line, borderRadius: 16, overflow: "hidden", marginBottom: 20 }}>
                   {sites.map((site: any, i: number) => {
                     const mins = siteTodayMins[site._id] ?? 0;

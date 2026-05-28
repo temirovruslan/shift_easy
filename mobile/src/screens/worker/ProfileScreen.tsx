@@ -192,7 +192,7 @@ export default function ProfileScreen() {
           <View className="flex-row items-center gap-2 bg-bg3 border border-line rounded-full px-3.5 py-1.5">
             <View className="w-1.5 h-1.5 rounded-full bg-green" />
             <Text className="text-xs text-text2" style={{ fontFamily: fonts.medium }}>
-              Worker · {meData?.sites?.[0]?.name ?? "No site"}
+              Worker · {meData?.sites?.[0]?.name ?? "No project"}
             </Text>
           </View>
         </View>

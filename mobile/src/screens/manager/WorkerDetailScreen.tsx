@@ -194,7 +194,7 @@ export default function WorkerDetailScreen() {
           {[
             { icon: "mail-outline", label: "Email", value: worker.email, color: colors.blue },
             { icon: "briefcase-outline", label: "Occupation", value: worker.occupation ?? "—", color: colors.text },
-            { icon: "location-outline", label: "Site", value: worker.sites?.[0]?.name ?? "No site", color: colors.text },
+            { icon: "location-outline", label: "Project", value: worker.sites?.[0]?.name ?? "No project", color: colors.text },
             { icon: "calendar-outline", label: "Joined", value: joinedDate, color: colors.text },
           ].map(({ icon, label, value, color }, i, arr) => (
             <View key={label} style={{ flexDirection: "row", alignItems: "center", gap: 12, paddingHorizontal: 16, paddingVertical: 14, borderBottomWidth: i < arr.length - 1 ? 1 : 0, borderColor: colors.line }}>

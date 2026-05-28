@@ -196,7 +196,7 @@ function AddSiteSheet({ onClose, onCreated }: { onClose: () => void; onCreated: 
             {/* Header */}
             <View style={{ flexDirection: "row", alignItems: "flex-start", justifyContent: "space-between", paddingHorizontal: 20, paddingTop: 8, paddingBottom: 20 }}>
               <View>
-                <Text style={{ fontFamily: fonts.bold, fontSize: 18, color: colors.text }}>New Site</Text>
+                <Text style={{ fontFamily: fonts.bold, fontSize: 18, color: colors.text }}>New Project</Text>
                 <Text style={{ fontSize: 12, color: colors.text3, marginTop: 2 }}>Add a work location</Text>
               </View>
               <TouchableOpacity
@@ -212,7 +212,7 @@ function AddSiteSheet({ onClose, onCreated }: { onClose: () => void; onCreated: 
               {/* Site name */}
               <View style={{ gap: 6 }}>
                 <Text style={{ fontSize: 10, fontFamily: fonts.bold, color: colors.text3, textTransform: "uppercase", letterSpacing: 1.5, paddingLeft: 4 }}>
-                  Site name
+                  Project name
                 </Text>
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 12, backgroundColor: colors.bg3, borderWidth: 1, borderColor: colors.line, borderRadius: 16, paddingHorizontal: 16, paddingVertical: 14 }}>
                   <Ionicons name="business-outline" size={15} color={colors.text3} />
@@ -258,7 +258,7 @@ function AddSiteSheet({ onClose, onCreated }: { onClose: () => void; onCreated: 
                 {mutation.isPending ? (
                   <ActivityIndicator color="#fff" />
                 ) : (
-                  <Text style={{ fontFamily: fonts.semibold, fontSize: 14, color: "#fff" }}>Create Site</Text>
+                  <Text style={{ fontFamily: fonts.semibold, fontSize: 14, color: "#fff" }}>Create Project</Text>
                 )}
               </TouchableOpacity>
             </View>
@@ -302,7 +302,7 @@ export default function SitesScreen() {
       >
         {/* Header */}
         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
-          <Text style={{ fontFamily: fonts.bold, fontSize: 24, color: colors.text }}>Sites</Text>
+          <Text style={{ fontFamily: fonts.bold, fontSize: 24, color: colors.text }}>Projects</Text>
           <TouchableOpacity
             onPress={() => setShowAddSheet(true)}
             style={{ flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: colors.blue, borderRadius: 12, paddingHorizontal: 16, paddingVertical: 8 }}
@@ -330,7 +330,7 @@ export default function SitesScreen() {
         {/* Empty state */}
         {!isLoading && sites.length === 0 && (
           <Text style={{ fontSize: 14, color: colors.text3, textAlign: "center", marginTop: 64 }}>
-            No sites yet. Tap + Add to create one.
+            No projects yet. Tap + Add to create one.
           </Text>
         )}
 

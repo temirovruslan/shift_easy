@@ -417,7 +417,7 @@ export default function ShiftsScreen() {
             activeOpacity={0.7}
           >
             <Text style={{ fontSize: 12, fontFamily: fonts.bold, color: selectedSiteId ? colors.blue : colors.text3 }}>
-              {selectedSiteName ?? "All sites"}
+              {selectedSiteName ?? "All projects"}
             </Text>
             <Ionicons name="chevron-down" size={11} color={selectedSiteId ? colors.blue : colors.text3} />
           </TouchableOpacity>
@@ -508,8 +508,8 @@ export default function ShiftsScreen() {
 
       {showSitePicker && (
         <PickerSheet
-          title="Select site"
-          allLabel="All sites"
+          title="Select project"
+          allLabel="All projects"
           options={sites.map((s) => ({ id: s._id, label: s.name }))}
           selected={selectedSiteId}
           onApply={setSelectedSiteId}

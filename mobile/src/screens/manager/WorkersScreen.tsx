@@ -247,7 +247,7 @@ export default function WorkersScreen() {
                     </View>
                     <View style={{ flex: 1 }}>
                       <Text style={{ fontFamily: fonts.semibold, fontSize: 14, color: colors.text3 }}>{w.name}</Text>
-                      <Text style={{ fontSize: 11, color: colors.text3, marginTop: 2 }}>{w.occupation} · {w.sites?.[0]?.name ?? "No site"}</Text>
+                      <Text style={{ fontSize: 11, color: colors.text3, marginTop: 2 }}>{w.occupation} · {w.sites?.[0]?.name ?? "No project"}</Text>
                     </View>
                     <TouchableOpacity
                       onPress={() => handleRestore(w._id)}
@@ -278,7 +278,7 @@ export default function WorkersScreen() {
                   </View>
                   <View style={{ flex: 1 }}>
                     <Text style={{ fontFamily: fonts.semibold, fontSize: 14, color: colors.text }}>{w.name}</Text>
-                    <Text style={{ fontSize: 11, color: colors.text3, marginTop: 2 }}>{w.occupation} · {w.sites?.[0]?.name ?? "No site"}</Text>
+                    <Text style={{ fontSize: 11, color: colors.text3, marginTop: 2 }}>{w.occupation} · {w.sites?.[0]?.name ?? "No project"}</Text>
                   </View>
                   <View style={{ paddingHorizontal: 10, paddingVertical: 4, borderRadius: 100, backgroundColor: w.isActivated ? colors.green + "26" : "#f59e0b26" }}>
                     <Text style={{ fontSize: 10, fontFamily: fonts.bold, color: w.isActivated ? colors.green : "#f59e0b" }}>

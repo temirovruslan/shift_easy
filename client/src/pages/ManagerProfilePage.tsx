@@ -138,8 +138,8 @@ const ManagerProfilePage = () => {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-bg px-5 pt-14 pb-24">
-      <div className="max-w-sm mx-auto">
+    <div className="min-h-screen bg-bg px-5 pt-14 pb-24 md:ml-52 md:pt-10">
+      <div className="max-w-lg mx-auto">
 
         {/* Avatar + name + badges */}
         <div className="flex flex-col items-center mb-8">
@@ -246,9 +246,9 @@ const ManagerProfilePage = () => {
 
       {/* Edit profile sheet */}
       {showEditProfile && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center">
+        <div className="fixed inset-0 z-50 flex items-end justify-center md:items-center">
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowEditProfile(false)} />
-          <div className="relative bg-bg border-t border-border rounded-t-3xl w-full max-w-sm px-5 pt-4 pb-10">
+          <div className="relative bg-bg border-t border-border rounded-t-3xl w-full max-w-sm px-5 pt-4 pb-10 md:rounded-2xl md:border md:border-border md:pb-6">
             <div className="flex justify-center mb-4">
               <div className="w-10 h-1 rounded-full bg-border" />
             </div>

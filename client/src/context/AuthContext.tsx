@@ -21,29 +21,49 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const SESSION_MS = 24 * 60 * 60 * 1000; // 24 hours
+
+  function doLogout() {
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    localStorage.removeItem("loginAt");
+    setUser(null);
+    setToken(null);
+  }
+
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
     const savedToken = localStorage.getItem("token");
+    const loginAt = Number(localStorage.getItem("loginAt") ?? 0);
 
     if (savedToken && savedUser) {
-      setUser(JSON.parse(savedUser));
-      setToken(savedToken);
+      if (Date.now() - loginAt > SESSION_MS) {
+        doLogout();
+      } else {
+        setUser(JSON.parse(savedUser));
+        setToken(savedToken);
+      }
     }
     setIsLoading(false);
+
+    const interval = setInterval(() => {
+      const at = Number(localStorage.getItem("loginAt") ?? 0);
+      if (at && Date.now() - at > SESSION_MS) doLogout();
+    }, 60_000);
+
+    return () => clearInterval(interval);
   }, []);
+
   function login(user: User, token: string) {
     setUser(user);
     setToken(token);
-
     localStorage.setItem("user", JSON.stringify(user));
     localStorage.setItem("token", token);
+    localStorage.setItem("loginAt", String(Date.now()));
   }
-  function logout() {
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
 
-    setUser(null);
-    setToken(null);
+  function logout() {
+    doLogout();
   }
 
   return (

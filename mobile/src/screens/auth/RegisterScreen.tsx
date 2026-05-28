@@ -19,7 +19,7 @@ import { colors, fonts } from "../../theme";
 
 type Props = { onBack: () => void };
 
-const STEP_LABELS = ["Your details", "First site", "Done"];
+const STEP_LABELS = ["Your details", "First project", "Done"];
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const HAS_DIGIT = /\d/;
@@ -117,7 +117,7 @@ export default function RegisterScreen({ onBack }: Props) {
   };
 
   const handleStep2 = () => {
-    if (siteName.trim().length < 2)    { setError("Site name is required"); return; }
+    if (siteName.trim().length < 2)    { setError("Project name is required"); return; }
     if (siteAddress.trim().length < 5) { setError("Enter a full address"); return; }
     setError("");
     mutation.mutate();
@@ -236,11 +236,11 @@ export default function RegisterScreen({ onBack }: Props) {
             </View>
           )}
 
-          {/* ── Step 2: First site ── */}
+          {/* ── Step 2: First project ── */}
           {step === 2 && (
             <View style={{ gap: 16 }}>
-              <FormField label="Site name" placeholder="Main warehouse" value={siteName} onChange={setSiteName} />
-              <FormField label="Site address" placeholder="123 Builder St, Tallinn" value={siteAddress} onChange={setSiteAddress} />
+              <FormField label="Project name" placeholder="Main warehouse" value={siteName} onChange={setSiteName} />
+              <FormField label="Project address" placeholder="123 Builder St, Tallinn" value={siteAddress} onChange={setSiteAddress} />
 
               {error ? <Text className="text-xs text-red">{error}</Text> : null}
 
@@ -262,7 +262,7 @@ export default function RegisterScreen({ onBack }: Props) {
               </View>
               <View className="items-center">
                 <Text className="text-lg text-text" style={{ fontFamily: fonts.bold }}>You're all set!</Text>
-                <Text className="text-xs text-text2 mt-1">Your company and first site are ready.</Text>
+                <Text className="text-xs text-text2 mt-1">Your company and first project are ready.</Text>
               </View>
               <TouchableOpacity
                 className="bg-green rounded-2xl py-4 px-8 items-center mt-2"
