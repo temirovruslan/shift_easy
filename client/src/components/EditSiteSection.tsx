@@ -110,10 +110,10 @@ const EditSiteSection = ({ siteId, name, address, onUpdate }: EditSiteSectionPro
   return (
     <div className="mb-5">
       <p className="text-[10px] font-bold text-text3 uppercase tracking-widest mb-2">
-        Edit Site
+        Edit Project
       </p>
       <div className="bg-bg3 border border-border rounded-2xl divide-y divide-border">
-        <EditableField label="Site name" value={name} onSave={handleSaveName} />
+        <EditableField label="Project name" value={name} onSave={handleSaveName} />
         <EditableField label="Address" value={address} onSave={handleSaveAddress} />
       </div>
     </div>

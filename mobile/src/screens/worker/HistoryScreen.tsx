@@ -62,7 +62,7 @@ function ShiftDetail({ shift }: { shift: any }) {
         </Text>
       </View>
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-        <Text style={{ fontSize: 12, color: colors.text3 }}>Site</Text>
+        <Text style={{ fontSize: 12, color: colors.text3 }}>Project</Text>
         <Text style={{ fontSize: 12, fontFamily: fonts.semibold, color: colors.blue }}>{shift.site?.name}</Text>
       </View>
       {shift.materials ? (

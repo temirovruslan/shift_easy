@@ -181,7 +181,7 @@ export default function HomeScreen() {
 
           {/* Site */}
           <View className="bg-bg3 border border-line rounded-2xl p-4 mb-4">
-            <Text className="text-[10px] text-text3 uppercase tracking-widest mb-2" style={{ fontFamily: fonts.bold }}>Site</Text>
+            <Text className="text-[10px] text-text3 uppercase tracking-widest mb-2" style={{ fontFamily: fonts.bold }}>Project</Text>
             <Text className="text-sm text-text" style={{ fontFamily: fonts.semibold }}>{activeShift.site?.name ?? "—"}</Text>
           </View>
 
@@ -273,7 +273,7 @@ export default function HomeScreen() {
         {assignedSite && (
           <View className="bg-bg3 border border-line rounded-2xl p-4 mb-3">
             <Text className="text-[10px] text-text3 uppercase tracking-widest mb-2" style={{ fontFamily: fonts.bold }}>
-              Assigned site
+              Assigned project
             </Text>
             <Text className="text-sm text-text" style={{ fontFamily: fonts.semibold }}>{assignedSite.name}</Text>
             {assignedSite.address ? (
@@ -308,7 +308,7 @@ export default function HomeScreen() {
           </TouchableOpacity>
         ) : (
           <View className="bg-bg3 border border-line rounded-2xl py-6 items-center mb-3">
-            <Text className="text-sm text-text3" style={{ fontFamily: fonts.semibold }}>Not assigned to any site</Text>
+            <Text className="text-sm text-text3" style={{ fontFamily: fonts.semibold }}>Not assigned to any project</Text>
             <Text className="text-xs text-text3 mt-1">Ask your manager to assign you</Text>
           </View>
         )}

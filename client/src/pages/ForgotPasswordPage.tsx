@@ -117,7 +117,7 @@ const ForgotPasswordPage = () => {
                 label="Email address"
                 value={email}
                 onChange={setEmail}
-                placeholder="sara@constructco.com"
+                placeholder="mart@ehituse.ee"
               />
 
               {error && <p className="text-xs text-red">{error}</p>}

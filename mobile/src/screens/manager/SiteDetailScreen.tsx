@@ -386,7 +386,7 @@ export default function SiteDetailScreen() {
           activeOpacity={0.7}
         >
           <Ionicons name="chevron-back" size={16} color={colors.blue} />
-          <Text style={{ fontSize: 14, color: colors.blue, fontFamily: fonts.medium }}>Sites</Text>
+          <Text style={{ fontSize: 14, color: colors.blue, fontFamily: fonts.medium }}>Projects</Text>
         </TouchableOpacity>
 
         {/* Header */}
@@ -431,15 +431,15 @@ export default function SiteDetailScreen() {
           ))}
         </View>
 
-        {/* Edit site */}
+        {/* Edit project */}
         <Text style={{ fontSize: 10, fontFamily: fonts.bold, color: colors.text3, textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 8 }}>
-          Edit Site
+          Edit Project
         </Text>
         <View
           style={{ backgroundColor: colors.bg3, borderWidth: 1, borderColor: colors.line, borderRadius: 16, overflow: "hidden", marginBottom: 24 }}
         >
           <EditableField
-            label="Site name"
+            label="Project name"
             value={current.name}
             onSave={handleNameSave}
           />
@@ -533,7 +533,7 @@ export default function SiteDetailScreen() {
               activeOpacity={0.8}
             >
               <Text style={{ fontFamily: fonts.bold, fontSize: 14, color: colors.green }}>
-                {activating ? "Activating…" : "Activate site"}
+                {activating ? "Activating…" : "Activate project"}
               </Text>
             </TouchableOpacity>
           )}
@@ -546,7 +546,7 @@ export default function SiteDetailScreen() {
             >
               <Ionicons name="archive-outline" size={15} color={colors.text3} />
               <Text style={{ fontFamily: fonts.semibold, fontSize: 14, color: colors.text3 }}>
-                {archiving ? "Archiving…" : "Archive site"}
+                {archiving ? "Archiving…" : "Archive project"}
               </Text>
             </TouchableOpacity>
           )}

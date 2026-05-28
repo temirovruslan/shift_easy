@@ -25,9 +25,9 @@ const ConfirmRemoveSheet = ({
   onConfirm: () => void;
   loading: boolean;
 }) => (
-  <div className="fixed inset-0 z-50 flex items-end justify-center">
+  <div className="fixed inset-0 z-50 flex items-end justify-center md:items-center">
     <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onCancel} />
-    <div className="relative bg-bg border-t border-border rounded-t-3xl w-full max-w-sm px-5 pt-6 pb-10">
+    <div className="relative bg-bg border-t border-border rounded-t-3xl w-full max-w-sm px-5 pt-6 pb-10 md:rounded-2xl md:border md:border-border md:pb-6">
       <div className="flex justify-center mb-5">
         <div className="w-12 h-12 rounded-2xl bg-red/10 flex items-center justify-center">
           <AlertTriangle size={22} className="text-red" />
@@ -105,8 +105,8 @@ const ManagerShowListOfWorkersPageDetail = () => {
   };
 
   return (
-    <div className="min-h-screen bg-bg px-5 pt-14 pb-24">
-      <div className="max-w-sm mx-auto">
+    <div className="min-h-screen bg-bg px-5 pt-14 pb-24 md:ml-52 md:pt-10">
+      <div className="max-w-lg mx-auto">
         {/* Back + Edit */}
         <div className="flex items-center justify-between mb-6">
           <button onClick={() => navigate("/manager/workers")} className="flex items-center gap-1 text-blue text-sm">
@@ -153,7 +153,7 @@ const ManagerShowListOfWorkersPageDetail = () => {
           {[
             { icon: Mail, label: "Email", value: worker.email, highlight: true },
             { icon: Briefcase, label: "Occupation", value: worker.occupation, highlight: false },
-            { icon: MapPin, label: "Site", value: worker.sites[0]?.name ?? "No site", highlight: false },
+            { icon: MapPin, label: "Project", value: worker.sites[0]?.name ?? "No project", highlight: false },
             { icon: Calendar, label: "Joined", value: joinedDate, highlight: false },
           ].map(({ icon: Icon, label, value, highlight }) => (
             <div key={label} className="flex items-center gap-3 px-4 py-3.5 border-b border-border last:border-b-0">
@@ -208,9 +208,9 @@ const ManagerShowListOfWorkersPageDetail = () => {
       )}
 
       {showEdit && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center">
+        <div className="fixed inset-0 z-50 flex items-end justify-center md:items-center">
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowEdit(false)} />
-          <div className="relative bg-bg border-t border-border rounded-t-3xl w-full max-w-sm px-5 pt-4 pb-10">
+          <div className="relative bg-bg border-t border-border rounded-t-3xl w-full max-w-sm px-5 pt-4 pb-10 md:rounded-2xl md:border md:border-border md:pb-6">
             <div className="flex justify-center mb-4">
               <div className="w-10 h-1 rounded-full bg-border" />
             </div>

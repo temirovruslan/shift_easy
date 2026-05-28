@@ -139,8 +139,9 @@ function ManagerTabs() {
           component={SitesScreen}
           listeners={{ focus: () => setActiveTab("Sites") }}
           options={{
+            // label="Projects" — backend route/state stays "Sites", do not rename
             tabBarButton: (props) => (
-              <TabButton icon="location-outline" label="Sites" active={activeTab === "Sites"} onPress={props.onPress} />
+              <TabButton icon="location-outline" label="Projects" active={activeTab === "Sites"} onPress={props.onPress} />
             ),
           }}
         />
