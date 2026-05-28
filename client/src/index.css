@@ -1,8 +1,14 @@
 @import "tailwindcss";
 
 html {
-  font-size: 17px;
+  font-size: 14px;
   font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 17px;
+  }
 }
 
 @theme {
