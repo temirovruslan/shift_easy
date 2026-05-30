@@ -93,9 +93,9 @@ const WorkerProfilePage = () => {
             </span>
           </div>
           <h2 className="text-xl font-bold text-text mb-2">{user.name}</h2>
-          <div className="flex items-center gap-1.5 bg-bg3 border border-border rounded-full px-3 py-1">
-            <div className="w-1.5 h-1.5 rounded-full bg-green" />
-            <span className="text-xs text-text2 font-medium">
+          <div className="flex items-center gap-1.5 bg-bg3 border border-border rounded-full px-3 py-1 max-w-65">
+            <div className="w-1.5 h-1.5 rounded-full bg-green shrink-0" />
+            <span className="text-xs text-text2 font-medium truncate">
               Worker · {user.sites?.[0]?.name ?? "No site"}
             </span>
           </div>
@@ -114,10 +114,10 @@ const WorkerProfilePage = () => {
           ].map(({ label, value }) => (
             <div
               key={label}
-              className="flex justify-between items-center px-4 py-3"
+              className="flex justify-between items-center gap-2 px-4 py-3"
             >
-              <span className="text-sm text-text3">{label}</span>
-              <span className="text-sm font-semibold text-text">{value}</span>
+              <span className="text-sm text-text3 shrink-0">{label}</span>
+              <span className="text-sm font-semibold text-text truncate text-right">{value}</span>
             </div>
           ))}
         </div>

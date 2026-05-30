@@ -54,16 +54,16 @@ const ShiftDetail = ({ shift }: { shift: Shift }) => (
         {formatTime(shift.startTime)} – {formatTime(shift.endTime)}
       </span>
     </div>
-    <div className="flex justify-between">
-      <span className="text-xs text-text3">Site</span>
-      <span className="text-xs font-semibold text-blue">
+    <div className="flex justify-between gap-2">
+      <span className="text-xs text-text3 shrink-0">Site</span>
+      <span className="text-xs font-semibold text-blue truncate text-right">
         {shift.site?.name}
       </span>
     </div>
     {shift.materials && (
-      <div className="flex justify-between">
-        <span className="text-xs text-text3">Materials</span>
-        <span className="text-xs font-semibold text-text">
+      <div className="flex justify-between gap-2">
+        <span className="text-xs text-text3 shrink-0">Materials</span>
+        <span className="text-xs font-semibold text-text truncate text-right">
           {shift.materials}
         </span>
       </div>
@@ -369,11 +369,11 @@ const WorkerHistoryPage = () => {
                                 }
                                 className="flex items-center py-2.5 w-full text-left px-2"
                               >
-                                <div className="flex-1">
+                                <div className="flex-1 min-w-0">
                                   <p className="text-sm font-semibold text-text">
                                     {formatDate(shift.startTime)}
                                   </p>
-                                  <p className="text-xs text-text2 mt-0.5">
+                                  <p className="text-xs text-text2 mt-0.5 truncate">
                                     {formatTime(shift.startTime)}–
                                     {formatTime(shift.endTime)} ·{" "}
                                     {shift.site?.name}
@@ -428,11 +428,11 @@ const WorkerHistoryPage = () => {
                     onClick={() => setSelectedShift(isOpen ? null : shift)}
                     className="flex items-center py-3 w-full text-left px-3"
                   >
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-text">
                         {formatDate(shift.startTime)}
                       </p>
-                      <p className="text-xs text-text2 mt-0.5">
+                      <p className="text-xs text-text2 mt-0.5 truncate">
                         {formatTime(shift.startTime)}–
                         {formatTime(shift.endTime)} · {shift.site?.name}
                       </p>

@@ -175,8 +175,8 @@ const ManagerProfilePage = () => {
               <div className="w-8 h-8 rounded-xl bg-bg2 flex items-center justify-center shrink-0">
                 <Icon size={14} className="text-text3" />
               </div>
-              <p className="text-sm text-text3 flex-1">{label}</p>
-              <p className={`text-sm font-semibold ${highlight ? "text-blue" : "text-text"}`}>{value}</p>
+              <p className="text-sm text-text3 shrink-0">{label}</p>
+              <p className={`text-sm font-semibold flex-1 min-w-0 text-right truncate ${highlight ? "text-blue" : "text-text"}`}>{value}</p>
             </div>
           ))}
         </div>

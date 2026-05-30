@@ -56,6 +56,7 @@ const ManagerShowListOfWorkersPageDetail = () => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [removing, setRemoving] = useState(false);
   const [inviting, setInviting] = useState(false);
+  const [inviteStatus, setInviteStatus] = useState<"idle" | "success" | "error">("idle");
   const [showEdit, setShowEdit] = useState(false);
   const [editName, setEditName] = useState("");
   const [editEmail, setEditEmail] = useState("");
@@ -152,8 +153,8 @@ const ManagerShowListOfWorkersPageDetail = () => {
               <div className="w-8 h-8 rounded-xl bg-bg2 flex items-center justify-center shrink-0">
                 <Icon size={14} className="text-text3" />
               </div>
-              <p className="text-sm text-text3 flex-1">{label}</p>
-              <p className={`text-sm font-semibold ${highlight ? "text-blue" : "text-text"}`}>{value}</p>
+              <p className="text-sm text-text3 shrink-0">{label}</p>
+              <p className={`text-sm font-semibold flex-1 min-w-0 text-right truncate ${highlight ? "text-blue" : "text-text"}`}>{value}</p>
             </div>
           ))}
         </div>
@@ -161,24 +162,40 @@ const ManagerShowListOfWorkersPageDetail = () => {
         {/* Actions */}
         <p className="text-[10px] font-bold text-text3 uppercase tracking-widest mb-2">Actions</p>
         <div className="bg-bg3 border border-border rounded-2xl overflow-hidden mb-3">
-          <button
-            onClick={async () => {
-              setInviting(true);
-              try {
-                await sendInvite(id!);
-                alert("Invite sent successfully!");
-              } catch {
-                alert("Failed to send invite.");
-              } finally {
-                setInviting(false);
-              }
-            }}
-            disabled={inviting}
-            className="w-full flex items-center justify-between px-4 py-3.5 disabled:opacity-50"
-          >
-            <p className="text-sm font-semibold text-text">{inviting ? "Sending..." : "Resend invite email"}</p>
-            <ChevronRight size={16} className="text-text3" />
-          </button>
+          {!worker.isActivated ? (
+            <>
+              <button
+                onClick={async () => {
+                  setInviting(true);
+                  setInviteStatus("idle");
+                  try {
+                    await sendInvite(id!);
+                    setInviteStatus("success");
+                  } catch {
+                    setInviteStatus("error");
+                  } finally {
+                    setInviting(false);
+                  }
+                }}
+                disabled={inviting}
+                className="w-full flex items-center justify-between px-4 py-3.5 disabled:opacity-50"
+              >
+                <p className="text-sm font-semibold text-text">{inviting ? "Sending..." : "Resend invite email"}</p>
+                <ChevronRight size={16} className="text-text3" />
+              </button>
+              {inviteStatus === "success" && (
+                <p className="text-xs text-green px-4 pb-3">✓ Invite sent successfully</p>
+              )}
+              {inviteStatus === "error" && (
+                <p className="text-xs text-red px-4 pb-3">Failed to send invite. Try again.</p>
+              )}
+            </>
+          ) : (
+            <div className="px-4 py-3.5 flex items-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-green" />
+              <p className="text-sm text-text3">Worker is already active — no invite needed</p>
+            </div>
+          )}
         </div>
 
         <button
@@ -226,9 +243,16 @@ const ManagerShowListOfWorkersPageDetail = () => {
             <button
               onClick={async () => {
                 setEditError(null);
+                if (!editName.trim()) { setEditError("Name is required"); return; }
+                if (!editEmail.trim()) { setEditError("Email is required"); return; }
                 setSaving(true);
                 try {
-                  const res = await updateWorker(id!, { name: editName, email: editEmail, occupation: editOccupation });
+                  const payload: Record<string, string> = {
+                    name: editName.trim(),
+                    email: editEmail.trim(),
+                    occupation: editOccupation.trim(),
+                  };
+                  const res = await updateWorker(id!, payload);
                   queryClient.setQueryData(["worker", id], res.data);
                   setShowEdit(false);
                 } catch (err: any) {

@@ -363,7 +363,7 @@ const ManagerDashboardPage = () => {
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-semibold text-text truncate">{s.worker.name}</p>
-                          <p className="text-xs text-text3 mt-0.5">{s.site.name} · since {formatTime(s.startTime)}</p>
+                          <p className="text-xs text-text3 mt-0.5 truncate">{s.site.name} · since {formatTime(s.startTime)}</p>
                         </div>
                         <div className="flex items-center gap-1.5 shrink-0">
                           <p className="text-sm font-bold text-green">{formatDuration(elapsed)}</p>
