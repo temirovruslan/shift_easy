@@ -132,7 +132,7 @@ const ManagerSiteDetailPage = () => {
               siteId={site._id}
               name={site.name}
               address={site.address}
-              onUpdate={(updated) => setSite((prev) => (prev ? { ...prev, ...updated } : prev))}
+              onUpdate={(updated) => queryClient.setQueryData(["site", id], { ...site, ...updated })}
             />
           </div>
 
