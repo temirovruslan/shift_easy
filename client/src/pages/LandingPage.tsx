@@ -48,8 +48,8 @@ const LandingPage = () => {
               <Mail size={16} color="#30d158" />
             </div>
             <div className="flex-1 text-left">
-              <p className="text-sm font-semibold text-text">I'm a manager</p>
-              <p className="text-xs text-text2 mt-0.5">
+              <p className="text-[14px] font-semibold text-text">I'm a manager</p>
+              <p className="text-[14px] text-text2 mt-0.5">
                 Sign in to your account
               </p>
             </div>
@@ -72,10 +72,10 @@ const LandingPage = () => {
               <Plus size={16} color="#a78bfa" />
             </div>
             <div className="flex-1 text-left">
-              <p className="text-sm font-semibold text-purple">
+              <p className="text-[14px] font-semibold text-purple">
                 Register as manager
               </p>
-              <p className="text-xs text-text2 mt-0.5">Create your company</p>
+              <p className="text-[14px] text-text2 mt-0.5">Create your company</p>
             </div>
             <ChevronRight size={16} color="#a78bfa" />
           </div>
