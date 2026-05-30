@@ -1,12 +1,8 @@
-import { ClockPlus } from "lucide-react"
-
+import logo from "../images/logo.png";
 
 const LogoComponent = () => {
     return (
-
-        <div className="w-11 h-11 bg-blue-d rounded-xl flex items-center justify-center mb-3">
-            <ClockPlus color="#bddeff" />
-        </div>
+        <img src={logo} alt="ShiftEasy" className="w-24 h-24 mb-3 object-contain" />
     )
 }
 
