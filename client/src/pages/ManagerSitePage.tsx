@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { X, MapPin, Building2, UserPlus, Pencil, Archive, RotateCcw } from "lucide-react";
 import { getSites, createSite, archiveSite, activateSite } from "../api/sites";
 import { getAllWorkers } from "../api/worker";
@@ -354,29 +355,27 @@ const AddSiteSheet = ({ onClose, onCreated }: AddSiteSheetProps) => {
 
 const ManagerSitePage = () => {
   const navigate = useNavigate();
-  const [sites, setSites] = useState<Site[]>([]);
   const [selectedSite, setSelectedSite] = useState<Site | null>(null);
-  const [availableWorkers, setAvailableWorkers] = useState<WorkerOption[]>([]);
-  const [isLoaded, setIsLoaded] = useState(false);
   const [showAddSheet, setShowAddSheet] = useState(false);
 
-  useEffect(() => {
-    getSites()
-      .then((res) => setSites(res.data))
-      .catch(console.error)
-      .finally(() => setIsLoaded(true));
-  }, []);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    if (!selectedSite) return;
-    getAllWorkers()
-      .then((res) => {
-        setAvailableWorkers(
-          res.data.filter((w: WorkerOption) => !selectedSite.workers.some((sw) => sw._id === w._id))
-        );
-      })
-      .catch(console.error);
-  }, [selectedSite?._id]);
+  const { data: sites = [], isLoading } = useQuery<Site[]>({
+    queryKey: ["sites"],
+    queryFn: async () => { const res = await getSites(); return res.data ?? []; },
+    staleTime: 60_000,
+  });
+
+  const { data: allWorkers = [] } = useQuery<WorkerOption[]>({
+    queryKey: ["workers"],
+    queryFn: async () => { const res = await getAllWorkers(); return res.data ?? []; },
+    staleTime: 5 * 60_000,
+    enabled: !!selectedSite,
+  });
+
+  const availableWorkers = allWorkers.filter(
+    (w) => !selectedSite?.workers.some((sw) => sw._id === w._id)
+  );
 
   const handleCardClick = (site: Site) => {
     if (window.innerWidth < 768) {
@@ -391,7 +390,9 @@ const ManagerSitePage = () => {
     try {
       await archiveSite(selectedSite._id);
       const updated = { ...selectedSite, status: "archived" as const };
-      setSites((prev) => prev.map((s) => (s._id === selectedSite._id ? updated : s)));
+      queryClient.setQueryData<Site[]>(["sites"], (prev) =>
+        (prev ?? []).map((s) => s._id === selectedSite._id ? updated : s)
+      );
       setSelectedSite(updated);
     } catch (err) { console.error(err); }
   };
@@ -401,24 +402,23 @@ const ManagerSitePage = () => {
     try {
       await activateSite(selectedSite._id);
       const updated = { ...selectedSite, status: "active" as const };
-      setSites((prev) => prev.map((s) => (s._id === selectedSite._id ? updated : s)));
+      queryClient.setQueryData<Site[]>(["sites"], (prev) =>
+        (prev ?? []).map((s) => s._id === selectedSite._id ? updated : s)
+      );
       setSelectedSite(updated);
     } catch (err) { console.error(err); }
   };
 
   const handleAssigned = (newWorkers: WorkerOption[]) => {
-    setSites((prev) =>
-      prev.map((s) =>
-        s._id === selectedSite?._id ? { ...s, workers: [...s.workers, ...newWorkers] } : s
-      )
+    if (!selectedSite) return;
+    const updated = { ...selectedSite, workers: [...selectedSite.workers, ...newWorkers] };
+    queryClient.setQueryData<Site[]>(["sites"], (prev) =>
+      (prev ?? []).map((s) => s._id === selectedSite._id ? updated : s)
     );
-    setSelectedSite((prev) =>
-      prev ? { ...prev, workers: [...prev.workers, ...newWorkers] } : prev
-    );
-    setAvailableWorkers((prev) => prev.filter((w) => !newWorkers.some((nw) => nw._id === w._id)));
+    setSelectedSite(updated);
   };
 
-  if (!isLoaded) return <Loader />;
+  if (isLoading) return <Loader />;
 
   const activeSites = sites.filter((s) => s.status === "active");
   const archivedSites = sites.filter((s) => s.status === "archived");
@@ -499,7 +499,7 @@ const ManagerSitePage = () => {
         <AddSiteSheet
           onClose={() => setShowAddSheet(false)}
           onCreated={(newSite) => {
-            setSites((prev) => [newSite, ...prev]);
+            queryClient.setQueryData<Site[]>(["sites"], (prev) => [newSite, ...(prev ?? [])]);
             setShowAddSheet(false);
           }}
         />

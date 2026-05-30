@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { getUser, userChangePassword } from "../api/user";
@@ -29,10 +30,7 @@ const WorkerProfilePage = () => {
     logout();
     navigate("/");
   };
-  const [user, setUser] = useState<UserTypes | null>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
   const [notifications, setNotifications] = useState(true);
-
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -41,19 +39,11 @@ const WorkerProfilePage = () => {
   const [pwSuccess, setPwSuccess] = useState(false);
   const [pwLoading, setPwLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await getUser();
-        setUser(res.data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoaded(true);
-      }
-    };
-    fetchData();
-  }, []);
+  const { data: user, isLoading: isLoaded } = useQuery<UserTypes>({
+    queryKey: ["workerProfile"],
+    queryFn: async () => { const res = await getUser(); return res.data; },
+    staleTime: 5 * 60_000,
+  });
 
   const handleChangePassword = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -87,7 +77,7 @@ const WorkerProfilePage = () => {
     }
   };
 
-  if (!isLoaded) return <Loader />;
+  if (isLoaded) return <Loader />;
   if (!user) return null;
 
   const managerName = user.company?.managers?.[0]?.name ?? null;

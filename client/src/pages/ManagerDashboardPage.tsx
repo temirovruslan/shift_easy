@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import {
   BarChart,
   Bar,
@@ -157,36 +158,33 @@ const WeekChart = ({
 
 const ManagerDashboardPage = () => {
   const navigate = useNavigate();
-  const [managerInfo, setManagerInfo] = useState<any>(null);
-  const [shiftsWorker, setShiftsWorker] = useState<any[]>([]);
-  const [sitesInfo, setSitesinfo] = useState<any[]>([]);
-  const [workers, setWorkers] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const [showAllOffShift, setShowAllOffShift] = useState(false);
 
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const [userRes, shiftsRes, sitesRes, workersRes] = await Promise.all([
-          getUser(),
-          getAllShifts(),
-          getSites(),
-          getAllWorkers(),
-        ]);
-        setManagerInfo(userRes.data);
-        setShiftsWorker(shiftsRes.data);
-        setSitesinfo(sitesRes.data);
-        setWorkers(workersRes.data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchUserInfo();
-  }, []);
+  const { data: managerInfo, isLoading: userLoading } = useQuery<any>({
+    queryKey: ["managerProfile"],
+    queryFn: async () => { const res = await getUser(); return res.data; },
+    staleTime: 5 * 60_000,
+  });
 
-  if (loading) return <Loader />;
+  const { data: shiftsWorker = [], isLoading: shiftsLoading } = useQuery<any[]>({
+    queryKey: ["allShifts"],
+    queryFn: async () => { const res = await getAllShifts(); return res.data ?? []; },
+    staleTime: 30_000,
+  });
+
+  const { data: sitesInfo = [], isLoading: sitesLoading } = useQuery<any[]>({
+    queryKey: ["sites"],
+    queryFn: async () => { const res = await getSites(); return res.data ?? []; },
+    staleTime: 5 * 60_000,
+  });
+
+  const { data: workers = [], isLoading: workersLoading } = useQuery<any[]>({
+    queryKey: ["workers"],
+    queryFn: async () => { const res = await getAllWorkers(); return res.data ?? []; },
+    staleTime: 5 * 60_000,
+  });
+
+  if (userLoading || shiftsLoading || sitesLoading || workersLoading) return <Loader />;
 
   const todayMidnight = new Date();
   todayMidnight.setHours(0, 0, 0, 0);

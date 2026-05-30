@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"; // useEffect still used in WorkerDrawer
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   X,
@@ -635,7 +635,7 @@ const ManagerShowListOfWorkersPage = () => {
                     </td>
                   </tr>
                 ) : (
-                  filtered.map((worker, i) => {
+                  filtered.map((worker: any, i: number) => {
                     const selected = selectedWorker?._id === worker._id;
                     return (
                       <tr
@@ -698,7 +698,7 @@ const ManagerShowListOfWorkersPage = () => {
                 No workers found
               </p>
             ) : (
-              filtered.map((worker, i) => (
+              filtered.map((worker: any, i: number) => (
                 <button
                   key={worker._id}
                   onClick={() => handleWorkerClick(worker)}
