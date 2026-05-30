@@ -30,8 +30,8 @@ const LandingPage = () => {
               <User size={16} color="#0a84ff" />
             </div>
             <div className="flex-1 text-left">
-              <p className="text-sm font-semibold text-text">I'm a worker</p>
-              <p className="text-xs text-text2 mt-0.5">
+              <p className="text-[14px] font-semibold text-text">I'm a worker</p>
+              <p className="text-[14px] text-text2 mt-0.5">
                 Sign in with invite credentials
               </p>
             </div>
