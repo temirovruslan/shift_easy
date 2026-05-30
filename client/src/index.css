@@ -11,6 +11,18 @@ html {
   }
 }
 
+/* ── Mobile card text: sm and xs both resolve to 15px on mobile ── */
+@media (max-width: 767px) {
+  .text-sm { font-size: 15px !important; line-height: 1.4 !important; }
+  .text-xs { font-size: 15px !important; line-height: 1.4 !important; }
+}
+
+/* ── Very small screens (<350px): drop back to 12px ── */
+@media (max-width: 349px) {
+  .text-sm { font-size: 12px !important; line-height: 1.4 !important; }
+  .text-xs { font-size: 12px !important; line-height: 1.4 !important; }
+}
+
 @theme {
   --color-bg: #0a0a0f;
   --color-bg2: #111118;
