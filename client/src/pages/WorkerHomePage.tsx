@@ -339,18 +339,18 @@ const WorkerHomePage = () => {
           {shifts.slice(0, 3).map((shift) => (
             <div
               key={shift._id}
-              className="flex items-center justify-between py-3 border-b border-border"
+              className="flex items-center justify-between gap-3 py-3 border-b border-border"
             >
-              <div>
+              <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-text">
                   {formatDate(shift.startTime)}
                 </p>
-                <p className="text-xs text-text2 mt-0.5">
+                <p className="text-xs text-text2 mt-0.5 truncate">
                   {formatTime(shift.startTime)}–{formatTime(shift.endTime)} ·{" "}
                   {shift.site?.name}
                 </p>
               </div>
-              <span className="text-sm font-bold text-blue">
+              <span className="text-sm font-bold text-blue whitespace-nowrap shrink-0">
                 {formatDuration(shift.duration)}
               </span>
             </div>

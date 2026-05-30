@@ -71,7 +71,7 @@ const SiteCard = ({
       }`}
     >
       <div className="flex items-start justify-between gap-2 mb-1">
-        <p className={`font-bold text-base leading-tight ${archived ? "text-text3" : "text-text"}`}>
+        <p className={`font-bold text-base leading-tight flex-1 min-w-0 truncate ${archived ? "text-text3" : "text-text"}`}>
           {site.name}
         </p>
         {archived ? (
