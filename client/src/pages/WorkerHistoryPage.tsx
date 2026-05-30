@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { getMyShift } from "../api/shifts";
 import type { Shift } from "../types";
 import Loader from "../components/Loader";
@@ -109,26 +110,16 @@ const TABS = ["This week", "Month", "All time"];
 
 const WorkerHistoryPage = () => {
   const [activeTab, setActiveTab] = useState(0);
-  const [allShifts, setAllShifts] = useState<Shift[]>([]);
-  const [isLoaded, setIsLoaded] = useState(false);
   const [selectedShift, setSelectedShift] = useState<Shift | null>(null);
   const [selectedMonthKey, setSelectedMonthKey] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchShifts = async () => {
-      try {
-        const res = await getMyShift();
-        setAllShifts(res.data.data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoaded(true);
-      }
-    };
-    fetchShifts();
-  }, []);
+  const { data: allShifts = [], isLoading } = useQuery<Shift[]>({
+    queryKey: ["myShifts"],
+    queryFn: async () => { const res = await getMyShift(); return res.data.data ?? []; },
+    staleTime: 60_000,
+  });
 
-  if (!isLoaded) return <Loader />;
+  if (isLoading) return <Loader />;
 
   const completedShifts = allShifts.filter((s) => s.status === "completed");
 

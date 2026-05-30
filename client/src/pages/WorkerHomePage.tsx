@@ -1,6 +1,7 @@
 import { useAuth } from "../context/AuthContext";
 import { Play, Square } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getMyShift, startMyShift, stopMyShift } from "../api/shifts";
 import { getUser } from "../api/user";
 import type { Shift } from "../types";
@@ -61,38 +62,26 @@ const sumHours = (shifts: Shift[], filter: (s: Shift) => boolean) =>
 
 const WorkerHomePage = () => {
   const { user } = useAuth();
-  const [shifts, setShifts] = useState<Shift[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [currentShift, setCurrentShift] = useState<Shift | undefined>(
-    undefined,
-  );
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [elapsed, setElapsed] = useState(0);
   const [notes, setNotes] = useState("");
   const [materials, setMaterials] = useState("");
   const [submitted, setSubmitted] = useState(false);
-  const [profile, setProfile] = useState<any>(null);
-  const navigate = useNavigate();
-  const refreshShifts = async () => {
-    const res = await getMyShift();
-    const data: Shift[] = res.data.data;
-    setShifts(data);
-    setCurrentShift(data.find((s) => s.status === "active"));
-    return data;
-  };
 
-  useEffect(() => {
-    const fetchAll = async () => {
-      try {
-        const [, profileRes] = await Promise.all([refreshShifts(), getUser()]);
-        setProfile(profileRes.data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchAll();
-  }, []);
+  const { data: shifts = [], isLoading: shiftsLoading } = useQuery<Shift[]>({
+    queryKey: ["myShifts"],
+    queryFn: async () => { const res = await getMyShift(); return res.data.data ?? []; },
+    staleTime: 30_000,
+  });
+
+  const { data: profile, isLoading: profileLoading } = useQuery<any>({
+    queryKey: ["workerProfile"],
+    queryFn: async () => { const res = await getUser(); return res.data; },
+    staleTime: 5 * 60_000,
+  });
+
+  const currentShift = shifts.find((s) => s.status === "active");
 
   useEffect(() => {
     if (!currentShift) return;
@@ -103,7 +92,7 @@ const WorkerHomePage = () => {
     return () => clearInterval(id);
   }, [currentShift]);
 
-  if (loading) return <Loader />;
+  if (shiftsLoading || profileLoading) return <Loader />;
 
   const now = new Date();
   const firstName = user?.name.split(" ")[0];
@@ -128,7 +117,7 @@ const WorkerHomePage = () => {
     if (!assignedSite) return;
     try {
       await startMyShift({ siteId: assignedSite._id });
-      await refreshShifts();
+      await queryClient.invalidateQueries({ queryKey: ["myShifts"] });
     } catch (error) {
       console.error(error);
     }
@@ -137,7 +126,7 @@ const WorkerHomePage = () => {
   const shiftStop = async () => {
     try {
       await stopMyShift({ notes, materials });
-      await refreshShifts();
+      await queryClient.invalidateQueries({ queryKey: ["myShifts"] });
       setNotes("");
       setMaterials("");
       setSubmitted(false);

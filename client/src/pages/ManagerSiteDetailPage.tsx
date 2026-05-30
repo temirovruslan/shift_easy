@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChevronLeft, Archive, Users, Clock, Activity, UserPlus } from "lucide-react";
 import { getSite, archiveSite, activateSite } from "../api/sites";
 import { getAllWorkers } from "../api/worker";
@@ -25,29 +26,23 @@ const ManagerSiteDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const [site, setSite] = useState<Site | null>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
   const [showAllWorkers, setShowAllWorkers] = useState(false);
   const [archiving, setArchiving] = useState(false);
-  const [availableWorkers, setAvailableWorkers] = useState<WorkerOption[]>([]);
   const [showAssignModal, setShowAssignModal] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [siteRes, workersRes] = await Promise.all([getSite(id!), getAllWorkers()]);
-        const siteData: Site = siteRes.data;
-        const allWorkers: WorkerOption[] = workersRes.data;
-        setSite(siteData);
-        setAvailableWorkers(allWorkers.filter((w) => !siteData.workers.some((sw) => sw._id === w._id)));
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setIsLoaded(true);
-      }
-    };
-    fetchData();
-  }, [id]);
+  const queryClient = useQueryClient();
+
+  const { data: site, isLoading: siteLoading } = useQuery<Site>({
+    queryKey: ["site", id],
+    queryFn: async () => { const res = await getSite(id!); return res.data; },
+    staleTime: 60_000,
+  });
+
+  const { data: allWorkers = [] } = useQuery<WorkerOption[]>({
+    queryKey: ["workers"],
+    queryFn: async () => { const res = await getAllWorkers(); return res.data ?? []; },
+    staleTime: 5 * 60_000,
+  });
 
   const handleArchive = async () => {
     if (!site) return;
@@ -65,21 +60,22 @@ const ManagerSiteDetailPage = () => {
     if (!site) return;
     try {
       await activateSite(site._id);
-      setSite((prev) => (prev ? { ...prev, status: "active" } : prev));
+      queryClient.setQueryData(["site", id], { ...site, status: "active" });
     } catch (err) {
       console.error(err);
     }
   };
 
   const handleAssigned = (newlyAssigned: WorkerOption[]) => {
-    setSite((prev) => prev ? { ...prev, workers: [...prev.workers, ...newlyAssigned] } : prev);
-    setAvailableWorkers((prev) => prev.filter((w) => !newlyAssigned.some((a) => a._id === w._id)));
+    if (!site) return;
+    queryClient.setQueryData(["site", id], { ...site, workers: [...site.workers, ...newlyAssigned] });
   };
 
-  if (!isLoaded) return <Loader />;
+  if (siteLoading) return <Loader />;
   if (!site) return null;
 
   const isActive = site.status === "active";
+  const availableWorkers = allWorkers.filter((w) => !site.workers.some((sw) => sw._id === w._id));
   const visibleWorkers = showAllWorkers ? site.workers : site.workers.slice(0, WORKERS_PREVIEW_COUNT);
   const hiddenCount = site.workers.length - WORKERS_PREVIEW_COUNT;
 

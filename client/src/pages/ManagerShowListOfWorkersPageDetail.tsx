@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ChevronLeft,
   Mail,
@@ -52,8 +53,6 @@ const ConfirmRemoveSheet = ({
 const ManagerShowListOfWorkersPageDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [worker, setWorker] = useState<any>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [removing, setRemoving] = useState(false);
   const [inviting, setInviting] = useState(false);
@@ -64,21 +63,14 @@ const ManagerShowListOfWorkersPageDetail = () => {
   const [editError, setEditError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    const fetchWorker = async () => {
-      try {
-        const res = await getWorker(id!);
-        setWorker(res.data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoaded(true);
-      }
-    };
-    fetchWorker();
-  }, [id]);
+  const queryClient = useQueryClient();
+  const { data: worker, isLoading } = useQuery<any>({
+    queryKey: ["worker", id],
+    queryFn: async () => { const res = await getWorker(id!); return res.data; },
+    staleTime: 5 * 60_000,
+  });
 
-  if (!isLoaded) return <Loader />;
+  if (isLoading) return <Loader />;
   if (!worker) return null;
 
   const initials = worker.name
@@ -237,7 +229,7 @@ const ManagerShowListOfWorkersPageDetail = () => {
                 setSaving(true);
                 try {
                   const res = await updateWorker(id!, { name: editName, email: editEmail, occupation: editOccupation });
-                  setWorker(res.data);
+                  queryClient.setQueryData(["worker", id], res.data);
                   setShowEdit(false);
                 } catch (err: any) {
                   setEditError(err.response?.data?.message ?? "Something went wrong");

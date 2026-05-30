@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import {
   Mail,
@@ -65,9 +66,6 @@ const PasswordInput = ({
 const ManagerProfilePage = () => {
   const { logout } = useAuth();
   const navigate = useNavigate();
-  const [user, setUser] = useState<UserTypes | null>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
-
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [editName, setEditName] = useState("");
   const [editEmail, setEditEmail] = useState("");
@@ -82,19 +80,12 @@ const ManagerProfilePage = () => {
   const [pwSuccess, setPwSuccess] = useState(false);
   const [pwLoading, setPwLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await getUser();
-        setUser(res.data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoaded(true);
-      }
-    };
-    fetchData();
-  }, []);
+  const queryClient = useQueryClient();
+  const { data: user, isLoading } = useQuery<UserTypes>({
+    queryKey: ["managerProfile"],
+    queryFn: async () => { const res = await getUser(); return res.data; },
+    staleTime: 5 * 60_000,
+  });
 
   const handleEditProfile = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -104,7 +95,7 @@ const ManagerProfilePage = () => {
     try {
       setEditSaving(true);
       const res = await updateProfile({ name: editName.trim(), email: editEmail.trim() });
-      setUser(res.data);
+      queryClient.setQueryData(["managerProfile"], res.data);
       setShowEditProfile(false);
     } catch (err: any) {
       setEditError(err.response?.data?.message ?? "Something went wrong");
@@ -134,7 +125,7 @@ const ManagerProfilePage = () => {
     }
   };
 
-  if (!isLoaded) return <Loader />;
+  if (isLoading) return <Loader />;
   if (!user) return null;
 
   return (

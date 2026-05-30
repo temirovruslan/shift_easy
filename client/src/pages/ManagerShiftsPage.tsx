@@ -1,4 +1,5 @@
-import { useEffect, useState, useCallback } from "react";
+import { useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChevronDown, ChevronUp, RefreshCw, X, Download, Search } from "lucide-react";
 import NavbarManager from "../components/NavbarManager";
 import Loader from "../components/Loader";
@@ -332,13 +333,6 @@ const ShiftDetailDrawer = ({ shift, onClose }: { shift: any; onClose: () => void
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
 const ManagerShiftsPage = () => {
-  const [shifts, setShifts] = useState<any[]>([]);
-  const [workers, setWorkers] = useState<any[]>([]);
-  const [sites, setSites] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-
   // mobile
   const [filter, setFilter] = useState<"today" | "week" | "all">("week");
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -354,36 +348,35 @@ const ManagerShiftsPage = () => {
   const [selectedShift, setSelectedShift] = useState<any>(null);
   const [timeFilterOpen, setTimeFilterOpen] = useState(false);
 
-  const fetchShifts = useCallback(async (silent = false) => {
-    if (!silent) setRefreshing(true);
-    try {
-      const res = await getAllShifts();
-      setShifts(res.data);
-      setLastUpdated(new Date());
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, []);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    fetchShifts();
-    getAllWorkers().then((res) => setWorkers(res.data));
-    getSites().then((res) => setSites(res.data));
-    const interval = setInterval(() => fetchShifts(true), POLL_INTERVAL);
-    return () => clearInterval(interval);
-  }, [fetchShifts]);
+  const { data: shifts = [], isLoading, isFetching, dataUpdatedAt } = useQuery<any[]>({
+    queryKey: ["allShifts"],
+    queryFn: async () => { const res = await getAllShifts(); return res.data ?? []; },
+    staleTime: 0,
+    refetchInterval: POLL_INTERVAL,
+  });
+
+  const { data: workers = [] } = useQuery<any[]>({
+    queryKey: ["workers"],
+    queryFn: async () => { const res = await getAllWorkers(); return res.data ?? []; },
+    staleTime: 5 * 60_000,
+  });
+
+  const { data: sites = [] } = useQuery<any[]>({
+    queryKey: ["sites"],
+    queryFn: async () => { const res = await getSites(); return res.data ?? []; },
+    staleTime: 5 * 60_000,
+  });
 
   const formatLastUpdated = () => {
-    if (!lastUpdated) return "";
-    const sec = Math.floor((Date.now() - lastUpdated.getTime()) / 1000);
+    if (!dataUpdatedAt) return "";
+    const sec = Math.floor((Date.now() - dataUpdatedAt) / 1000);
     if (sec < 60) return `Updated ${sec}s ago`;
     return `Updated ${Math.floor(sec / 60)}m ago`;
   };
 
-  if (loading) return <Loader />;
+  if (isLoading) return <Loader />;
 
   const todayMidnight = new Date();
   todayMidnight.setHours(0, 0, 0, 0);
@@ -523,11 +516,11 @@ const ManagerShiftsPage = () => {
           <div className="md:hidden flex items-center justify-between mb-4">
             <h1 className="text-2xl font-bold text-text">Shifts</h1>
             <button
-              onClick={() => fetchShifts()}
-              disabled={refreshing}
+              onClick={() => queryClient.invalidateQueries({ queryKey: ["allShifts"] })}
+              disabled={isFetching}
               className="flex items-center gap-1.5 text-xs font-semibold text-blue disabled:opacity-50"
             >
-              <RefreshCw size={13} className={refreshing ? "animate-spin" : ""} />
+              <RefreshCw size={13} className={isFetching ? "animate-spin" : ""} />
               Refresh
             </button>
           </div>
