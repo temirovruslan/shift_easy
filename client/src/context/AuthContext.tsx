@@ -21,7 +21,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const SESSION_MS = 24 * 60 * 60 * 1000; // 24 hours
+  // Sliding session: resets on every app open. Only expires after 90 days of inactivity.
+  const SESSION_MS = 90 * 24 * 60 * 60 * 1000;
 
   function doLogout() {
     localStorage.removeItem("user");
@@ -42,16 +43,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       } else {
         setUser(JSON.parse(savedUser));
         setToken(savedToken);
+        // Slide the expiry window on every app open
+        localStorage.setItem("loginAt", String(Date.now()));
       }
     }
     setIsLoading(false);
-
-    const interval = setInterval(() => {
-      const at = Number(localStorage.getItem("loginAt") ?? 0);
-      if (at && Date.now() - at > SESSION_MS) doLogout();
-    }, 60_000);
-
-    return () => clearInterval(interval);
   }, []);
 
   function login(user: User, token: string) {

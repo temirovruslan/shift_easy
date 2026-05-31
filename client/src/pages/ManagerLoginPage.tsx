@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Lock, CheckCircle, Users } from "lucide-react";
+import { Lock, CheckCircle, Users, Loader2 } from "lucide-react";
 import Button from "../components/ButtonComponent";
 import Input from "../components/InputComponent";
 import { login as loginManager } from "../api/auth";
@@ -54,11 +54,18 @@ const ManagerLoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [slowHint, setSlowHint] = useState(false);
+  const slowTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const navigate = useNavigate();
   const { login } = useAuth();
 
   const managerLogin = async () => {
+    setLoading(true);
+    setError("");
+    setSlowHint(false);
+    slowTimer.current = setTimeout(() => setSlowHint(true), 4000);
     try {
       const res = await loginManager({ email, password });
       if (res.data.role !== "manager") {
@@ -69,8 +76,14 @@ const ManagerLoginPage = () => {
       navigate("/manager/dashboard");
     } catch (err: any) {
       setError(err?.response?.data?.message || "Wrong email or password. Please try again.");
+    } finally {
+      setLoading(false);
+      setSlowHint(false);
+      if (slowTimer.current) clearTimeout(slowTimer.current);
     }
   };
+
+  useEffect(() => () => { if (slowTimer.current) clearTimeout(slowTimer.current); }, []);
 
   return (
     <div className="min-h-screen bg-bg md:grid md:grid-cols-2">
@@ -125,8 +138,20 @@ const ManagerLoginPage = () => {
             </div>
 
             {error && <p className="text-xs text-red">{error}</p>}
+            {slowHint && !error && (
+              <p className="text-xs text-text3 text-center">
+                Server is waking up, hang tight…
+              </p>
+            )}
 
-            <Button label="Sign in to dashboard" color="bg-blue" type="submit" />
+            <Button
+              label={loading ? "Signing in…" : "Sign in to dashboard"}
+              icon={loading ? <Loader2 size={14} className="animate-spin" /> : undefined}
+              iconSide="left"
+              color="bg-blue"
+              type="submit"
+              disabled={loading}
+            />
 
             <p className="text-sm text-text3 text-center">
               No account?{" "}

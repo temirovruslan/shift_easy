@@ -180,7 +180,6 @@ const WorkerHistoryPage = () => {
 
   return (
     <div className="min-h-screen bg-bg px-5 pt-14 pb-20">
-      <div className="max-w-sm mx-auto">
         {/* ── Header ── */}
         <h2 className="text-2xl font-bold text-text tracking-tight mb-5">
           My shifts
@@ -459,7 +458,6 @@ const WorkerHistoryPage = () => {
           </div>
         )}
         <NavBarWorker />
-      </div>
     </div>
   );
 };
