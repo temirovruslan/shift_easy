@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ChevronDown, ChevronUp, RefreshCw, X, Download, Search } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { ChevronDown, ChevronUp, X, Download, Search } from "lucide-react";
 import NavbarManager from "../components/NavbarManager";
 import Loader from "../components/Loader";
 import { getAllShifts } from "../api/shifts";
 import { getAllWorkers } from "../api/worker";
 import { getSites } from "../api/sites";
 
-const POLL_INTERVAL = 30_000;
+const POLL_INTERVAL = 10_000;
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -376,9 +376,7 @@ const ManagerShiftsPage = () => {
   const [selectedShift, setSelectedShift] = useState<any>(null);
   const [timeFilterOpen, setTimeFilterOpen] = useState(false);
 
-  const queryClient = useQueryClient();
-
-  const { data: shifts = [], isLoading, isFetching, dataUpdatedAt } = useQuery<any[]>({
+  const { data: shifts = [], isLoading, dataUpdatedAt } = useQuery<any[]>({
     queryKey: ["allShifts"],
     queryFn: async () => { const res = await getAllShifts(); return res.data ?? []; },
     staleTime: 0,
@@ -594,16 +592,8 @@ const ManagerShiftsPage = () => {
           </div>
 
           {/* ── Mobile header ── */}
-          <div className="md:hidden flex items-center justify-between mb-4">
+          <div className="md:hidden mb-4">
             <h1 className="text-2xl font-bold text-text">Shifts</h1>
-            <button
-              onClick={() => queryClient.invalidateQueries({ queryKey: ["allShifts"] })}
-              disabled={isFetching}
-              className="flex items-center gap-1.5 text-xs font-semibold text-blue disabled:opacity-50"
-            >
-              <RefreshCw size={13} className={isFetching ? "animate-spin" : ""} />
-              Refresh
-            </button>
           </div>
 
           {/* ── Desktop filter row ── */}
@@ -660,7 +650,7 @@ const ManagerShiftsPage = () => {
 
           {/* ── Mobile filters ── */}
           <div className="md:hidden">
-            <div className="flex gap-2 mb-3 overflow-x-auto pb-0.5 no-scrollbar">
+            <div className="-mx-5 px-5 flex gap-2 mb-3 overflow-x-auto pb-0.5 no-scrollbar">
               {(["today", "week", "month", "year", "all"] as const).map((key) => (
                 <button
                   key={key}

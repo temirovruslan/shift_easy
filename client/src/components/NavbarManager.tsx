@@ -32,9 +32,7 @@ const NavbarManager = () => {
       ">
         {/* Logo — desktop only */}
         <div className="hidden md:flex items-center gap-2.5 px-2 mb-6 shrink-0">
-          <div className="w-8 h-8 rounded-lg bg-blue-d flex items-center justify-center shrink-0">
-            <span className="text-[10px] font-bold text-white leading-none">SE</span>
-          </div>
+          <img src="/logo2.webp" alt="ShiftEasy" className="w-8 h-8 rounded-lg object-contain shrink-0" />
           <span className="text-sm font-bold text-text">ShiftEasy</span>
         </div>
 
