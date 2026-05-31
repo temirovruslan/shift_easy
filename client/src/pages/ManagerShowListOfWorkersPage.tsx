@@ -62,11 +62,13 @@ function FilterDropdown({
   active,
   options,
   onSelect,
+  align = "left",
 }: {
   label: string;
   active: boolean;
   options: { value: string; label: string }[];
   onSelect: (value: string) => void;
+  align?: "left" | "right";
 }) {
   const [open, setOpen] = useState(false);
   return (
@@ -88,7 +90,7 @@ function FilterDropdown({
       {open && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute z-20 top-full mt-1.5 right-0 w-52 bg-bg2 border border-border rounded-2xl overflow-hidden shadow-xl">
+          <div className={`absolute z-20 top-full mt-1.5 w-52 bg-bg2 border border-border rounded-2xl overflow-hidden shadow-xl ${align === "right" ? "right-0" : "left-0"}`}>
             {options.map((opt) => (
               <button
                 key={opt.value}
@@ -591,7 +593,7 @@ const ManagerShowListOfWorkersPage = () => {
               )}
             </div>
 
-            <div className="flex gap-2 overflow-x-auto md:overflow-visible pb-0.5 md:pb-0">
+            <div className="flex gap-2 flex-wrap">
               <FilterDropdown
                 label={statusLabel}
                 active={statusFilter !== "all"}
@@ -601,6 +603,7 @@ const ManagerShowListOfWorkersPage = () => {
                   { value: "pending", label: "Pending" },
                 ]}
                 onSelect={(v) => setStatusFilter(v as any)}
+                align="left"
               />
               {uniqueSites.length > 0 && (
                 <FilterDropdown
@@ -608,6 +611,7 @@ const ManagerShowListOfWorkersPage = () => {
                   active={activeSiteFilter !== "All projects"}
                   options={siteOptions.map((s) => ({ value: s, label: s }))}
                   onSelect={setActiveSiteFilter}
+                  align="right"
                 />
               )}
             </div>
