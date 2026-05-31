@@ -73,13 +73,13 @@ function FilterDropdown({
     <div className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
-        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors whitespace-nowrap ${
+        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors max-w-40 ${
           active
             ? "bg-blue/10 border-blue/40 text-blue"
             : "bg-bg3 border-border text-text3 hover:border-blue/30"
         }`}
       >
-        {label}
+        <span className="truncate">{label}</span>
         <ChevronDown
           size={11}
           className={`transition-transform ${open ? "rotate-180" : ""}`}
@@ -88,7 +88,7 @@ function FilterDropdown({
       {open && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute z-20 top-full mt-1.5 left-0 min-w-36 bg-bg2 border border-border rounded-2xl overflow-hidden shadow-xl">
+          <div className="absolute z-20 top-full mt-1.5 right-0 w-52 bg-bg2 border border-border rounded-2xl overflow-hidden shadow-xl">
             {options.map((opt) => (
               <button
                 key={opt.value}
@@ -105,7 +105,7 @@ function FilterDropdown({
                 {label !== opt.label && (
                   <div className="w-1.5 h-1.5 shrink-0" />
                 )}
-                {opt.label}
+                <span className="truncate">{opt.label}</span>
               </button>
             ))}
           </div>
