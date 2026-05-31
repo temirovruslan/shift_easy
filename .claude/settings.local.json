@@ -6,7 +6,15 @@
       "WebFetch(domain:www.nativewind.dev)",
       "WebFetch(domain:dev.to)",
       "Bash(npm install *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(npx tsc *)",
+      "Bash(xargs sed -i 's/md:ml-14/md:ml-52/g')",
+      "Bash(git commit -m ' *)",
+      "Bash(git add *)",
+      "Bash(git commit -m 'fix: remove unused imports causing TS6133 build errors on Vercel *)",
+      "Bash(git commit -m 'style: smaller base font on mobile \\(14px mobile, 17px desktop\\) *)",
+      "Bash(git commit -m 'fix: duplicate React key in grouped shifts list \\(worker+date composite key\\) *)",
+      "Bash(findstr /R \"text-\\\\[.*px\\\\]\" *.tsx)"
     ]
   }
 }

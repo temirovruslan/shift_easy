@@ -375,8 +375,9 @@ const ManagerShiftsPage = () => {
   const [desktopView, setDesktopView] = useState<"timesheet" | "list">("timesheet");
   const [selectedShift, setSelectedShift] = useState<any>(null);
   const [timeFilterOpen, setTimeFilterOpen] = useState(false);
+  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
-  const { data: shifts = [], isLoading, dataUpdatedAt } = useQuery<any[]>({
+  const { data: shifts = [], isLoading } = useQuery<any[]>({
     queryKey: ["allShifts"],
     queryFn: async () => { const res = await getAllShifts(); return res.data ?? []; },
     staleTime: 0,
@@ -394,13 +395,6 @@ const ManagerShiftsPage = () => {
     queryFn: async () => { const res = await getSites(); return res.data ?? []; },
     staleTime: 5 * 60_000,
   });
-
-  const formatLastUpdated = () => {
-    if (!dataUpdatedAt) return "";
-    const sec = Math.floor((Date.now() - dataUpdatedAt) / 1000);
-    if (sec < 60) return `Updated ${sec}s ago`;
-    return `Updated ${Math.floor(sec / 60)}m ago`;
-  };
 
   if (isLoading) return <Loader />;
 
@@ -650,18 +644,37 @@ const ManagerShiftsPage = () => {
 
           {/* ── Mobile filters ── */}
           <div className="md:hidden">
-            <div className="-mx-5 px-5 flex gap-2 mb-3 overflow-x-auto pb-0.5 no-scrollbar">
-              {(["today", "week", "month", "year", "all"] as const).map((key) => (
+            <div className="flex gap-2 mb-3">
+              {/* Time filter dropdown */}
+              <div className="relative">
                 <button
-                  key={key}
-                  onClick={() => setFilter(key)}
-                  className={`px-4 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap shrink-0 ${
-                    filter === key ? "bg-blue text-white" : "bg-bg3 border border-border text-text3"
-                  }`}
+                  onClick={() => setMobileFilterOpen((v) => !v)}
+                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold border bg-blue/10 border-blue/40 text-blue"
                 >
-                  {key === "today" ? "Today" : key === "week" ? "This week" : key === "month" ? "This month" : key === "year" ? "This year" : "All time"}
+                  {filterLabel}
+                  <ChevronDown size={11} className={`transition-transform ${mobileFilterOpen ? "rotate-180" : ""}`} />
                 </button>
-              ))}
+                {mobileFilterOpen && (
+                  <>
+                    <div className="fixed inset-0 z-10" onClick={() => setMobileFilterOpen(false)} />
+                    <div className="absolute z-20 top-full mt-1.5 left-0 w-40 bg-bg2 border border-border rounded-2xl overflow-hidden shadow-xl">
+                      {(["today", "week", "month", "year", "all"] as const).map((key) => {
+                        const lbl = key === "today" ? "Today" : key === "week" ? "This week" : key === "month" ? "This month" : key === "year" ? "This year" : "All time";
+                        return (
+                          <button
+                            key={key}
+                            onClick={() => { setFilter(key); setMobileFilterOpen(false); }}
+                            className={`w-full flex items-center gap-2 px-4 py-2.5 text-xs text-left transition-colors hover:bg-bg3 ${filter === key ? "text-blue font-semibold" : "text-text"}`}
+                          >
+                            <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${filter === key ? "bg-blue" : ""}`} />
+                            {lbl}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
             <div className="flex gap-2 mb-5">
               <button
@@ -983,22 +996,21 @@ const ManagerShiftsPage = () => {
           <div className="md:hidden">
             <div className="grid grid-cols-3 gap-2 mb-5">
               <div className={`border rounded-xl px-3 py-3 transition-colors ${onShift > 0 ? "bg-green/4 border-green/25" : "bg-bg3 border-border"}`}>
-                <p className={`text-xl font-bold leading-tight ${onShift > 0 ? "text-green" : "text-text"}`}>{onShift}</p>
+                <p className={`text-lg font-bold leading-tight truncate ${onShift > 0 ? "text-green" : "text-text"}`}>{onShift}</p>
                 <p className="text-[10px] text-text3 font-medium mt-1">On shift</p>
               </div>
               <div className="bg-bg3 border border-border rounded-xl px-3 py-3">
-                <p className="text-xl font-bold text-blue leading-tight">{formatDuration(todayMinutes)}</p>
+                <p className="text-lg font-bold text-blue leading-tight truncate">{formatDuration(todayMinutes)}</p>
                 <p className="text-[10px] text-text3 font-medium mt-1">Today</p>
               </div>
               <div className="bg-bg3 border border-border rounded-xl px-3 py-3">
-                <p className="text-xl font-bold text-text leading-tight">{formatDuration(weekMinutes)}</p>
-                <p className="text-[10px] text-text3 font-medium mt-1">This week</p>
+                <p className="text-lg font-bold text-text leading-tight truncate">{formatDuration(weekMinutes)}</p>
+                <p className="text-[10px] text-text3 font-medium mt-1">{filterLabel}</p>
               </div>
             </div>
 
-            <div className="flex items-center justify-between mb-3">
+            <div className="mb-3">
               <p className="text-text3 text-xs">{filtered.length} shift{filtered.length !== 1 ? "s" : ""}</p>
-              <p className="text-text3 text-xs">{formatLastUpdated()}</p>
             </div>
 
             {filtered.length === 0 && (

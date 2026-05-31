@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -15,6 +15,7 @@ import { getAllShifts } from "../api/shifts";
 import { getSites } from "../api/sites";
 import { getAllWorkers } from "../api/worker";
 import Loader from "../components/Loader";
+import { Pagination } from "../components/ui/Pagination";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -145,10 +146,8 @@ const WeekChart = ({
         </BarChart>
       </ResponsiveContainer>
       <div className="border-t border-border pt-2.5 px-2 flex items-center justify-between">
-        <p className="text-xs text-text3">
-          Total so far this week:
-        </p>
-        <p className="text-xs font-bold text-blue">{formatDuration(weekMinutes)} across all projects</p>
+        <p className="text-xs text-text3">Total this week</p>
+        <p className="text-xs font-bold text-blue">{formatDuration(weekMinutes)}</p>
       </div>
     </div>
   );
@@ -158,7 +157,12 @@ const WeekChart = ({
 
 const ManagerDashboardPage = () => {
   const navigate = useNavigate();
-  const [showAllOffShift, setShowAllOffShift] = useState(false);
+  const [offShiftPage, setOffShiftPage] = useState(1);
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const id = setInterval(() => setTick((t) => t + 1), 1000);
+    return () => clearInterval(id);
+  }, []);
 
   const { data: managerInfo, isLoading: userLoading } = useQuery<any>({
     queryKey: ["managerProfile"],
@@ -166,7 +170,7 @@ const ManagerDashboardPage = () => {
     staleTime: 5 * 60_000,
   });
 
-  const { data: shiftsWorker = [], isLoading: shiftsLoading } = useQuery<any[]>({
+  const { data: shiftsWorker = [], isLoading: shiftsLoading, dataUpdatedAt } = useQuery<any[]>({
     queryKey: ["allShifts"],
     queryFn: async () => { const res = await getAllShifts(); return res.data ?? []; },
     staleTime: 0,
@@ -342,9 +346,22 @@ const ManagerDashboardPage = () => {
 
             {/* ── Left: On site now ── */}
             <div>
-              <p className="text-[10px] font-bold text-text3 uppercase tracking-widest mb-3">
-                On site now · {onShiftNow}
-              </p>
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-[10px] font-bold text-text3 uppercase tracking-widest">
+                  On site now · {onShiftNow}
+                </p>
+                <span className="flex items-center gap-1.5 bg-green/10 border border-green/25 px-2.5 py-1 rounded-full">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green animate-pulse shrink-0" />
+                  <span className="text-[11px] font-semibold text-green">
+                    {dataUpdatedAt
+                      ? (() => {
+                          const sec = Math.floor((Date.now() - dataUpdatedAt) / 1000);
+                          return sec < 5 ? "Live" : sec < 60 ? `${sec}s ago` : `${Math.floor(sec / 60)}m ago`;
+                        })()
+                      : "Live"}
+                  </span>
+                </span>
+              </div>
 
               {onShiftNow === 0 ? (
                 <div className="bg-bg3 border border-border rounded-2xl px-4 py-6 text-center mb-5">
@@ -378,15 +395,15 @@ const ManagerDashboardPage = () => {
 
               {/* Off shift */}
               {offShiftWorkers.length > 0 && (() => {
-                const LIMIT = 5;
-                const visible = showAllOffShift ? offShiftWorkers : offShiftWorkers.slice(0, LIMIT);
-                const hidden = offShiftWorkers.length - LIMIT;
+                const PAGE_SIZE = 5;
+                const totalPages = Math.max(1, Math.ceil(offShiftWorkers.length / PAGE_SIZE));
+                const visible = offShiftWorkers.slice((offShiftPage - 1) * PAGE_SIZE, offShiftPage * PAGE_SIZE);
                 return (
                   <>
                     <p className="text-[10px] font-bold text-text3 uppercase tracking-widest mb-3">
                       Off shift · {offShiftWorkers.length}
                     </p>
-                    <div className="bg-bg3 border border-border rounded-2xl overflow-hidden opacity-50 mb-5">
+                    <div className="bg-bg3 border border-border rounded-2xl overflow-hidden opacity-50 mb-3">
                       {visible.map((w, i) => (
                         <div
                           key={w._id}
@@ -402,15 +419,13 @@ const ManagerDashboardPage = () => {
                           <span className="text-xs text-text3">—</span>
                         </div>
                       ))}
-                      {offShiftWorkers.length > LIMIT && (
-                        <button
-                          onClick={() => setShowAllOffShift((v) => !v)}
-                          className="w-full px-4 py-2.5 text-xs font-semibold text-text3 hover:text-text border-t border-border transition-colors"
-                        >
-                          {showAllOffShift ? "Show less" : `Show ${hidden} more`}
-                        </button>
-                      )}
                     </div>
+                    <Pagination
+                      page={offShiftPage}
+                      totalPages={totalPages}
+                      onPageChange={setOffShiftPage}
+                      className="mb-5"
+                    />
                   </>
                 );
               })()}

@@ -33,8 +33,8 @@ const WorkerLoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-bg flex flex-col items-center justify-center px-6">
-      <div className="w-full max-w-xs">
+    <div className="min-h-screen bg-bg flex flex-col items-center justify-center px-5">
+      <div className="w-full max-w-sm">
         <button
           className="flex items-center gap-1 mb-8 hover:opacity-70 transition-opacity"
           onClick={() => navigate("/")}
