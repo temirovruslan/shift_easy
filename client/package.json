@@ -13,11 +13,14 @@
     "@heroicons/react": "^2.2.0",
     "@tanstack/react-query": "^5.100.14",
     "axios": "^1.15.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "lucide-react": "^1.14.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "react-router-dom": "^7.14.2",
     "recharts": "^3.8.1",
+    "tailwind-merge": "^3.6.0",
     "validator": "^13.15.35"
   },
   "devDependencies": {

@@ -19,6 +19,34 @@ const getMondayMidnight = () => {
   return d;
 };
 
+const getMonthWeeks = (): { start: Date; end: Date; label: string }[] => {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const lastDay = new Date(year, month + 1, 0);
+  const firstDay = new Date(year, month, 1);
+  const dow = firstDay.getDay();
+  const firstMonday = new Date(firstDay);
+  firstMonday.setDate(firstDay.getDate() - (dow === 0 ? 6 : dow - 1));
+  firstMonday.setHours(0, 0, 0, 0);
+
+  const weeks: { start: Date; end: Date; label: string }[] = [];
+  let ws = new Date(firstMonday);
+  while (ws <= lastDay) {
+    const we = new Date(ws);
+    we.setDate(ws.getDate() + 6);
+    we.setHours(23, 59, 59, 999);
+    const fmt = (d: Date) => `${d.getDate()} ${d.toLocaleDateString("en-GB", { month: "short" })}`;
+    const label =
+      ws.getMonth() === we.getMonth()
+        ? `${ws.getDate()}–${we.getDate()} ${ws.toLocaleDateString("en-GB", { month: "short" })}`
+        : `${fmt(ws)} – ${fmt(we)}`;
+    weeks.push({ start: new Date(ws), end: new Date(we), label });
+    ws.setDate(ws.getDate() + 7);
+  }
+  return weeks;
+};
+
 const getWeekDays = (): Date[] => {
   const monday = getMondayMidnight();
   return Array.from({ length: 7 }, (_, i) => {
@@ -334,7 +362,7 @@ const ShiftDetailDrawer = ({ shift, onClose }: { shift: any; onClose: () => void
 
 const ManagerShiftsPage = () => {
   // mobile
-  const [filter, setFilter] = useState<"today" | "week" | "all">("week");
+  const [filter, setFilter] = useState<"today" | "week" | "month" | "year" | "all">("week");
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [showWorkerPicker, setShowWorkerPicker] = useState(false);
   const [showSitePicker, setShowSitePicker] = useState(false);
@@ -381,15 +409,23 @@ const ManagerShiftsPage = () => {
   const todayMidnight = new Date();
   todayMidnight.setHours(0, 0, 0, 0);
 
+  const monthStart = new Date(todayMidnight);
+  monthStart.setDate(1);
+
+  const yearStart = new Date(todayMidnight);
+  yearStart.setMonth(0, 1);
+
+  const filterFrom =
+    filter === "today" ? todayMidnight :
+    filter === "week"  ? getMondayMidnight() :
+    filter === "month" ? monthStart :
+    filter === "year"  ? yearStart :
+    null;
+
   // ── Mobile filtered list ──
   const filtered = shifts.filter((s) => {
     const d = new Date(s.startTime);
-    const timeMatch =
-      filter === "today"
-        ? d >= todayMidnight
-        : filter === "week"
-          ? d >= getMondayMidnight()
-          : true;
+    const timeMatch = !filterFrom || d >= filterFrom;
     const workerMatch = !selectedWorkerId || s.worker._id === selectedWorkerId;
     const siteMatch = !selectedSiteId || s.site._id === selectedSiteId;
     return timeMatch && workerMatch && siteMatch;
@@ -445,9 +481,31 @@ const ManagerShiftsPage = () => {
     return d >= weekDays[0] && d < weekEnd && workerMatch && siteMatch;
   });
 
+  const timesheetFilterFrom = filterFrom ?? weekDays[0];
+
   const timesheetWorkers = Array.from(
-    new Map(weekShifts.map((s) => [s.worker._id, s.worker])).values(),
+    new Map(
+      weekShifts
+        .filter((s) => new Date(s.startTime) >= timesheetFilterFrom)
+        .map((s) => [s.worker._id, s.worker])
+    ).values(),
   );
+
+  // ── Monthly timesheet data ──
+  const monthWeeks = getMonthWeeks();
+  const monthlyTimesheetWorkers = Array.from(
+    new Map(filtered.map((s) => [s.worker._id, s.worker])).values(),
+  );
+  const getMonthCellShifts = (workerId: string, ws: Date, we: Date) =>
+    filtered.filter((s) => {
+      const d = new Date(s.startTime);
+      return s.worker._id === workerId && d >= ws && d <= we;
+    });
+  const getMonthWeekTotal = (ws: Date, we: Date) =>
+    filtered
+      .filter((s) => { const d = new Date(s.startTime); return d >= ws && d <= we; })
+      .reduce((sum, s) =>
+        sum + (s.status === "completed" ? (s.duration ?? 0) : Math.floor((Date.now() - new Date(s.startTime).getTime()) / 60000)), 0);
 
   const getShiftsForCell = (workerId: string, day: Date) => {
     const dayEnd = new Date(day.getTime() + 86_400_000);
@@ -479,7 +537,26 @@ const ManagerShiftsPage = () => {
     return sum + Math.floor((Date.now() - new Date(s.startTime).getTime()) / 60000);
   }, 0);
 
-  const weekLabel = `${weekDays[0].toLocaleDateString("en-GB", { day: "numeric", month: "short" })} – ${weekDays[6].toLocaleDateString("en-GB", { day: "numeric", month: "short" })}`;
+  const filterLabel =
+    filter === "today" ? "Today" :
+    filter === "week"  ? "This week" :
+    filter === "month" ? "This month" :
+    filter === "year"  ? "This year" :
+    "All time";
+
+  const timesheetFilterOptions = [
+    ["today", "Today"],
+    ["week",  "This week"],
+    ["month", "This month"],
+  ] as const;
+
+  const listFilterOptions = [
+    ["today", "Today"],
+    ["week",  "This week"],
+    ["month", "This month"],
+    ["year",  "This year"],
+    ["all",   "All time"],
+  ] as const;
 
   return (
     <div className="bg-bg min-h-screen pb-24 md:ml-52 md:pb-0 md:h-screen md:flex md:overflow-hidden">
@@ -496,7 +573,11 @@ const ManagerShiftsPage = () => {
                 {(["timesheet", "list"] as const).map((v) => (
                   <button
                     key={v}
-                    onClick={() => { setDesktopView(v); setSelectedShift(null); }}
+                    onClick={() => {
+                      setDesktopView(v);
+                      setSelectedShift(null);
+                      if (v === "timesheet" && filter !== "today" && filter !== "week" && filter !== "month") setFilter("week");
+                    }}
                     className={`px-4 py-1.5 rounded-lg text-sm font-semibold transition-colors capitalize ${
                       desktopView === v ? "bg-blue text-white" : "text-text3 hover:text-text"
                     }`}
@@ -535,14 +616,14 @@ const ManagerShiftsPage = () => {
                   filter !== "week" ? "bg-blue/10 border-blue/40 text-blue" : "bg-bg3 border-border text-text3 hover:border-blue/40 hover:text-blue"
                 }`}
               >
-                {filter === "today" ? "Today" : filter === "all" ? "All time" : weekLabel}
+                {filterLabel}
                 <ChevronDown size={11} className={`transition-transform ${timeFilterOpen ? "rotate-180" : ""}`} />
               </button>
               {timeFilterOpen && (
                 <>
                   <div className="fixed inset-0 z-10" onClick={() => setTimeFilterOpen(false)} />
                   <div className="absolute z-20 top-full mt-1.5 left-0 min-w-36 bg-bg2 border border-border rounded-2xl overflow-hidden shadow-xl">
-                    {([["today", "Today"], ["week", weekLabel], ["all", "All time"]] as const).map(([val, lbl]) => (
+                    {(desktopView === "timesheet" ? timesheetFilterOptions : listFilterOptions).map(([val, lbl]) => (
                       <button
                         key={val}
                         onClick={() => { setFilter(val); setTimeFilterOpen(false); }}
@@ -579,16 +660,16 @@ const ManagerShiftsPage = () => {
 
           {/* ── Mobile filters ── */}
           <div className="md:hidden">
-            <div className="flex gap-2 mb-3">
-              {(["today", "week", "all"] as const).map((key) => (
+            <div className="flex gap-2 mb-3 overflow-x-auto pb-0.5 no-scrollbar">
+              {(["today", "week", "month", "year", "all"] as const).map((key) => (
                 <button
                   key={key}
                   onClick={() => setFilter(key)}
-                  className={`px-4 py-1.5 rounded-full text-xs font-bold transition-colors ${
+                  className={`px-4 py-1.5 rounded-full text-xs font-bold transition-colors whitespace-nowrap shrink-0 ${
                     filter === key ? "bg-blue text-white" : "bg-bg3 border border-border text-text3"
                   }`}
                 >
-                  {key === "today" ? "Today" : key === "week" ? "This week" : "All time"}
+                  {key === "today" ? "Today" : key === "week" ? "This week" : key === "month" ? "This month" : key === "year" ? "This year" : "All time"}
                 </button>
               ))}
             </div>
@@ -617,6 +698,98 @@ const ManagerShiftsPage = () => {
           {/* ── Desktop timesheet ── */}
           {desktopView === "timesheet" && (
             <div className="hidden md:block">
+
+              {/* ── Monthly view ── */}
+              {filter === "month" && (
+                <div className="bg-bg3 border border-border rounded-2xl overflow-auto">
+                  <table className="w-full text-left border-collapse">
+                    <thead>
+                      <tr className="border-b border-border">
+                        <th className="px-4 py-3 text-xs font-semibold text-text3 w-44">Worker</th>
+                        {monthWeeks.map((week) => (
+                          <th key={week.start.toISOString()} className="px-2 py-3 text-xs font-semibold text-center text-text3 whitespace-nowrap">
+                            {week.label}
+                          </th>
+                        ))}
+                        <th className="px-4 py-3 text-xs font-semibold text-right text-blue">Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {monthlyTimesheetWorkers.length === 0 ? (
+                        <tr>
+                          <td colSpan={monthWeeks.length + 2} className="px-4 py-10 text-center text-sm text-text3">
+                            No shifts this month
+                          </td>
+                        </tr>
+                      ) : (
+                        monthlyTimesheetWorkers.map((worker) => {
+                          const workerTotal = filtered
+                            .filter((s) => s.worker._id === worker._id)
+                            .reduce((sum, s) => sum + (s.status === "completed" ? (s.duration ?? 0) : Math.floor((Date.now() - new Date(s.startTime).getTime()) / 60000)), 0);
+                          return (
+                            <tr key={worker._id} className="border-b border-border last:border-b-0">
+                              <td className="px-4 py-3">
+                                <div className="flex items-center gap-2.5">
+                                  <div className="w-7 h-7 rounded-full bg-blue flex items-center justify-center text-[10px] font-bold text-white shrink-0">
+                                    {getInitials(worker.name)}
+                                  </div>
+                                  <div>
+                                    <p className="text-xs font-semibold text-text leading-tight">{abbrevName(worker.name)}</p>
+                                    <p className="text-[10px] text-text3">Worker</p>
+                                  </div>
+                                </div>
+                              </td>
+                              {monthWeeks.map((week) => {
+                                const cellShifts = getMonthCellShifts(worker._id, week.start, week.end);
+                                const totalMins = cellShifts.reduce((sum, s) =>
+                                  sum + (s.status === "completed" ? (s.duration ?? 0) : Math.floor((Date.now() - new Date(s.startTime).getTime()) / 60000)), 0);
+                                const hasActive = cellShifts.some((s) => s.status === "active");
+                                return (
+                                  <td key={week.start.toISOString()} className="px-2 py-3 text-center">
+                                    {totalMins === 0 ? (
+                                      <span className="text-text3 text-xs">—</span>
+                                    ) : (
+                                      <div className={`rounded-xl px-2 py-1.5 inline-block ${hasActive ? "bg-green/10" : "bg-bg2"}`}>
+                                        <p className={`text-xs font-bold flex items-center gap-1 ${hasActive ? "text-green" : "text-text"}`}>
+                                          {formatDuration(totalMins)}
+                                          {hasActive && <span className="w-1 h-1 rounded-full bg-green animate-pulse" />}
+                                        </p>
+                                      </div>
+                                    )}
+                                  </td>
+                                );
+                              })}
+                              <td className="px-4 py-3 text-right">
+                                <span className="text-sm font-bold text-blue">{formatDuration(workerTotal)}</span>
+                              </td>
+                            </tr>
+                          );
+                        })
+                      )}
+                      {monthlyTimesheetWorkers.length > 0 && (
+                        <tr className="border-t border-border bg-bg2/40">
+                          <td className="px-4 py-3 text-xs font-semibold text-text3">Total</td>
+                          {monthWeeks.map((week) => {
+                            const mins = getMonthWeekTotal(week.start, week.end);
+                            return (
+                              <td key={week.start.toISOString()} className="px-2 py-3 text-center text-xs font-bold">
+                                {mins > 0 ? <span className="text-text">{formatDuration(mins)}</span> : <span className="text-text3">—</span>}
+                              </td>
+                            );
+                          })}
+                          <td className="px-4 py-3 text-right text-xs font-bold text-blue">
+                            {formatDuration(filtered.reduce((sum, s) =>
+                              sum + (s.status === "completed" ? (s.duration ?? 0) : Math.floor((Date.now() - new Date(s.startTime).getTime()) / 60000)), 0))}
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              {/* ── Weekly / Today view ── */}
+              {filter !== "month" && (
               <div className="bg-bg3 border border-border rounded-2xl overflow-auto">
                 <table className="w-full min-w-175 text-left border-collapse">
                   <thead>
@@ -679,7 +852,7 @@ const ManagerShiftsPage = () => {
                                 onClick={() => setSelectedShift((prev: any) => prev?._id === firstShift._id ? null : firstShift)}
                               >
                                 <div
-                                  className={`rounded-xl px-2 py-2 hover:opacity-80 transition-opacity ${
+                                  className={`rounded-xl px-2 py-2 hover:opacity-80 transition-opacity text-center ${
                                     selectedShift?._id === firstShift._id
                                       ? "ring-2 ring-blue/40"
                                       : ""
@@ -687,7 +860,7 @@ const ManagerShiftsPage = () => {
                                     hasActive ? "bg-green/10" : isToday ? "bg-blue/10" : "bg-bg2"
                                   }`}
                                 >
-                                  <p className={`text-xs font-bold leading-tight flex items-center gap-1 ${hasActive ? "text-green" : isToday ? "text-blue" : "text-text"}`}>
+                                  <p className={`text-xs font-bold leading-tight flex items-center justify-center gap-1 ${hasActive ? "text-green" : isToday ? "text-blue" : "text-text"}`}>
                                     {formatDuration(totalMins)}
                                     {hasActive && <span className="w-1 h-1 rounded-full bg-green animate-pulse" />}
                                   </p>
@@ -723,6 +896,8 @@ const ManagerShiftsPage = () => {
                   </tbody>
                 </table>
               </div>
+              )}
+
             </div>
           )}
 

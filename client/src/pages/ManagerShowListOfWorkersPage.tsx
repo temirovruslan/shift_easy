@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Pagination } from "../components/ui/Pagination";
 import { useNavigate } from "react-router-dom";
 import {
   X,
@@ -486,6 +487,8 @@ const ManagerShowListOfWorkersPage = () => {
     staleTime: 5 * 60_000,
   });
 
+  const PAGE_SIZE = 10;
+
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<
     "all" | "active" | "pending"
@@ -493,6 +496,11 @@ const ManagerShowListOfWorkersPage = () => {
   const [activeSiteFilter, setActiveSiteFilter] = useState("All projects");
   const [selectedWorker, setSelectedWorker] = useState<any | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [page, setPage] = useState(1);
+
+  useEffect(() => {
+    setPage(1);
+  }, [search, statusFilter, activeSiteFilter]);
 
   if (workersLoading || sitesLoading) return <Loader />;
 
@@ -517,6 +525,9 @@ const ManagerShowListOfWorkersPage = () => {
       w.sites?.some((s: any) => s.name === activeSiteFilter);
     return matchSearch && matchStatus && matchSite;
   });
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const activeCount = workers.filter((w: any) => w.isActivated).length;
   const pendingCount = workers.filter((w: any) => !w.isActivated).length;
@@ -625,7 +636,7 @@ const ManagerShowListOfWorkersPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {filtered.length === 0 ? (
+                {paginated.length === 0 ? (
                   <tr>
                     <td
                       colSpan={6}
@@ -635,7 +646,7 @@ const ManagerShowListOfWorkersPage = () => {
                     </td>
                   </tr>
                 ) : (
-                  filtered.map((worker: any, i: number) => {
+                  paginated.map((worker: any, i: number) => {
                     const selected = selectedWorker?._id === worker._id;
                     return (
                       <tr
@@ -683,22 +694,26 @@ const ManagerShowListOfWorkersPage = () => {
                 )}
               </tbody>
             </table>
-            <div className="px-5 py-3 border-t border-border">
-              <p className="text-xs text-text3">
-                {workers.length} workers · {activeCount} active · {pendingCount}{" "}
-                pending
+            <div className="px-5 py-3 border-t border-border flex items-center justify-between gap-4">
+              <p className="text-xs text-text3 shrink-0">
+                {workers.length} workers · {activeCount} active · {pendingCount} pending
               </p>
+              <Pagination
+                page={page}
+                totalPages={totalPages}
+                onPageChange={setPage}
+              />
             </div>
           </div>
 
           {/* ── Mobile list ── */}
           <div className="md:hidden flex flex-col gap-2">
-            {filtered.length === 0 ? (
+            {paginated.length === 0 ? (
               <p className="text-sm text-text3 text-center py-10">
                 No workers found
               </p>
             ) : (
-              filtered.map((worker: any, i: number) => (
+              paginated.map((worker: any, i: number) => (
                 <button
                   key={worker._id}
                   onClick={() => handleWorkerClick(worker)}
@@ -723,9 +738,14 @@ const ManagerShowListOfWorkersPage = () => {
               ))
             )}
             <p className="text-xs text-text3 text-center pt-2">
-              {workers.length} workers · {activeCount} active · {pendingCount}{" "}
-              pending
+              {workers.length} workers · {activeCount} active · {pendingCount} pending
             </p>
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              onPageChange={setPage}
+              className="pt-1"
+            />
           </div>
         </div>
       </div>
