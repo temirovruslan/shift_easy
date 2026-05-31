@@ -247,7 +247,7 @@ const ManagerShowListOfWorkersPageDetail = () => {
                 if (!editEmail.trim()) { setEditError("Email is required"); return; }
                 setSaving(true);
                 try {
-                  const payload: Record<string, string> = {
+                  const payload = {
                     name: editName.trim(),
                     email: editEmail.trim(),
                     occupation: editOccupation.trim(),

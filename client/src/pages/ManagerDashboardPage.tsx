@@ -169,7 +169,8 @@ const ManagerDashboardPage = () => {
   const { data: shiftsWorker = [], isLoading: shiftsLoading } = useQuery<any[]>({
     queryKey: ["allShifts"],
     queryFn: async () => { const res = await getAllShifts(); return res.data ?? []; },
-    staleTime: 30_000,
+    staleTime: 0,
+    refetchInterval: 5_000,
   });
 
   const { data: sitesInfo = [], isLoading: sitesLoading } = useQuery<any[]>({
