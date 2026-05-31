@@ -84,7 +84,6 @@ const WorkerProfilePage = () => {
 
   return (
     <div className="min-h-screen bg-bg px-5 pt-14 pb-20">
-      <div className="max-w-sm mx-auto">
         {/* ── Avatar + name + badge ── */}
         <div className="flex flex-col items-center mb-8">
           <div className="w-16 h-16 rounded-full bg-blue flex items-center justify-center mb-3">
@@ -213,7 +212,6 @@ const WorkerProfilePage = () => {
         >
           Sign out
         </button>
-      </div>
       <NavBarWorker />
     </div>
   );

@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, Loader2 } from "lucide-react";
 
 import Button from "../components/ButtonComponent";
 import Input from "../components/InputComponent";
@@ -11,26 +11,35 @@ const WorkerLoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [slowHint, setSlowHint] = useState(false);
+  const slowTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const navigate = useNavigate();
   const { login } = useAuth();
+
   const workerLogin = async () => {
+    setLoading(true);
+    setError("");
+    setSlowHint(false);
+    slowTimer.current = setTimeout(() => setSlowHint(true), 4000);
     try {
       const res = await loginWorker({ email, password });
       if (res.data.role !== "worker") {
-        setError(
-          "This is the worker login. Your account is a manager account — please use the manager sign in page.",
-        );
+        setError("This is the worker login. Your account is a manager account — please use the manager sign in page.");
         return;
       }
       login({ name: res.data.name, role: res.data.role }, res.data.token);
       navigate("/worker/home");
     } catch (err: any) {
-      setError(
-        err?.response?.data?.message ||
-          "Wrong email or password. Please try again.",
-      );
+      setError(err?.response?.data?.message || "Wrong email or password. Please try again.");
+    } finally {
+      setLoading(false);
+      setSlowHint(false);
+      if (slowTimer.current) clearTimeout(slowTimer.current);
     }
   };
+
+  useEffect(() => () => { if (slowTimer.current) clearTimeout(slowTimer.current); }, []);
 
   return (
     <div className="min-h-screen bg-bg flex flex-col items-center justify-center px-5">
@@ -92,8 +101,20 @@ const WorkerLoginPage = () => {
             </button>
           </div>
           {error && <p className="text-xs text-red">{error}</p>}
+          {slowHint && !error && (
+            <p className="text-xs text-text3 text-center">
+              Server is waking up, hang tight…
+            </p>
+          )}
 
-          <Button label="Sign in" color="bg-blue" type="submit" />
+          <Button
+            label={loading ? "Signing in…" : "Sign in"}
+            icon={loading ? <Loader2 size={14} className="animate-spin" /> : undefined}
+            iconSide="left"
+            color="bg-blue"
+            type="submit"
+            disabled={loading}
+          />
         </form>
 
         <div className="bg-blue/5 border border-blue/15 rounded-xl px-3.5 py-3 mt-4">

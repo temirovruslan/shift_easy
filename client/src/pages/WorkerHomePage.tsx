@@ -111,7 +111,7 @@ const WorkerHomePage = () => {
     100,
   );
 
-  const notesValid = notes.trim().length >= 5;
+  const notesValid = notes.trim().length >= 10;
 
   const shiftStart = async () => {
     if (!assignedSite) return;
@@ -151,7 +151,6 @@ const WorkerHomePage = () => {
   if (currentShift)
     return (
       <div className="min-h-screen bg-bg px-5 pt-14 pb-20">
-        <div className="max-w-sm mx-auto">
           <div className="flex items-center justify-between mb-6">
             <div>
               <p className="text-sm text-text2 mb-0.5">Shift in progress</p>
@@ -217,7 +216,7 @@ const WorkerHomePage = () => {
                 )}
                 {submitted && notes.length > 0 && !notesValid && (
                   <span className="text-xs font-medium text-red">
-                    Too short
+                    Min 10 characters
                   </span>
                 )}
               </div>
@@ -252,7 +251,6 @@ const WorkerHomePage = () => {
               <span className="text-base font-bold text-red">Stop shift</span>
             </button>
           </form>
-        </div>
         <NavBarWorker />
       </div>
     );
@@ -261,7 +259,6 @@ const WorkerHomePage = () => {
 
   return (
     <div className="min-h-screen bg-bg px-5 pt-14 pb-20">
-      <div className="max-w-sm mx-auto">
         <div className="flex items-center justify-between mb-6">
           <div>
             <p className="text-sm text-text2">Hello 👋</p>
@@ -356,7 +353,6 @@ const WorkerHomePage = () => {
             </div>
           ))}
         </div>
-      </div>
       <NavBarWorker />
     </div>
   );

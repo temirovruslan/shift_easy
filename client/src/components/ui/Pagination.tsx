@@ -37,9 +37,9 @@ export function Pagination({ page, totalPages, onPageChange, className }: Pagina
         onClick={() => onPageChange(page - 1)}
         disabled={page === 1}
         aria-label="Previous page"
-        className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold border border-border bg-bg3 text-text3 hover:text-text hover:border-blue/30 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+        className="flex items-center gap-0.5 px-2 py-1 rounded-md text-[11px] font-semibold border border-border bg-bg3 text-text3 hover:text-text hover:border-blue/30 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
       >
-        <ChevronLeft size={13} />
+        <ChevronLeft size={11} />
         <span className="hidden sm:inline">Prev</span>
       </button>
 
@@ -47,9 +47,9 @@ export function Pagination({ page, totalPages, onPageChange, className }: Pagina
         p === "..." ? (
           <span
             key={`ellipsis-${i}`}
-            className="w-8 h-8 flex items-center justify-center text-text3"
+            className="w-6 h-6 flex items-center justify-center text-text3"
           >
-            <MoreHorizontal size={14} />
+            <MoreHorizontal size={11} />
           </span>
         ) : (
           <button
@@ -57,7 +57,7 @@ export function Pagination({ page, totalPages, onPageChange, className }: Pagina
             onClick={() => onPageChange(p)}
             aria-current={p === page ? "page" : undefined}
             className={cn(
-              "w-8 h-8 rounded-lg text-xs font-semibold border transition-colors",
+              "w-6 h-6 rounded-md text-[11px] font-semibold border transition-colors",
               p === page
                 ? "bg-blue/10 border-blue/40 text-blue"
                 : "bg-bg3 border-border text-text3 hover:text-text hover:border-blue/30"
@@ -72,10 +72,10 @@ export function Pagination({ page, totalPages, onPageChange, className }: Pagina
         onClick={() => onPageChange(page + 1)}
         disabled={page === totalPages}
         aria-label="Next page"
-        className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold border border-border bg-bg3 text-text3 hover:text-text hover:border-blue/30 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+        className="flex items-center gap-0.5 px-2 py-1 rounded-md text-[11px] font-semibold border border-border bg-bg3 text-text3 hover:text-text hover:border-blue/30 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
       >
         <span className="hidden sm:inline">Next</span>
-        <ChevronRight size={13} />
+        <ChevronRight size={11} />
       </button>
     </nav>
   );
