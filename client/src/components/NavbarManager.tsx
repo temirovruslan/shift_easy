@@ -118,7 +118,8 @@ const NavbarManager = () => {
       .filter((s: any) => !prevIds.has(s._id))
       .forEach((s: any) => {
         const id = `start-${s._id}`;
-        const onView = () => { navigateRef.current("/manager/dashboard"); toast.dismiss(id); };
+        const workerId = s.worker?._id;
+        const onView = () => { navigateRef.current(`/manager/dashboard?workerId=${workerId}`); toast.dismiss(id); };
         toast.custom(
           (t) => <ShiftToast t={t} type="start" name={s.worker?.name ?? "Worker"} site={s.site?.name ?? ""} onView={onView} />,
           { id, duration: 6000 }
@@ -132,7 +133,8 @@ const NavbarManager = () => {
       .forEach(([, shift]) => {
         const mins = Math.floor((Date.now() - new Date(shift.startTime).getTime()) / 60000);
         const id = `stop-${shift._id}`;
-        const onView = () => { navigateRef.current("/manager/dashboard"); toast.dismiss(id); };
+        const workerId = shift.worker?._id;
+        const onView = () => { navigateRef.current(`/manager/dashboard?workerId=${workerId}`); toast.dismiss(id); };
         toast.custom(
           (t) => <ShiftToast t={t} type="stop" name={shift.worker?.name ?? "Worker"} site={shift.site?.name ?? ""} duration={mins} onView={onView} />,
           { id, duration: 6000 }
