@@ -166,18 +166,6 @@ const ManagerDashboardPage = () => {
     return () => clearInterval(id);
   }, []);
 
-  // Open worker sheet when navigated from a toast notification
-  useEffect(() => {
-    const workerId = searchParams.get("workerId");
-    if (!workerId || !shiftsWorker.length) return;
-    const shift = shiftsWorker.find((s) => s.worker._id === workerId && s.status === "active") ?? null;
-    const worker = shift?.worker ?? workers.find((w) => w._id === workerId);
-    if (worker) {
-      setSelectedWorker({ worker, shift });
-      setSearchParams({}, { replace: true });
-    }
-  }, [searchParams, shiftsWorker, workers]); // eslint-disable-line react-hooks/exhaustive-deps
-
   const { data: managerInfo, isLoading: userLoading } = useQuery<any>({
     queryKey: ["managerProfile"],
     queryFn: async () => { const res = await getUser(); return res.data; },
@@ -202,6 +190,18 @@ const ManagerDashboardPage = () => {
     queryFn: async () => { const res = await getAllWorkers(); return res.data ?? []; },
     staleTime: 5 * 60_000,
   });
+
+  // Open worker sheet when navigated from a toast notification
+  useEffect(() => {
+    const workerId = searchParams.get("workerId");
+    if (!workerId || !shiftsWorker.length) return;
+    const shift = shiftsWorker.find((s: any) => s.worker._id === workerId && s.status === "active") ?? null;
+    const worker = shift?.worker ?? workers.find((w: any) => w._id === workerId);
+    if (worker) {
+      setSelectedWorker({ worker, shift });
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, shiftsWorker, workers]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (userLoading || shiftsLoading || sitesLoading || workersLoading) return <Loader />;
 
