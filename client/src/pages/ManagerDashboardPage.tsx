@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
   BarChart,
@@ -157,6 +157,7 @@ const WeekChart = ({
 
 const ManagerDashboardPage = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [offShiftPage, setOffShiftPage] = useState(1);
   const [, setTick] = useState(0);
   const [selectedWorker, setSelectedWorker] = useState<any | null>(null);
@@ -164,6 +165,18 @@ const ManagerDashboardPage = () => {
     const id = setInterval(() => setTick((t) => t + 1), 1000);
     return () => clearInterval(id);
   }, []);
+
+  // Open worker sheet when navigated from a toast notification
+  useEffect(() => {
+    const workerId = searchParams.get("workerId");
+    if (!workerId || !shiftsWorker.length) return;
+    const shift = shiftsWorker.find((s) => s.worker._id === workerId && s.status === "active") ?? null;
+    const worker = shift?.worker ?? workers.find((w) => w._id === workerId);
+    if (worker) {
+      setSelectedWorker({ worker, shift });
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, shiftsWorker, workers]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const { data: managerInfo, isLoading: userLoading } = useQuery<any>({
     queryKey: ["managerProfile"],
