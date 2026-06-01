@@ -68,6 +68,8 @@ const WorkerHomePage = () => {
   const [notes, setNotes] = useState("");
   const [materials, setMaterials] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [isStarting, setIsStarting] = useState(false);
+  const [isStopping, setIsStopping] = useState(false);
 
   const { data: shifts = [], isLoading: shiftsLoading } = useQuery<Shift[]>({
     queryKey: ["myShifts"],
@@ -122,16 +124,21 @@ const WorkerHomePage = () => {
   const notesValid = notes.trim().length >= 10;
 
   const shiftStart = async () => {
-    if (!assignedSite) return;
+    if (!assignedSite || isStarting) return;
+    setIsStarting(true);
     try {
       await startMyShift({ siteId: assignedSite._id });
       await queryClient.invalidateQueries({ queryKey: ["myShifts"] });
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsStarting(false);
     }
   };
 
   const shiftStop = async () => {
+    if (isStopping) return;
+    setIsStopping(true);
     try {
       await stopMyShift({ notes, materials });
       await queryClient.invalidateQueries({ queryKey: ["myShifts"] });
@@ -140,6 +147,8 @@ const WorkerHomePage = () => {
       setSubmitted(false);
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsStopping(false);
     }
   };
 
@@ -211,7 +220,7 @@ const WorkerHomePage = () => {
             onSubmit={(e) => {
               e.preventDefault();
               setSubmitted(true);
-              if (notesValid) shiftStop();
+              if (notesValid && !isStopping) shiftStop();
             }}
           >
             <div className="mb-3">
@@ -249,12 +258,15 @@ const WorkerHomePage = () => {
 
             <button
               type="submit"
-              className="w-full bg-red/15 border border-red/30 rounded-2xl py-5 flex flex-col items-center gap-2 active:scale-[0.98] transition-transform"
+              disabled={isStopping}
+              className={`w-full bg-red/15 border border-red/30 rounded-2xl py-5 flex flex-col items-center gap-2 transition-all ${isStopping ? "opacity-60" : "active:scale-[0.98]"}`}
             >
               <div className="w-10 h-10 rounded-full border border-red/50 flex items-center justify-center">
-                <Square size={16} className="text-red fill-red" />
+                {isStopping
+                  ? <div className="w-5 h-5 rounded-full border-2 border-red/30 border-t-red animate-spin" />
+                  : <Square size={16} className="text-red fill-red" />}
               </div>
-              <span className="text-base font-bold text-red">Stop shift</span>
+              <span className="text-base font-bold text-red">{isStopping ? "Stopping..." : "Stop shift"}</span>
             </button>
           </form>
         <NavBarWorker />
@@ -302,13 +314,16 @@ const WorkerHomePage = () => {
         {assignedSite ? (
           <button
             onClick={shiftStart}
-            className="w-full bg-green-d border border-green-border rounded-2xl py-6 flex flex-col items-center gap-2 mb-3 active:scale-[0.98] transition-transform"
+            disabled={isStarting}
+            className={`w-full bg-green-d border border-green-border rounded-2xl py-6 flex flex-col items-center gap-2 mb-3 transition-all ${isStarting ? "opacity-60" : "active:scale-[0.98]"}`}
           >
             <div className="w-10 h-10 rounded-full border border-green flex items-center justify-center">
-              <Play size={18} className="text-green fill-green" />
+              {isStarting
+                ? <div className="w-5 h-5 rounded-full border-2 border-green/30 border-t-green animate-spin" />
+                : <Play size={18} className="text-green fill-green" />}
             </div>
-            <span className="text-base font-bold text-green">Start shift</span>
-            <span className="text-xs text-text2">{assignedSite.name}</span>
+            <span className="text-base font-bold text-green">{isStarting ? "Starting..." : "Start shift"}</span>
+            {!isStarting && <span className="text-xs text-text2">{assignedSite.name}</span>}
           </button>
         ) : (
           <div className="w-full bg-bg3 border border-border rounded-2xl py-6 flex flex-col items-center gap-2 mb-3">
