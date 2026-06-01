@@ -134,7 +134,7 @@ const NavbarManager = () => {
         const mins = Math.floor((Date.now() - new Date(shift.startTime).getTime()) / 60000);
         const id = `stop-${shift._id}`;
         const workerId = shift.worker?._id;
-        const onView = () => { navigateRef.current(`/manager/dashboard?workerId=${workerId}`); toast.dismiss(id); };
+        const onView = () => { navigateRef.current(`/manager/dashboard?workerId=${workerId}&justEnded=true`); toast.dismiss(id); };
         toast.custom(
           (t) => <ShiftToast t={t} type="stop" name={shift.worker?.name ?? "Worker"} site={shift.site?.name ?? ""} duration={mins} onView={onView} />,
           { id, duration: 6000 }

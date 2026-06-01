@@ -73,7 +73,7 @@ const WeekChart = ({
       .reduce((sum, s) => {
         if (s.status === "completed") return sum + (s.duration ?? 0);
         if (i === todayDayIdx && s.status === "active")
-          return sum + Math.floor((Date.now() - new Date(s.startTime).getTime()) / 60000);
+          return sum + Math.max(0, Math.floor((Date.now() - new Date(s.startTime).getTime()) / 60000));
         return sum;
       }, 0);
   });
@@ -195,11 +195,22 @@ const ManagerDashboardPage = () => {
   useEffect(() => {
     const workerId = searchParams.get("workerId");
     if (!workerId || !shiftsWorker.length) return;
-    const shift = shiftsWorker.find((s: any) => s.worker._id === workerId && s.status === "active") ?? null;
-    const worker = shift?.worker ?? workers.find((w: any) => w._id === workerId);
-    if (worker) {
-      setSelectedWorker({ worker, shift });
-      setSearchParams({}, { replace: true });
+    const justEnded = searchParams.get("justEnded") === "true";
+    if (justEnded) {
+      const completedShift = shiftsWorker
+        .filter((s: any) => s.worker._id === workerId && s.status === "completed")
+        .sort((a: any, b: any) => new Date(b.endTime || b.startTime).getTime() - new Date(a.endTime || a.startTime).getTime())[0];
+      if (completedShift) {
+        setSelectedWorker({ worker: completedShift.worker, shift: null, completedShift });
+        setSearchParams({}, { replace: true });
+      }
+    } else {
+      const shift = shiftsWorker.find((s: any) => s.worker._id === workerId && s.status === "active") ?? null;
+      const worker = shift?.worker ?? workers.find((w: any) => w._id === workerId);
+      if (worker) {
+        setSelectedWorker({ worker, shift });
+        setSearchParams({}, { replace: true });
+      }
     }
   }, [searchParams, shiftsWorker, workers]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -215,14 +226,14 @@ const ManagerDashboardPage = () => {
     .filter((s) => new Date(s.startTime) >= todayMidnight)
     .reduce((sum, s) => {
       if (s.status === "completed") return sum + (s.duration ?? 0);
-      return sum + Math.floor((Date.now() - new Date(s.startTime).getTime()) / 60000);
+      return sum + Math.max(0, Math.floor((Date.now() - new Date(s.startTime).getTime()) / 60000));
     }, 0);
 
   const weekMinutes = shiftsWorker
     .filter((s) => new Date(s.startTime) >= getMondayMidnight())
     .reduce((sum, s) => {
       if (s.status === "completed") return sum + (s.duration ?? 0);
-      return sum + Math.floor((Date.now() - new Date(s.startTime).getTime()) / 60000);
+      return sum + Math.max(0, Math.floor((Date.now() - new Date(s.startTime).getTime()) / 60000));
     }, 0);
 
   const activeWorkerIds = new Set(activeShifts.map((s) => s.worker._id));
@@ -497,14 +508,14 @@ const ManagerDashboardPage = () => {
 
       {/* ── Worker detail sheet ── */}
       {selectedWorker && (() => {
-        const { worker, shift } = selectedWorker;
+        const { worker, shift, completedShift } = selectedWorker;
         const workerShifts = shiftsWorker
           .filter((s) => s.worker._id === worker._id && s.status === "completed")
           .slice(0, 5);
         const weekMins = workerShifts
           .filter((s) => new Date(s.startTime) >= getMondayMidnight())
           .reduce((sum, s) => sum + (s.duration ?? 0), 0);
-        const elapsed = shift ? Math.floor((Date.now() - new Date(shift.startTime).getTime()) / 60000) : null;
+        const elapsed = shift ? Math.max(0, Math.floor((Date.now() - new Date(shift.startTime).getTime()) / 60000)) : null;
 
         return (
           <div className="fixed inset-0 z-50 flex items-end justify-center md:items-center">
@@ -516,17 +527,19 @@ const ManagerDashboardPage = () => {
               </div>
 
               {/* Header */}
-              <div className={`flex items-center gap-3 p-4 rounded-2xl mb-5 ${shift ? "bg-green/5 border border-green/20" : "bg-bg3 border border-border"}`}>
-                <div className={`w-11 h-11 rounded-full flex items-center justify-center text-sm font-bold text-white shrink-0 ${shift ? "bg-blue ring-2 ring-blue/30" : "bg-text3/40"}`}>
+              <div className={`flex items-center gap-3 p-4 rounded-2xl mb-5 ${
+                shift ? "bg-green/5 border border-green/20" :
+                completedShift ? "bg-blue/5 border border-blue/20" :
+                "bg-bg3 border border-border"
+              }`}>
+                <div className={`w-11 h-11 rounded-full flex items-center justify-center text-sm font-bold text-white shrink-0 ${shift ? "bg-blue ring-2 ring-blue/30" : completedShift ? "bg-blue" : "bg-text3/40"}`}>
                   {getInitials(worker.name)}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-base font-bold text-text">{worker.name}</p>
-                  {shift ? (
-                    <p className="text-xs text-text2 mt-0.5 leading-snug">{shift.site.name}</p>
-                  ) : (
-                    <p className="text-xs text-text3 mt-0.5">Off shift</p>
-                  )}
+                  {shift && <p className="text-xs text-text2 mt-0.5 leading-snug">{shift.site.name}</p>}
+                  {completedShift && !shift && <p className="text-xs text-text2 mt-0.5 leading-snug">{completedShift.site.name}</p>}
+                  {!shift && !completedShift && <p className="text-xs text-text3 mt-0.5">Off shift</p>}
                 </div>
                 {shift && (
                   <div className="flex flex-col items-end shrink-0">
@@ -536,6 +549,9 @@ const ManagerDashboardPage = () => {
                       <span className="text-[11px] text-green font-semibold">Live</span>
                     </div>
                   </div>
+                )}
+                {completedShift && !shift && (
+                  <p className="text-base font-bold text-blue shrink-0">{formatDuration(completedShift.duration)}</p>
                 )}
               </div>
 
@@ -563,8 +579,32 @@ const ManagerDashboardPage = () => {
                 </div>
               )}
 
-              {/* Recent shifts — only for off-shift workers */}
-              {!shift && workerShifts.length > 0 && (
+              {/* Just-ended shift info */}
+              {completedShift && !shift && (
+                <div className="bg-bg3 border border-border rounded-2xl overflow-hidden mb-5">
+                  <div className="px-4 py-3 border-b border-border">
+                    <p className="text-sm font-semibold text-text">{completedShift.site.name}</p>
+                    <p className="text-xs text-text3 mt-0.5">{formatTime(completedShift.startTime)} — {formatTime(completedShift.endTime)}</p>
+                  </div>
+                  <div className="px-4 py-3 flex flex-col gap-2">
+                    <div className="flex justify-between text-xs">
+                      <span className="text-text3">Start</span>
+                      <span className="font-semibold text-text">{formatTime(completedShift.startTime)}</span>
+                    </div>
+                    <div className="flex justify-between text-xs">
+                      <span className="text-text3">End</span>
+                      <span className="font-semibold text-text">{formatTime(completedShift.endTime)}</span>
+                    </div>
+                    <div className="flex justify-between text-xs">
+                      <span className="text-text3">Duration</span>
+                      <span className="font-semibold text-blue">{formatDuration(completedShift.duration)}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Recent shifts — only for plain off-shift workers (no specific shift context) */}
+              {!shift && !completedShift && workerShifts.length > 0 && (
                 <>
                   <p className="text-[10px] font-bold text-text3 uppercase tracking-widest mb-2">
                     Recent shifts {weekMins > 0 && <span className="text-blue normal-case">· {formatDuration(weekMins)} this week</span>}
@@ -585,7 +625,7 @@ const ManagerDashboardPage = () => {
                 </>
               )}
 
-              {workerShifts.length === 0 && !shift && (
+              {workerShifts.length === 0 && !shift && !completedShift && (
                 <p className="text-sm text-text3 text-center py-4">No shift history yet</p>
               )}
             </div>
