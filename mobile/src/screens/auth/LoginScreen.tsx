@@ -75,8 +75,8 @@ export default function LoginScreen({ role, onBack }: Props) {
           contentContainerStyle={{
             flexGrow: 1,
             paddingHorizontal: 24,
-            paddingTop: 16,
             paddingBottom: 40,
+            justifyContent: "center",
           }}
           keyboardShouldPersistTaps="handled"
         >

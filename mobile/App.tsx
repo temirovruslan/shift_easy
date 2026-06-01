@@ -17,7 +17,7 @@ import WorkerNavigator from "./src/navigation/WorkerNavigator";
 import ManagerNavigator from "./src/navigation/ManagerNavigator";
 import { colors, fonts } from "./src/theme";
 
-// Apply Inter as the default font for all Text components
+// Apply Outfit as the default font for all Text components
 (Text as any).defaultProps = {
   ...(Text as any).defaultProps,
   style: { fontFamily: fonts.regular },
