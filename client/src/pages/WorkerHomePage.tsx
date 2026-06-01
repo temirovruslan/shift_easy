@@ -98,6 +98,14 @@ const WorkerHomePage = () => {
   const firstName = user?.name.split(" ")[0];
   const assignedSite = profile?.sites?.[0] ?? shifts[0]?.site;
 
+  const greeting = (() => {
+    const h = now.getHours();
+    if (h < 12) return { text: "Good morning", emoji: "🌅" };
+    if (h < 17) return { text: "Good afternoon", emoji: "☀️" };
+    return { text: "Good evening", emoji: "🌙" };
+  })();
+  const todayLabel = now.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "short" });
+
   const completedShifts = shifts.filter((s) => s.status === "completed");
   const completedCount = completedShifts.length;
   const totalCompletedMinutes = completedShifts.reduce(
@@ -259,14 +267,15 @@ const WorkerHomePage = () => {
     <div className="min-h-screen bg-bg px-5 pt-14 pb-20">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <p className="text-sm text-text2">Hello 👋</p>
-            <h2 className="text-2xl font-bold text-text tracking-tight">
+            <p className="text-xs text-text3">{greeting.text} {greeting.emoji}</p>
+            <h2 className="text-2xl font-bold text-text tracking-tight my-0.5">
               {firstName}
             </h2>
+            <p className="text-xs text-text3">{todayLabel}</p>
           </div>
           <button
             onClick={() => navigate("/profile/worker")}
-            className="w-10 h-10 rounded-full bg-blue flex items-center justify-center"
+            className="w-11 h-11 rounded-full bg-blue ring-2 ring-blue/30 flex items-center justify-center shrink-0"
           >
             <span className="text-sm font-bold text-white">
               {firstName?.slice(0, 2).toUpperCase()}

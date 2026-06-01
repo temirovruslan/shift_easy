@@ -159,6 +159,7 @@ const ManagerDashboardPage = () => {
   const navigate = useNavigate();
   const [offShiftPage, setOffShiftPage] = useState(1);
   const [, setTick] = useState(0);
+  const [selectedWorker, setSelectedWorker] = useState<any | null>(null);
   useEffect(() => {
     const id = setInterval(() => setTick((t) => t + 1), 1000);
     return () => clearInterval(id);
@@ -372,9 +373,10 @@ const ManagerDashboardPage = () => {
                   {activeShifts.map((s, i) => {
                     const elapsed = Math.floor((Date.now() - new Date(s.startTime).getTime()) / 60000);
                     return (
-                      <div
+                      <button
                         key={s._id}
-                        className={`flex items-center gap-3 px-4 py-3.5 ${i < activeShifts.length - 1 ? "border-b border-border" : ""}`}
+                        onClick={() => setSelectedWorker({ shift: s, worker: s.worker })}
+                        className={`w-full flex items-center gap-3 px-4 py-3.5 text-left hover:bg-bg2 transition-colors ${i < activeShifts.length - 1 ? "border-b border-border" : ""}`}
                       >
                         <div className="w-9 h-9 rounded-full bg-blue ring-2 ring-blue/20 flex items-center justify-center text-xs font-bold text-white shrink-0">
                           {getInitials(s.worker.name)}
@@ -387,7 +389,7 @@ const ManagerDashboardPage = () => {
                           <p className="text-sm font-bold text-green">{formatDuration(elapsed)}</p>
                           <span className="w-1.5 h-1.5 rounded-full bg-green animate-pulse" />
                         </div>
-                      </div>
+                      </button>
                     );
                   })}
                 </div>
@@ -405,9 +407,10 @@ const ManagerDashboardPage = () => {
                     </p>
                     <div className="bg-bg3 border border-border rounded-2xl overflow-hidden opacity-50 mb-3">
                       {visible.map((w, i) => (
-                        <div
+                        <button
                           key={w._id}
-                          className={`flex items-center gap-3 px-4 py-3 ${i < visible.length - 1 ? "border-b border-border" : ""}`}
+                          onClick={() => setSelectedWorker({ worker: w, shift: null })}
+                          className={`w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-bg2 transition-colors ${i < visible.length - 1 ? "border-b border-border" : ""}`}
                         >
                           <div className="w-8 h-8 rounded-full bg-text3/30 flex items-center justify-center text-xs font-bold text-text3 shrink-0">
                             {getInitials(w.name)}
@@ -417,7 +420,7 @@ const ManagerDashboardPage = () => {
                             <p className="text-xs text-text3/60 mt-0.5">Off shift</p>
                           </div>
                           <span className="text-xs text-text3">—</span>
-                        </div>
+                        </button>
                       ))}
                     </div>
                     <Pagination
@@ -478,6 +481,104 @@ const ManagerDashboardPage = () => {
       </div>
 
       <NavbarManager />
+
+      {/* ── Worker detail sheet ── */}
+      {selectedWorker && (() => {
+        const { worker, shift } = selectedWorker;
+        const workerShifts = shiftsWorker
+          .filter((s) => s.worker._id === worker._id && s.status === "completed")
+          .slice(0, 5);
+        const weekMins = workerShifts
+          .filter((s) => new Date(s.startTime) >= getMondayMidnight())
+          .reduce((sum, s) => sum + (s.duration ?? 0), 0);
+        const elapsed = shift ? Math.floor((Date.now() - new Date(shift.startTime).getTime()) / 60000) : null;
+
+        return (
+          <div className="fixed inset-0 z-50 flex items-end justify-center md:items-center">
+            <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setSelectedWorker(null)} />
+            <div className="relative bg-bg border-t border-border rounded-t-3xl w-full max-w-md px-5 pt-6 pb-10 md:rounded-2xl md:border md:pb-6">
+              {/* drag handle */}
+              <div className="flex justify-center mb-4 md:hidden">
+                <div className="w-10 h-1 rounded-full bg-border" />
+              </div>
+
+              {/* Header */}
+              <div className={`flex items-center gap-3 p-4 rounded-2xl mb-5 ${shift ? "bg-green/5 border border-green/20" : "bg-bg3 border border-border"}`}>
+                <div className={`w-11 h-11 rounded-full flex items-center justify-center text-sm font-bold text-white shrink-0 ${shift ? "bg-blue ring-2 ring-blue/30" : "bg-text3/40"}`}>
+                  {getInitials(worker.name)}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-base font-bold text-text">{worker.name}</p>
+                  {shift ? (
+                    <p className="text-xs text-text2 mt-0.5 leading-snug">{shift.site.name}</p>
+                  ) : (
+                    <p className="text-xs text-text3 mt-0.5">Off shift</p>
+                  )}
+                </div>
+                {shift && (
+                  <div className="flex flex-col items-end shrink-0">
+                    <p className="text-base font-bold text-green">{formatDuration(elapsed!)}</p>
+                    <div className="flex items-center gap-1 mt-0.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-green animate-pulse" />
+                      <span className="text-[11px] text-green font-semibold">Live</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Active shift info */}
+              {shift && (
+                <div className="bg-bg3 border border-border rounded-2xl overflow-hidden mb-5">
+                  <div className="px-4 py-3 border-b border-border">
+                    <p className="text-sm font-semibold text-text">{shift.site.name}</p>
+                    <p className="text-xs text-text3 mt-0.5">{formatTime(shift.startTime)} — now</p>
+                  </div>
+                  <div className="px-4 py-3 flex flex-col gap-2">
+                    <div className="flex justify-between text-xs">
+                      <span className="text-text3">Start</span>
+                      <span className="font-semibold text-text">{formatTime(shift.startTime)}</span>
+                    </div>
+                    <div className="flex justify-between text-xs">
+                      <span className="text-text3">End</span>
+                      <span className="font-semibold text-green">Still active</span>
+                    </div>
+                    <div className="flex justify-between text-xs">
+                      <span className="text-text3">Elapsed</span>
+                      <span className="font-semibold text-blue">{formatDuration(elapsed!)}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Recent shifts — only for off-shift workers */}
+              {!shift && workerShifts.length > 0 && (
+                <>
+                  <p className="text-[10px] font-bold text-text3 uppercase tracking-widest mb-2">
+                    Recent shifts {weekMins > 0 && <span className="text-blue normal-case">· {formatDuration(weekMins)} this week</span>}
+                  </p>
+                  <div className="bg-bg3 border border-border rounded-2xl overflow-hidden">
+                    {workerShifts.map((s, i) => (
+                      <div key={s._id} className={`flex items-center justify-between px-4 py-3 ${i < workerShifts.length - 1 ? "border-b border-border" : ""}`}>
+                        <div>
+                          <p className="text-sm font-semibold text-text">
+                            {new Date(s.startTime).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" })}
+                          </p>
+                          <p className="text-xs text-text3 mt-0.5">{formatTime(s.startTime)}–{formatTime(s.endTime)} · {s.site.name}</p>
+                        </div>
+                        <p className="text-sm font-bold text-blue shrink-0">{formatDuration(s.duration)}</p>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              {workerShifts.length === 0 && !shift && (
+                <p className="text-sm text-text3 text-center py-4">No shift history yet</p>
+              )}
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 };
