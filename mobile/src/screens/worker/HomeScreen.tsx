@@ -147,16 +147,16 @@ export default function HomeScreen() {
           contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40 }}
           keyboardShouldPersistTaps="handled"
         >
-          {/* Header */}
-          <View className="flex-row items-start justify-between mt-4 mb-6">
-            <View>
-              <Text className="text-sm text-text2 mb-0.5">Shift in progress</Text>
+          {/* Header card */}
+          <View className="bg-red/5 border border-red/15 rounded-2xl p-4 mt-4 mb-4">
+            <View className="flex-row items-center justify-between mb-2">
               <Text className="text-2xl text-text" style={{ fontFamily: fonts.bold }}>{firstName}</Text>
+              <View className="flex-row items-center gap-1.5 bg-red/10 border border-red/25 rounded-full px-2.5 py-1">
+                <View className="w-1.5 h-1.5 rounded-full bg-red" />
+                <Text className="text-[11px] text-red" style={{ fontFamily: fonts.semibold }}>Live</Text>
+              </View>
             </View>
-            <View className="flex-row items-center gap-1.5 bg-red/15 border border-red/30 rounded-full px-3 py-1.5 mt-1">
-              <View className="w-1.5 h-1.5 rounded-full bg-red" />
-              <Text className="text-xs text-red" style={{ fontFamily: fonts.semibold }}>Live</Text>
-            </View>
+            <Text className="text-sm text-text2">{activeShift.site?.name ?? "—"}</Text>
           </View>
 
           {/* Timer card */}

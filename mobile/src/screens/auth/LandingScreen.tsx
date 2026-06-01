@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { colors, fonts } from "../../theme";
@@ -20,74 +20,78 @@ export default function LandingScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-bg">
-      <View className="flex-1 px-6 justify-center">
+      <View className="flex-1 px-6 justify-center items-center">
 
         {/* Logo */}
-        <View className="items-center mb-8">
-          <View className="w-11 h-11 rounded-xl bg-blue items-center justify-center mb-3">
-            <Ionicons name="time-outline" size={22} color="#bddeff" />
-          </View>
+        <View className="items-center mb-10">
+          <Image
+            source={require("../../../assets/logo.webp")}
+            style={{ width: 72, height: 72, borderRadius: 18, marginBottom: 12 }}
+            resizeMode="contain"
+          />
           <Text className="text-2xl text-text tracking-tight" style={{ fontFamily: fonts.bold }}>ShiftEasy</Text>
           <Text className="text-xs text-text2 mt-1">Construction time tracking</Text>
         </View>
 
-        <Text className="text-xs text-text2 text-center mb-2.5">Choose how to continue</Text>
+        <View className="w-full">
+          <Text className="text-xs text-text2 text-center mb-2.5">Choose how to continue</Text>
 
-        {/* Worker card */}
-        <TouchableOpacity
-          className="flex-row items-center gap-3 bg-bg3 border border-blue/30 rounded-2xl p-3 mb-2"
-          onPress={() => setRole("worker")}
-        >
-          <View className="w-9 h-9 rounded-xl bg-blue/10 items-center justify-center">
-            <Ionicons name="person-outline" size={16} color={colors.blue} />
-          </View>
-          <View className="flex-1">
-            <Text className="text-sm text-text" style={{ fontFamily: fonts.semibold }}>I'm a worker</Text>
-            <Text className="text-xs text-text2 mt-0.5">Sign in with invite credentials</Text>
-          </View>
-          <Ionicons name="chevron-forward" size={16} color={colors.blue} />
-        </TouchableOpacity>
+          {/* Worker card */}
+          <TouchableOpacity
+            className="flex-row items-center gap-3 bg-bg3 border border-blue/30 rounded-2xl p-3 mb-2"
+            onPress={() => setRole("worker")}
+          >
+            <View className="w-9 h-9 rounded-xl bg-blue/10 items-center justify-center">
+              <Ionicons name="person-outline" size={16} color={colors.blue} />
+            </View>
+            <View className="flex-1">
+              <Text className="text-sm text-text" style={{ fontFamily: fonts.semibold }}>I'm a worker</Text>
+              <Text className="text-xs text-text2 mt-0.5">Sign in with invite credentials</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={16} color={colors.blue} />
+          </TouchableOpacity>
 
-        {/* Manager card */}
-        <TouchableOpacity
-          className="flex-row items-center gap-3 bg-bg3 border border-green/30 rounded-2xl p-3 mb-2"
-          onPress={() => setRole("manager")}
-        >
-          <View className="w-9 h-9 rounded-xl bg-green/10 items-center justify-center">
-            <Ionicons name="mail-outline" size={16} color={colors.green} />
-          </View>
-          <View className="flex-1">
-            <Text className="text-sm text-text" style={{ fontFamily: fonts.semibold }}>I'm a manager</Text>
-            <Text className="text-xs text-text2 mt-0.5">Sign in to your account</Text>
-          </View>
-          <Ionicons name="chevron-forward" size={16} color={colors.green} />
-        </TouchableOpacity>
+          {/* Manager card */}
+          <TouchableOpacity
+            className="flex-row items-center gap-3 bg-bg3 border border-green/30 rounded-2xl p-3 mb-2"
+            onPress={() => setRole("manager")}
+          >
+            <View className="w-9 h-9 rounded-xl bg-green/10 items-center justify-center">
+              <Ionicons name="mail-outline" size={16} color={colors.green} />
+            </View>
+            <View className="flex-1">
+              <Text className="text-sm text-text" style={{ fontFamily: fonts.semibold }}>I'm a manager</Text>
+              <Text className="text-xs text-text2 mt-0.5">Sign in to your account</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={16} color={colors.green} />
+          </TouchableOpacity>
 
-        {/* Divider */}
-        <View className="flex-row items-center gap-2 my-3">
-          <View className="flex-1 h-px bg-line" />
-          <Text className="text-xs text-text3">no account?</Text>
-          <View className="flex-1 h-px bg-line" />
+          {/* Divider */}
+          <View className="flex-row items-center gap-2 my-3">
+            <View className="flex-1 h-px bg-line" />
+            <Text className="text-xs text-text3">no account?</Text>
+            <View className="flex-1 h-px bg-line" />
+          </View>
+
+          {/* Register card */}
+          <TouchableOpacity
+            className="flex-row items-center gap-3 bg-bg3 border border-purple/30 rounded-2xl p-3"
+            onPress={() => setShowRegister(true)}
+          >
+            <View className="w-9 h-9 rounded-xl bg-purple/10 items-center justify-center">
+              <Ionicons name="add-outline" size={16} color={colors.purple} />
+            </View>
+            <View className="flex-1">
+              <Text className="text-sm text-purple" style={{ fontFamily: fonts.semibold }}>Register as manager</Text>
+              <Text className="text-xs text-text2 mt-0.5">Create your company</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={16} color={colors.purple} />
+          </TouchableOpacity>
+
+          <Text className="text-xs text-text3 text-center mt-6">
+            Workers cannot create accounts — your manager registers you.
+          </Text>
         </View>
-
-        {/* Register card */}
-        <TouchableOpacity
-          className="flex-row items-center gap-3 bg-bg3 border border-purple/30 rounded-2xl p-3"
-          onPress={() => setShowRegister(true)}
-        >
-          <View className="w-9 h-9 rounded-xl bg-purple/10 items-center justify-center">
-            <Ionicons name="add-outline" size={16} color={colors.purple} />
-          </View>
-          <View className="flex-1">
-            <Text className="text-sm text-purple" style={{ fontFamily: fonts.semibold }}>Register as manager</Text>
-            <Text className="text-xs text-text2 mt-0.5">Create your company</Text>
-          </View>
-          <Ionicons name="chevron-forward" size={16} color={colors.purple} />
-        </TouchableOpacity>
-
-        <Text className="text-xs text-text3 text-center mt-6">
-          Workers cannot create accounts — your manager registers you.
-        </Text>
       </View>
     </SafeAreaView>
   );

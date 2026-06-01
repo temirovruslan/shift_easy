@@ -151,17 +151,15 @@ const WorkerHomePage = () => {
   if (currentShift)
     return (
       <div className="min-h-screen bg-bg px-5 pt-14 pb-20">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <p className="text-sm text-text2 mb-0.5">Shift in progress</p>
-              <h2 className="text-2xl font-bold text-text tracking-tight">
-                {firstName}
-              </h2>
+          <div className="bg-red/5 border border-red/15 rounded-2xl p-4 mb-4">
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-2xl font-bold text-text tracking-tight">{firstName}</h2>
+              <span className="flex items-center gap-1.5 bg-red/10 border border-red/25 px-2.5 py-1 rounded-full">
+                <span className="w-1.5 h-1.5 rounded-full bg-red animate-pulse shrink-0" />
+                <span className="text-[11px] font-semibold text-red">Live</span>
+              </span>
             </div>
-            <div className="flex items-center gap-1.5 bg-red/15 border border-red/30 rounded-full px-3 py-1.5">
-              <div className="w-1.5 h-1.5 rounded-full bg-red animate-pulse" />
-              <span className="text-xs font-semibold text-red">Live</span>
-            </div>
+            <p className="text-sm text-text2 leading-snug">{currentShift.site.name}</p>
           </div>
 
           <div className="bg-blue/10 border border-blue/20 rounded-2xl p-6 mb-3 flex flex-col items-center text-center">
