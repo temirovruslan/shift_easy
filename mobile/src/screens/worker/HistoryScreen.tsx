@@ -61,9 +61,9 @@ function ShiftDetail({ shift }: { shift: any }) {
           {formatTime(shift.startTime)} – {shift.endTime ? formatTime(shift.endTime) : "—"}
         </Text>
       </View>
-      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-        <Text style={{ fontSize: 12, color: colors.text3 }}>Project</Text>
-        <Text style={{ fontSize: 12, fontFamily: fonts.semibold, color: colors.blue }}>{shift.site?.name}</Text>
+      <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 8 }}>
+        <Text style={{ fontSize: 12, color: colors.text3, flexShrink: 0 }}>Project</Text>
+        <Text style={{ fontSize: 12, fontFamily: fonts.semibold, color: colors.blue, flex: 1, textAlign: "right" }}>{shift.site?.name}</Text>
       </View>
       {shift.materials ? (
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>

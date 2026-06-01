@@ -56,7 +56,7 @@ const ShiftDetail = ({ shift }: { shift: Shift }) => (
     </div>
     <div className="flex justify-between gap-2">
       <span className="text-xs text-text3 shrink-0">Site</span>
-      <span className="text-xs font-semibold text-blue truncate text-right">
+      <span className="text-xs font-semibold text-blue text-right">
         {shift.site?.name}
       </span>
     </div>
@@ -372,17 +372,12 @@ const WorkerHistoryPage = () => {
                                   <p className="text-sm font-semibold text-text">
                                     {formatDate(shift.startTime)}
                                   </p>
-                                  <p className="text-xs text-text2 mt-0.5 truncate">
-                                    {formatTime(shift.startTime)}–
-                                    {formatTime(shift.endTime)} ·{" "}
+                                  <p className="text-xs text-text2 mt-0.5">
+                                    {formatTime(shift.startTime)}–{formatTime(shift.endTime)}
+                                  </p>
+                                  <p className="text-xs text-text3 mt-0.5">
                                     {shift.site?.name}
                                   </p>
-                                </div>
-                                <div className="mx-3">
-                                  <ProgressBar
-                                    duration={shift.duration}
-                                    width="w-12"
-                                  />
                                 </div>
                                 <div className="flex items-center gap-2 shrink-0">
                                   <DurationLabel duration={shift.duration} />
@@ -431,13 +426,12 @@ const WorkerHistoryPage = () => {
                       <p className="text-sm font-semibold text-text">
                         {formatDate(shift.startTime)}
                       </p>
-                      <p className="text-xs text-text2 mt-0.5 truncate">
-                        {formatTime(shift.startTime)}–
-                        {formatTime(shift.endTime)} · {shift.site?.name}
+                      <p className="text-xs text-text2 mt-0.5">
+                        {formatTime(shift.startTime)}–{formatTime(shift.endTime)}
                       </p>
-                    </div>
-                    <div className="mx-4">
-                      <ProgressBar duration={shift.duration} />
+                      <p className="text-xs text-text3 mt-0.5">
+                        {shift.site?.name}
+                      </p>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <DurationLabel duration={shift.duration} />
