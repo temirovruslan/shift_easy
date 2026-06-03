@@ -96,6 +96,21 @@ export const getShift = asyncHandler(async (req, res) => {
   res.status(200).json({ success: true, data: findShift });
 });
 
+export const exportShifts = asyncHandler(async (req, res) => {
+  const manager = req.user;
+
+  const shifts = await ShiftModel.find({
+    company: manager.company,
+    status: "completed",
+  })
+    .populate("worker", "name")
+    .populate("site", "name")
+    .sort({ startTime: -1 });
+
+  console.log(`[exportShifts] manager: ${manager.name} | shifts found: ${shifts.length}`);
+
+  res.status(200).json({ success: true, count: shifts.length, data: shifts });
+});
 // * ─── NOTES ────────────────────────────────────────────────────────────────────
 
 // ! [1]

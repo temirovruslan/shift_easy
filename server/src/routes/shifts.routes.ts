@@ -1,6 +1,7 @@
 import { Router } from "express";
 const router = Router();
 import {
+  exportShifts,
   getAllShifts,
   getMyShifts,
   getShift,
@@ -9,9 +10,9 @@ import {
 } from "../controllers/shift.controller";
 import validate from "../middleware/validate.middleware";
 import { startShiftSchema, stopShiftSchema } from "../schemas/shift.schema";
-import  {protect}  from "../middleware/protect.middleware";
+import { protect } from "../middleware/protect.middleware";
 import requireManager from "../middleware/role.middleware";
-
+router.get("/export", protect, requireManager, exportShifts);
 router.post("/start", protect, validate(startShiftSchema), startShift);
 router.post("/stop", protect, validate(stopShiftSchema), stopShift);
 router.get("/my", protect, getMyShifts);
