@@ -4,7 +4,6 @@ import morgan from "morgan";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./swagger.json";
 const app = express();
-import AppError from "./errors/AppError";
 import { Request, Response, NextFunction } from "express";
 
 // routers
@@ -26,14 +25,17 @@ app.use(morgan("dev"));
 // API docs
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
+// temp debug — remove after testing
+app.get("/api/ping", (_req, res) => res.json({ ok: true, time: new Date().toISOString() }));
+
 // routers
 app.use("/api/auth", authRouter);
 app.use("/api/shifts", shiftsRouter);
 app.use("/api/user", userRouter);
 app.use("/api/site", siteRouter);
 app.use("/api/worker", workerRouter);
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  if (err instanceof AppError) {
+app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+  if (err?.statusCode) {
     res.status(err.statusCode).json({
       success: false,
       message: err.message,

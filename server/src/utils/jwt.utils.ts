@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken'
+import AppError from '../errors/AppError'
 
 export const generateToken = (userId: string): string => {
     return jwt.sign(
@@ -9,7 +10,11 @@ export const generateToken = (userId: string): string => {
 }
 
 export const verifyToken = (token: string): jwt.JwtPayload => {
-    return jwt.verify(token, process.env.JWT_SECRET as string) as jwt.JwtPayload // [4]
+    try {
+        return jwt.verify(token, process.env.JWT_SECRET as string) as jwt.JwtPayload
+    } catch {
+        throw new AppError('Invalid or expired token', 401)
+    } // [4]
 }
 
 

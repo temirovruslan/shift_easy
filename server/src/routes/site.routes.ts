@@ -13,8 +13,9 @@ router.get("/", protect, requireManager, asyncHandler(getActiveSites));
 router.get("/archived", protect, requireManager, asyncHandler(getArchivedSites));
 router.get("/:id", protect, requireManager, asyncHandler(getSite)); // was missing
 
-router.patch("/:id", protect, requireManager, asyncHandler(updateSite));
 router.patch("/archive/:id", protect, requireManager, asyncHandler(archiveSite));
 router.patch("/activate/:id", protect, requireManager, asyncHandler(activateSite));
+router.patch("/:id", protect, requireManager, asyncHandler(updateSite));
+
 
 export default router;
