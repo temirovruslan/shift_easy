@@ -10,6 +10,7 @@ import ForgotPasswordPage from "./pages/ForgotPasswordPage"
 import ResetPasswordPage from "./pages/ResetPasswordPage"
 import ActivatePage from "./pages/ActivatePage"
 import ProtectedRoute from "./components/ProtectedRoute"
+import PublicRoute from "./components/PublicRoute"
 import WorkerHistoryPage from "./pages/WorkerHistoryPage"
 import WorkerProfilePage from "./pages/WorkerProfilePage"
 import ManagerSitePage from "./pages/ManagerSitePage"
@@ -24,10 +25,10 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-          <Route path='/' element={<LandingPage />} />
+          <Route path='/' element={<PublicRoute><LandingPage /></PublicRoute>} />
           <Route path='/profile/worker' element={<WorkerProfilePage />} />
-          <Route path='/login/worker' element={<WorkerLoginPage/>} />
-          <Route path='/login/manager' element={<ManagerLoginPage/>} />
+          <Route path='/login/worker' element={<PublicRoute><WorkerLoginPage/></PublicRoute>} />
+          <Route path='/login/manager' element={<PublicRoute><ManagerLoginPage/></PublicRoute>} />
           <Route path='/register' element={<RegisterPage/>} />
           <Route path='/activate/:token' element={<ActivatePage/>} />
           <Route path='/forgot-password' element={<ForgotPasswordPage/>} />

@@ -31,7 +31,7 @@ const getMonthWeeks = (): { start: Date; end: Date; label: string }[] => {
   firstMonday.setHours(0, 0, 0, 0);
 
   const weeks: { start: Date; end: Date; label: string }[] = [];
-  let ws = new Date(firstMonday);
+  const ws = new Date(firstMonday);
   while (ws <= lastDay) {
     const we = new Date(ws);
     we.setDate(ws.getDate() + 6);

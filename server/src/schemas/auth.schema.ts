@@ -35,6 +35,16 @@ export const resetPasswordSchema = z.object({
 
 export const activateSchema = resetPasswordSchema // [4]
 
+// [5] the reset-password and activate pages send only { password } — the
+//     "passwords match" check happens in the UI. This validates the password
+//     itself server-side so a weak/missing one is rejected with a clean 400
+//     instead of blowing up deeper in the request.
+export const setPasswordSchema = z.object({
+    password: z.string()
+        .min(8, 'Password must be at least 8 characters')
+        .regex(/\d/, 'Password must contain at least one number'),
+})
+
 // ─── NOTES ───────────────────────────────────────────────────────────────────
 
 //

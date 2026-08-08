@@ -15,8 +15,27 @@ api.interceptors.request.use((config) => {
     if (token) {
         config.headers.Authorization = `Bearer ${token}`; // attach it — server uses this to identify who you are
     }
-    return config; 
+    return config;
 });
+
+// Response interceptor — if the server says our token is expired/invalid (401),
+// the remembered session is dead. Clear it and bounce to the landing page so the
+// user re-logs in cleanly, instead of getting stuck on a broken dashboard.
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response?.status === 401) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            localStorage.removeItem('loginAt');
+            // Avoid a redirect loop if we're already on a public page
+            if (!['/', '/login/worker', '/login/manager'].includes(window.location.pathname)) {
+                window.location.href = '/';
+            }
+        }
+        return Promise.reject(error);
+    }
+);
 
 export default api;
 

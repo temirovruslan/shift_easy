@@ -14,7 +14,13 @@
       "Bash(git commit -m 'fix: remove unused imports causing TS6133 build errors on Vercel *)",
       "Bash(git commit -m 'style: smaller base font on mobile \\(14px mobile, 17px desktop\\) *)",
       "Bash(git commit -m 'fix: duplicate React key in grouped shifts list \\(worker+date composite key\\) *)",
-      "Bash(findstr /R \"text-\\\\[.*px\\\\]\" *.tsx)"
+      "Bash(findstr /R \"text-\\\\[.*px\\\\]\" *.tsx)",
+      "Bash(copy \"c:\\\\Users\\\\Admin\\\\Desktop\\\\shift_easy\\\\client\\\\public\\\\new-logo2.webp\" \"c:\\\\Users\\\\Admin\\\\Desktop\\\\shift_easy\\\\mobile\\\\assets\\\\logo.webp\")",
+      "PowerShell(Copy-Item \"c:\\\\Users\\\\Admin\\\\Desktop\\\\shift_easy\\\\client\\\\public\\\\new-logo2.webp\" \"c:\\\\Users\\\\Admin\\\\Desktop\\\\shift_easy\\\\mobile\\\\assets\\\\logo.webp\")",
+      "Bash(mkdir -p /home/ruslan/.claude/projects/-home-ruslan-Downloads-shift-easy/memory)",
+      "Bash(nslookup -type=TXT cluster0.syrkhcq.mongodb.net 1.1.1.1)",
+      "Bash(getent hosts *)",
+      "Bash(echo \"exit: $?\")"
     ]
   }
 }
