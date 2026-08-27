@@ -1,6 +1,6 @@
 # Response to the ShiftEasy audit
 
-Thirty-four commits across seven branches, in priority order. Every branch builds
+Thirty-six commits across seven branches, in priority order. Every branch builds
 on the previous one, so they are reviewed and merged in the order listed.
 
 `npm run verify` at the repository root typechecks all three applications,
@@ -14,7 +14,7 @@ lints the client and runs 90 tests. It passes on every commit.
 | 4 | `ci/add-pipeline` | 3 | No checks on pull requests, ungated OTA release |
 | 5 | `fix/auth-hardening` | 3 | No rate limiting, account enumeration |
 | 6 | `refactor/config-and-error-handling` | 2 | Settings compiled into source, 500s for client mistakes |
-| 7 | `chore/repo-hygiene` | 17 | Root commands, contributor guide, server lint, dead code, advisories, release path |
+| 7 | `chore/repo-hygiene` | 19 | Root commands, contributor guide, server lint, dead code, advisories, release path |
 
 ## The order, and why
 
@@ -155,6 +155,12 @@ dangerous part — the automatic pipeline — was removed instead of the code.
   filters, modal state and rendering. Splitting it is a real piece of work and
   a poor thing to attempt without the end-to-end tests that would prove it
   still behaves.
+- **The four defects listed in the contributor guide are not fixed.** They
+  came from a scratch list in the documentation folder and are recorded rather
+  than repaired: truncated hours, the wrong site shown to a multi-site worker,
+  a timer lost when the app closes, and unverified grouping on the shifts
+  page. Each needs the test that would have caught it, which is more work than
+  remained.
 - **No staging environment.** Promotion goes from a tagged release straight to
   production for all three components. RELEASING.md documents the path and the
   rollback for each; a staging tier is a hosting decision, not a repository
