@@ -102,6 +102,9 @@ the 404, the frozen lint budget, keeping the mobile app while removing its
 automatic release, and deferring transactions. Read the relevant one before
 undoing something that looks odd.
 
+Picking the project up after someone else? Start with
+[`documentation/handoff.md`](documentation/handoff.md).
+
 ## Known state
 
 - `client/` carries 101 linter warnings, capped in `package.json` so the count

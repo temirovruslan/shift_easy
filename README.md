@@ -118,6 +118,7 @@ Interactive Swagger docs are served at `/api/docs` when the server is running.
 | [Registration flow](documentation/registration-flow.html) | The sign-up journey, step by step |
 | [Data model](documentation/data-model.drawio.xml) | Entity diagram, opens in [draw.io](https://app.diagrams.net) |
 | [Decisions](documentation/decisions/) | Why particular choices were made, and what they cost |
+| [Handoff](documentation/handoff.md) | Current state, what is unfinished, and how to confirm both |
 
 ## Contributing
 
