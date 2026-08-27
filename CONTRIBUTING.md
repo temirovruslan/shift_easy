@@ -33,6 +33,22 @@ Per application:
 
 CI runs exactly these. A change is not done until `npm run verify` passes.
 
+### What to run for which kind of change
+
+`npm run verify` is always correct. This is the shorter path while working:
+
+| Change | Run | Why |
+|---|---|---|
+| Web client only | `npm --prefix client run lint && npm --prefix client test && npm --prefix client run build` | `build` typechecks first |
+| Server only | `npm --prefix server run lint && npm --prefix server run typecheck && npm --prefix server test` | |
+| Mobile only | `npm --prefix mobile run typecheck` | No suite exists yet |
+| A schema, route or response shape | `npm run verify` | Two clients consume this API; a server change is a change to both |
+| Anything in `.github/` | `npm run verify`, then watch the run on the pull request | Workflow behaviour cannot be checked locally |
+| Dependencies | `npm run verify` and `npm audit` in the app you changed | |
+
+If you touched the server and are unsure whether a client depends on it,
+assume it does and run everything.
+
 The server suite runs against an in-memory MongoDB, so it needs no running
 database and no Docker. First run downloads a mongod binary.
 
@@ -77,6 +93,17 @@ Tag `vX.Y.Z` on `main` and push the tag. The release workflow re-verifies
 the tagged commit and publishes the built bundles. Promotion and rollback for
 each component are documented in
 [`documentation/RELEASING.md`](documentation/RELEASING.md).
+
+## Why things are the way they are
+
+Choices that will look arbitrary without their reasoning are recorded in
+[`documentation/decisions/`](documentation/decisions/) — company scoping and
+the 404, the frozen lint budget, keeping the mobile app while removing its
+automatic release, and deferring transactions. Read the relevant one before
+undoing something that looks odd.
+
+Picking the project up after someone else? Start with
+[`documentation/handoff.md`](documentation/handoff.md).
 
 ## Known state
 
