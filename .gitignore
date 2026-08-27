@@ -9,3 +9,11 @@ coverage/
 
 .DS_Store
 *.log
+
+# Local tooling and editor state. Kept out of the repository so a clone is the
+# project and nothing else — these depend on whose machine it is, not on the
+# code.
+.claude/
+.expo/
+.idea/
+.vscode/
