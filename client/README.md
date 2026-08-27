@@ -24,5 +24,5 @@ npm run build           # typechecks first, then bundles
 ```
 
 The repository root's `npm run verify` runs all of this together with the
-server suite. See [`../AGENTS.md`](../AGENTS.md) for the conventions that
+server suite. See [`../CONTRIBUTING.md`](../CONTRIBUTING.md) for the conventions that
 apply across the codebase.

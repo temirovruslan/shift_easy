@@ -109,7 +109,7 @@ Interactive Swagger docs are served at `/api/docs` when the server is running.
 
 ## Contributing
 
-`AGENTS.md` documents the layout, how to verify a change, and the rules that
+`CONTRIBUTING.md` documents the layout, how to verify a change, and the rules that
 are easy to break by accident — company scoping, request validation and
 configuration.
 
