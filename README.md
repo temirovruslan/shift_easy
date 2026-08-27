@@ -107,6 +107,17 @@ Interactive Swagger docs are served at `/api/docs` when the server is running.
 | `/api/worker` | Worker invites and assignment |
 | `/api/user` | Current user profile |
 
+## Documentation
+
+| Document | What it covers |
+|---|---|
+| [Setup and deployment](documentation/SETUP.md) | Running locally, environment variables, deployment targets |
+| [Releasing and rolling back](documentation/RELEASING.md) | Tagging a release, promoting each component, rolling back |
+| [Email](documentation/email-setup.md) | How invite and reset mail is sent, and what to check when it stops |
+| [Design documentation](documentation/design-documentation.html) | Screens and visual language |
+| [Registration flow](documentation/registration-flow.html) | The sign-up journey, step by step |
+| [Data model](documentation/data-model.drawio.xml) | Entity diagram, opens in [draw.io](https://app.diagrams.net) |
+
 ## Contributing
 
 `CONTRIBUTING.md` documents the layout, how to verify a change, and the rules that

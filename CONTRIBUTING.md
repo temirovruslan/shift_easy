@@ -89,3 +89,24 @@ each component are documented in
 - `client/src/pages/ManagerShiftsPage.tsx` is about 1100 lines and mixes
   queries, filters, modal state and rendering. Extract from it when touching
   it; do not rewrite it wholesale as a side errand.
+
+### Known defects
+
+Carried over from a scratch list that used to sit in `documentation/`. They
+are recorded here rather than dropped: none is fixed, and each one is
+something a user can hit.
+
+- **Hours are truncated, not rounded.** The display uses `Math.floor`, so a
+  shift of 7h50m reads as 7h. Anyone paid by the hour is short-changed by the
+  interface. This is the one to fix first.
+- **A worker assigned to several sites sees the wrong one.**
+  `WorkerHomePage.tsx` shows the first site in the array rather than the one
+  they are currently working.
+- **A closed app loses the running timer.** Elapsed time is tracked in the
+  client, so reopening the app restarts the count instead of continuing from
+  the `startTime` the server already holds.
+- **Grouping on the manager shifts page is unverified.** It was flagged as
+  probably wrong and never checked. It has no test.
+
+None of these are covered by the suite. A fix should arrive with the test
+that would have caught it.
