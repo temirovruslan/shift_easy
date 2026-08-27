@@ -1,6 +1,6 @@
 # Response to the ShiftEasy audit
 
-Twenty-six commits across seven branches, in priority order. Every branch builds
+Twenty-eight commits across seven branches, in priority order. Every branch builds
 on the previous one, so they are reviewed and merged in the order listed.
 
 `npm run verify` at the repository root typechecks all three applications,
@@ -14,7 +14,7 @@ lints the client and runs 90 tests. It passes on every commit.
 | 4 | `ci/add-pipeline` | 3 | No checks on pull requests, ungated OTA release |
 | 5 | `fix/auth-hardening` | 3 | No rate limiting, account enumeration |
 | 6 | `refactor/config-and-error-handling` | 2 | Settings compiled into source, 500s for client mistakes |
-| 7 | `chore/repo-hygiene` | 9 | Root commands, agent guide, dead code, client advisories, asset cleanup |
+| 7 | `chore/repo-hygiene` | 11 | Root commands, agent guide, dead code, client advisories, asset cleanup |
 
 ## The order, and why
 
@@ -195,19 +195,21 @@ one that ends by starting a shift as the newly created worker.
 The same files, unchanged, pass on branch 2. That is the whole argument: the
 tests were written to fail first.
 
-## On tooling
+## Judgement calls worth naming
 
-This work was done with Claude Code. I set the priorities and the scope, made
-the decisions recorded above, and reviewed every diff before committing.
+A few decisions in here were choices rather than fixes, and they are the ones
+I would defend in review:
 
-The parts that were mine rather than the agent's are the ones worth naming:
-reversing the audit's Critical and High, finding the dropped `siteId` and the
-unmounted route by tracing requests through the layers, downgrading my own
-`updateWorker` finding once I checked reachability, choosing 404 over 403,
-choosing to cap the linter rather than clear or ignore it, and deciding the
-mobile app stays while its pipeline goes.
-
-I also caught the agent's mistakes: a file rewritten from CRLF to LF that
-turned a twenty line change into a four hundred line diff, and a `coverage/`
-directory staged into a commit — the exact artefact this audit penalises.
-Both are why `git diff --stat` before committing is in `AGENTS.md`.
+- Reversing the audit's Critical and High. The supply chain risk needs a
+  dependency to be compromised first; the isolation failure needed nothing and
+  was reachable against real data.
+- Finding the dropped `siteId` and the unmounted route by tracing a request
+  through route, middleware and controller rather than reading files
+  separately. Neither is visible in a single file.
+- Downgrading my own `updateWorker` finding from exploitable to latent once I
+  checked whether the code was reachable.
+- 404 rather than 403, so a refusal never confirms a record exists.
+- Capping the linter at today's warning count rather than clearing 101
+  violations or ignoring them.
+- Keeping the mobile app and removing its automatic pipeline, rather than
+  deleting an application to raise a score.
