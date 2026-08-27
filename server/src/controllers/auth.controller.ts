@@ -8,6 +8,7 @@ import asyncHandler from "../utils/asyncHandler";
 import { comparePassword, hashPassword } from '../utils/hash.utils'
 import Site from "../models/Site.model";
 import { generateToken } from "../utils/jwt.utils";
+import { env } from "../config/env";
 
 
 /**
@@ -114,7 +115,7 @@ export const forgotPassword = asyncHandler(async (req: Request, res: Response) =
         inviteToken: hashedToken,
         inviteTokenExpires: new Date(Date.now() + 15 * 60 * 1000)
     })
-    const resetLink = `${process.env.CLIENT_URL}/reset-password/${rawToken}`
+    const resetLink = `${env.CLIENT_URL}/reset-password/${rawToken}`
     await sendPasswordResetEmail(user.email, resetLink)
     res.status(200).json(acknowledgement)
 }

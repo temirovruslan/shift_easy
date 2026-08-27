@@ -1,6 +1,7 @@
 import { BrevoClient } from "@getbrevo/brevo";
+import { env } from "../config/env";
 
-const getClient = () => new BrevoClient({ apiKey: process.env.BREVO_API_KEY! });
+const getClient = () => new BrevoClient({ apiKey: env.BREVO_API_KEY });
 
 export const sendPasswordResetEmail = async (to: string, resetLink: string) => {
   await getClient().transactionalEmails.sendTransacEmail({

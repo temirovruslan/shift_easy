@@ -4,6 +4,7 @@ import UserModel, { IUser } from "../models/User.model";
 import SiteModel from "../models/Site.model";
 import { sendInviteEmail } from "../utils/email.utils";
 import crypto from "crypto";
+import { env } from "../config/env";
 import {
   AssignWorkersBody,
   CreateWorkerBody,
@@ -80,7 +81,7 @@ export const createWorker = async (
     );
   }
 
-  const inviteLink = `${process.env.CLIENT_URL}/activate/${rawToken}`;
+  const inviteLink = `${env.CLIENT_URL}/activate/${rawToken}`;
   sendInviteEmail(worker.email, worker.name, inviteLink).catch((err) =>
     console.error("Invite email failed:", err),
   );
@@ -222,7 +223,7 @@ export const sendInvite = async (
     inviteTokenExpires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
   });
 
-  const inviteLink = `${process.env.CLIENT_URL}/activate/${rawToken}`;
+  const inviteLink = `${env.CLIENT_URL}/activate/${rawToken}`;
   sendInviteEmail(user.email, user.name, inviteLink).catch((err) =>
     console.error("Invite email failed:", err),
   );
