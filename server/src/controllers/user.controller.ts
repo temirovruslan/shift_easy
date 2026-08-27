@@ -2,6 +2,10 @@ import { Response, Request } from "express";
 import UserModel from "../models/User.model";
 import { comparePassword, hashPassword } from "../utils/hash.utils";
 import AppError from "../errors/AppError";
+import {
+  ChangePasswordBody,
+  UpdateProfileBody,
+} from "../schemas/user.schema";
 
 export const userProfile = async (req: Request, res: Response) => {
   const user = await UserModel.findById(req.user._id) // [1]
@@ -20,7 +24,10 @@ export const userProfile = async (req: Request, res: Response) => {
   res.json({ success: true, data: user });
 };
 
-export const updateProfile = async (req: Request, res: Response) => {
+export const updateProfile = async (
+  req: Request<unknown, unknown, UpdateProfileBody>,
+  res: Response,
+) => {
   const { name, email } = req.body;
 
   const existing = await UserModel.findOne({ email, _id: { $ne: req.user._id } });
@@ -38,7 +45,10 @@ export const updateProfile = async (req: Request, res: Response) => {
   res.json({ success: true, data: updated });
 };
 
-export const changePassword = async (req: Request, res: Response) => {
+export const changePassword = async (
+  req: Request<unknown, unknown, ChangePasswordBody>,
+  res: Response,
+) => {
   const { currentPassword, newPassword } = req.body;
   const user = await UserModel.findById(req.user._id);
 
@@ -49,7 +59,7 @@ export const changePassword = async (req: Request, res: Response) => {
   user!.password = await hashPassword(newPassword);
   await user!.save();
 
-  res.json({ seccess: true, message: "Password updated" });
+  res.json({ success: true, message: "Password updated" });
 };
 
 // ─── NOTES ───────────────────────────────────────────────────────────────────

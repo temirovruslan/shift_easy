@@ -1,10 +1,10 @@
 # Response to the ShiftEasy audit
 
-Twenty-five commits across seven branches, in priority order. Every branch builds
+Twenty-six commits across seven branches, in priority order. Every branch builds
 on the previous one, so they are reviewed and merged in the order listed.
 
 `npm run verify` at the repository root typechecks all three applications,
-lints the client and runs 80 tests. It passes on every commit.
+lints the client and runs 90 tests. It passes on every commit.
 
 | # | Branch | Commits | What it addresses |
 |---|---|---|---|
@@ -14,7 +14,7 @@ lints the client and runs 80 tests. It passes on every commit.
 | 4 | `ci/add-pipeline` | 3 | No checks on pull requests, ungated OTA release |
 | 5 | `fix/auth-hardening` | 3 | No rate limiting, account enumeration |
 | 6 | `refactor/config-and-error-handling` | 2 | Settings compiled into source, 500s for client mistakes |
-| 7 | `chore/repo-hygiene` | 8 | Root commands, agent guide, dead code, client advisories, asset cleanup |
+| 7 | `chore/repo-hygiene` | 9 | Root commands, agent guide, dead code, client advisories, asset cleanup |
 
 ## The order, and why
 
@@ -67,6 +67,16 @@ an unknown address returned before bcrypt ran. Both fixed in `73008ea`.
 `assignWorker` also had no request validation at all, so `workerIds` was
 whatever the client sent — noted in the audit as a scoping problem, but the
 missing validation was separate.
+
+**The password policy did not apply to changing a password.** Registration
+requires eight characters and a digit. `POST /api/user/change-password` was
+mounted without validation, so the rule could be stepped around in two
+requests: register under it, then set the password to `1`. The rule had been
+written out separately at each endpoint that accepts a password — four copies
+in one schema file — which is how a fifth endpoint came to be written without
+it. There is one `password` schema now and every door imports it. The same
+route also answered `{ seccess: true }`, so a client reading `success` saw a
+completed password change as a failure.
 
 ## Where I read the evidence differently
 

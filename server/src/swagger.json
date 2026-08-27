@@ -218,6 +218,32 @@
           "200": { "description": "User profile returned" },
           "401": { "description": "Unauthorized" }
         }
+      },
+      "put": {
+        "tags": ["User"],
+        "summary": "Update My Profile",
+        "description": "Updates the signed-in user's own name and email.",
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "email"],
+                "properties": {
+                  "name": { "type": "string", "example": "John Smith" },
+                  "email": { "type": "string", "example": "john@example.com" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Profile updated" },
+          "400": { "description": "Validation error" },
+          "409": { "description": "Email already in use by another account" }
+        }
       }
     },
     "/api/user/change-password": {
@@ -297,6 +323,18 @@
         "responses": {
           "200": { "description": "Shift stopped" },
           "400": { "description": "No active shift found" }
+        }
+      }
+    },
+    "/api/shifts/export": {
+      "get": {
+        "tags": ["Shifts"],
+        "summary": "Export Completed Shifts",
+        "description": "Returns every completed shift for the manager's company, newest first. Manager only.",
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": { "description": "Completed shifts with a count" },
+          "403": { "description": "Managers only" }
         }
       }
     },
