@@ -5,8 +5,8 @@ import morgan from "morgan";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./swagger.json";
 const app = express();
-import { Request, Response, NextFunction } from "express";
 import { env, isTest } from "./config/env";
+import { errorHandler, notFound } from "./middleware/error.middleware";
 
 // routers
 import authRouter from "./routes/auth.routes";
@@ -41,19 +41,10 @@ app.use("/api/shifts", shiftsRouter);
 app.use("/api/user", userRouter);
 app.use("/api/site", siteRouter);
 app.use("/api/worker", workerRouter);
-app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-  if (err?.statusCode) {
-    res.status(err.statusCode).json({
-      success: false,
-      message: err.message,
-    });
-    return;
-  }
-  console.error(err);
-  res.status(500).json({
-    success: false,
-    message: "Something went wrong",
-  });
-});
+// Must come after every route: this is what "no route matched" means.
+app.use(notFound);
+
+// Must come last. Express identifies the error handler by its four arguments.
+app.use(errorHandler);
 
 export default app;
