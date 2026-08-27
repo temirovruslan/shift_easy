@@ -70,6 +70,22 @@ Put it in `MONGO_URI`; no code change is required.
 | Transactional email | Brevo | `BREVO_API_KEY` on the API host |
 | Domain and DNS | Registrar of record | Registrar control panel |
 
+### Build command for the API
+
+```
+npm ci --include=dev && npm run build
+```
+
+`--include=dev` is not optional. `NODE_ENV=production` is set on the host and
+npm reads it as an instruction to skip devDependencies, which is where
+`typescript` and all nine `@types/*` packages live. A plain `npm install`
+under that variable removes them, and `tsc` then fails with several dozen
+"Could not find a declaration file" errors that read like a code fault and are
+not one.
+
+`npm ci` also installs exactly what the lockfile pins, so a deploy cannot
+resolve a version CI never tested.
+
 Service URLs, dashboard links, account owners and credentials are intentionally
 not listed here. They belong in the team password manager, together with the
 on-call runbook.
