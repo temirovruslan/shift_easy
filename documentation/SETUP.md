@@ -1,84 +1,97 @@
 # ShiftEasy — Setup & Deployment
 
-WARNING: This file contains passwords and API keys. Do NOT commit to a public repo.
+Every environment-specific value in this guide is a placeholder. Real values live
+in `.env` files (never committed) and in the hosting provider's environment
+settings. Account access is kept in a password manager, not in this repository.
 
 ---
 
 ## Local Development
 
-Prerequisites: Node.js (v18+), npm
+Prerequisites: Node.js (v18+), npm, a MongoDB database.
 
-### Start the Server
+### Server
 
+```bash
 cd server
 npm install
-npm run dev
+cp .env.example .env    # fill in the values, see the table below
+npm run dev             # http://localhost:5000
+```
 
-Runs on http://localhost:5000
+| Variable | Description |
+|---|---|
+| `PORT` | API port (default 5000) |
+| `MONGO_URI` | MongoDB connection string |
+| `JWT_SECRET` | Secret used to sign auth tokens |
+| `JWT_EXPIRES_IN` | Token lifetime, e.g. `90d` |
+| `CLIENT_URL` | Frontend origin, used for CORS and email links |
+| `BREVO_API_KEY` | API key for sending invite emails |
 
-If you get "queryTxt ETIMEOUT" on startup, your network blocks SRV/TXT DNS lookups.
-Fix: in server/.env, replace the mongodb+srv:// URI with the direct mongodb:// one
-(use the shard hosts: cluster0-shard-00-00, -01, -02 at .syrkhcq.mongodb.net:27017
-with ?ssl=true&replicaSet=atlas-14dm6y-shard-0&authSource=admin).
+### Client
 
-### Start the Client
-
+```bash
 cd client
 npm install
-npm run dev
+npm run dev             # http://localhost:5173
+```
 
-Runs on http://localhost:5173
+Needs `VITE_API_URL` pointing at the API, e.g. `http://localhost:5000/api`.
 
-### Start Mobile (Expo)
+### Mobile (Expo)
 
+```bash
 cd mobile
 npm install
 npx expo start
+```
 
 ---
 
-## Deployment & Accounts
+## Troubleshooting
 
-### Backend
-Service:   Render.com
-URL:       https://shift-easy-api.onrender.com
-Project:   shift-easy-api
-Account:   temirov.ruslan1995@gmail.com
-Dashboard: https://dashboard.render.com/web/srv-d86ni4og4nts73b4bjcg/events
+### `queryTxt ETIMEOUT` on server startup
 
-### Frontend
-Service:   TBD (Vercel / Netlify / Render)
-URL:       TBD
-Account:   TBD
+The network blocks the SRV/TXT DNS lookups that a `mongodb+srv://` URI needs.
+Use the non-SRV `mongodb://` connection string from the Atlas UI instead
+(Atlas → Connect → Drivers → "Connection string only" → older driver version).
+Put it in `MONGO_URI`; no code change is required.
 
-### Database
-Service:   MongoDB Atlas
-Database:  shift_easy
-Account:   ruha.petruha95@gmail.com
-Cluster:   https://cloud.mongodb.com/v2/69cf347307acaa54cacb1674#/explorer/69cf34b207acaa54cacbadc3/shift_easy/shifts/find
-Users:     https://cloud.mongodb.com/v2/69cf347307acaa54cacb1674#/explorer/69cf34b207acaa54cacbadc3/shift_easy/users/find
+---
 
-### Email Service
-Service:   Brevo (transactional emails)
-Used for:  Worker invite links
-Sends from: noreply@shifteasy.site
-Account:   ruslan.temirov1995@gmail.com
-Phone:     +372 5530939
-Dashboard: https://app.brevo.com/profile/information
+## Deployment
 
-### Domain
-Domain:    shifteasy.site
-Registrar: porkbun.com
-Account:   ruslan.temirov1995@gmail.com
-Panel:     https://porkbun.com/account/domainsSpeedy
+| Component | Platform | Configuration lives in |
+|---|---|---|
+| API | Render | Render → Service → Environment |
+| Web client | Vercel | Vercel → Project → Environment Variables |
+| Mobile | Expo EAS | `mobile/eas.json` and EAS secrets |
+| Database | MongoDB Atlas | Atlas → Database Access / Network Access |
+| Transactional email | Brevo | `BREVO_API_KEY` on the API host |
+| Domain and DNS | Registrar of record | Registrar control panel |
 
-### Customer Messages
-Email:     temirov.ruslan1995@gmail.com
+### Build command for the API
 
-### Code
-GitHub:    github.com/temirovruslan/shift_easy
-Branch:    main
+```
+npm ci --include=dev && npm run build
+```
 
-### Mobile Builds
-Service:   Expo EAS
-Account:   TBD
+`--include=dev` is not optional. `NODE_ENV=production` is set on the host and
+npm reads it as an instruction to skip devDependencies, which is where
+`typescript` and all nine `@types/*` packages live. A plain `npm install`
+under that variable removes them, and `tsc` then fails with several dozen
+"Could not find a declaration file" errors that read like a code fault and are
+not one.
+
+`npm ci` also installs exactly what the lockfile pins, so a deploy cannot
+resolve a version CI never tested.
+
+Service URLs, dashboard links, account owners and credentials are intentionally
+not listed here. They belong in the team password manager, together with the
+on-call runbook.
+
+### Before going live
+
+- Atlas → Network Access must allowlist only the API host, never `0.0.0.0/0`.
+- `JWT_SECRET` must differ between local, staging and production.
+- The Brevo sender address must be verified for the production domain.

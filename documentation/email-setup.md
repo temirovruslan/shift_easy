@@ -2,7 +2,6 @@
 
 ## Service: Brevo (formerly Sendinblue)
 Free tier: 300 emails/day. No domain required, just sender email verification.
-Account: ruslan.temirov1995@gmail.com
 
 ## Why not Gmail / nodemailer SMTP?
 Render's free tier blocks outbound SMTP connections (ports 465/587).
@@ -14,7 +13,7 @@ Sending to arbitrary worker emails is silently dropped on the free plan without 
 
 ## Current setup
 
-**Sender email:** `rururuhan995@gmail.com` — verified in Brevo → Settings → Senders, Domains, IPs
+**Sender email:** the address verified in Brevo → Settings → Senders, Domains, IPs
 **API key env var:** `BREVO_API_KEY` — set in Render environment variables
 **Package:** `@getbrevo/brevo` (v5)
 **File:** `server/src/utils/email.utils.ts`
@@ -42,8 +41,8 @@ Manager adds worker
 1. Check Render logs for `Invite email failed:` lines
 2. Verify `BREVO_API_KEY` is set in Render → Environment
 3. Check Brevo dashboard → Logs → Transactional to see if emails are being sent/bounced
-4. Make sure `rururuhan995@gmail.com` is still Verified in Brevo → Senders
+4. Make sure the sender address is still Verified in Brevo → Senders
 
 ## Brevo account
-- Login: ruslan.temirov1995@gmail.com
-- Dashboard: app.brevo.com
+
+Login credentials and dashboard access are kept in the team password manager.
