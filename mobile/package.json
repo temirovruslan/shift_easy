@@ -32,6 +32,9 @@
     "tailwindcss": "^3.4.19",
     "typescript": "~6.0.3"
   },
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",

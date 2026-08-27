@@ -2,6 +2,9 @@
   "name": "shifteasy",
   "private": true,
   "description": "Shift management and time tracking for construction teams",
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "install:all": "npm --prefix server ci && npm --prefix client ci && npm --prefix mobile ci",
     "typecheck": "npm --prefix server run typecheck && npm --prefix client run typecheck && npm --prefix mobile run typecheck",
