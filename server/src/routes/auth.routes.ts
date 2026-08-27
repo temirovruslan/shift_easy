@@ -10,15 +10,29 @@ import {
 } from "../controllers/auth.controller";
 import validate from "../middleware/validate.middleware";
 import {
+  authLimiter,
+  credentialsLimiter,
+  emailLookupLimiter,
+} from "../middleware/rateLimit.middleware";
+import {
   registerSchema,
   loginSchema,
   forgotPasswordSchema,
   setPasswordSchema,
 } from "../schemas/auth.schema";
-router.post("/check-email", checkEmail);
+// Applies to every route in this file, including the ones with their own
+// tighter limit below.
+router.use(authLimiter);
+
+router.post("/check-email", emailLookupLimiter, checkEmail);
 router.post("/register", validate(registerSchema), register);
-router.post("/login", validate(loginSchema), login);
-router.post("/forgot-password", validate(forgotPasswordSchema), forgotPassword);
+router.post("/login", credentialsLimiter, validate(loginSchema), login);
+router.post(
+  "/forgot-password",
+  emailLookupLimiter,
+  validate(forgotPasswordSchema),
+  forgotPassword,
+);
 router.post("/reset-password/:token", validate(setPasswordSchema), resetPassword);
 router.post("/activate/:token", validate(setPasswordSchema), activate);
 
