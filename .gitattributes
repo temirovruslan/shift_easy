@@ -1,0 +1,26 @@
+# Line endings are mixed across the repository: some files are committed with
+# CRLF, some with LF. That is invisible until a tool rewrites a file, at which
+# point a twenty line change shows up as a four hundred line diff and stops
+# being reviewable.
+#
+# From here on Git normalises text to LF in the repository and checks it out
+# in whatever the platform uses.
+#
+# Files already committed with CRLF keep it until they are renormalised. That
+# is one command — `git add --renormalize . && git commit` — deliberately left
+# out of this change: it touches most files in the repository and would bury
+# every other change under a whitespace commit. Worth doing on a quiet branch.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.svg text
+*.ico binary
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
+*.mp3 binary
+*.pdf binary
