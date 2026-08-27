@@ -4,7 +4,10 @@ import UserModel, { IUser } from "../models/User.model";
 import SiteModel from "../models/Site.model";
 import { sendInviteEmail } from "../utils/email.utils";
 import crypto from "crypto";
-import { AssignWorkersBody } from "../schemas/worker.schema";
+import {
+  AssignWorkersBody,
+  CreateWorkerBody,
+} from "../schemas/worker.schema";
 import { success } from "zod";
 
 type WorkerIdParam = { id: string };
@@ -22,8 +25,12 @@ type SiteIdParam = { siteId: string };
 const findCompanyWorker = (workerId: string, company: IUser["company"]) =>
   UserModel.findOne({ _id: workerId, role: "worker", company });
 
-export const createWorker = async (req: Request, res: Response) => {
+export const createWorker = async (
+  req: Request<unknown, unknown, CreateWorkerBody>,
+  res: Response,
+) => {
   const { name, email, siteId, occupation } = req.body;
+  const company = req.user.company;
 
   const existing = await UserModel.findOne({ email });
   if (existing) {
@@ -31,6 +38,14 @@ export const createWorker = async (req: Request, res: Response) => {
       success: false,
       message: "A user with this email already exists",
     });
+    return;
+  }
+
+  // Resolved before anything is written: a site that belongs to someone else,
+  // or to nobody, must not leave a half-created worker behind.
+  const site = siteId ? await SiteModel.findOne({ _id: siteId, company }) : null;
+  if (siteId && !site) {
+    res.status(404).json({ success: false, message: "Site not found" });
     return;
   }
 
@@ -49,18 +64,19 @@ export const createWorker = async (req: Request, res: Response) => {
     email,
     password: tempPassword,
     role: "worker",
-    company: req.user.company,
-    sites: siteId ? [siteId] : [],
+    company,
+    sites: site ? [site._id] : [],
     isActivated: false,
     occupation,
     inviteToken: hashedToken,
     inviteTokenExpires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
   });
 
-  if (siteId) {
-    await SiteModel.findByIdAndUpdate(siteId, {
-      $push: { workers: worker._id },
-    });
+  if (site) {
+    await SiteModel.updateOne(
+      { _id: site._id },
+      { $push: { workers: worker._id } }, // [1]
+    );
   }
 
   const inviteLink = `${process.env.CLIENT_URL}/activate/${rawToken}`;
