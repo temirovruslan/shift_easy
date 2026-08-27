@@ -1,20 +1,20 @@
 # Response to the ShiftEasy audit
 
-Seventeen commits across seven branches, in priority order. Every branch builds
+Twenty-five commits across seven branches, in priority order. Every branch builds
 on the previous one, so they are reviewed and merged in the order listed.
 
 `npm run verify` at the repository root typechecks all three applications,
-lints the client and runs 74 tests. It passes on every commit.
+lints the client and runs 80 tests. It passes on every commit.
 
 | # | Branch | Commits | What it addresses |
 |---|---|---|---|
-| 1 | `docs/scrub-operational-details` | 1 | Operational data in tracked documentation |
+| 1 | `docs/scrub-operational-details` | 2 | Operational data in tracked documentation |
 | 2 | `fix/worker-company-scope` | 5 | Cross-company access, two bugs the audit did not find |
 | 3 | `test/server-integration-suite` | 1 | No server tests at all |
 | 4 | `ci/add-pipeline` | 3 | No checks on pull requests, ungated OTA release |
 | 5 | `fix/auth-hardening` | 3 | No rate limiting, account enumeration |
 | 6 | `refactor/config-and-error-handling` | 2 | Settings compiled into source, 500s for client mistakes |
-| 7 | `chore/repo-hygiene` | 2 | No root commands, no shared formatting, no agent guide |
+| 7 | `chore/repo-hygiene` | 8 | Root commands, agent guide, dead code, client advisories, asset cleanup |
 
 ## The order, and why
 

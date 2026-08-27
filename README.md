@@ -83,7 +83,7 @@ The client needs `VITE_API_URL` pointing at the API, e.g. `http://localhost:5000
 
 ```bash
 npm test                          # server and client
-npm --prefix server test          # 47 tests
+npm --prefix server test          # 53 tests
 npm --prefix client test          # 27 tests
 ```
 
