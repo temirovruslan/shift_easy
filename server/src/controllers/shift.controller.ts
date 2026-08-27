@@ -104,7 +104,6 @@ export const exportShifts = asyncHandler(async (req, res) => {
     .populate("site", "name")
     .sort({ startTime: -1 });
 
-  console.log(`[exportShifts] manager: ${manager.name} | shifts found: ${shifts.length}`);
 
   res.status(200).json({ success: true, count: shifts.length, data: shifts });
 });
