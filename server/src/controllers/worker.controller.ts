@@ -1,10 +1,24 @@
 import { Request, Response } from "express";
 import { hashPassword } from "../utils/hash.utils";
-import UserModel from "../models/User.model";
+import UserModel, { IUser } from "../models/User.model";
 import SiteModel from "../models/Site.model";
 import { sendInviteEmail } from "../utils/email.utils";
 import crypto from "crypto";
 import { success } from "zod";
+
+type WorkerIdParam = { id: string };
+
+/**
+ * Loads a worker that belongs to the requesting manager's company.
+ *
+ * Every manager-facing worker route must go through this. `requireManager`
+ * only proves the caller is *a* manager, not that the worker in the URL is
+ * theirs, so looking a worker up by id alone lets one company reach into
+ * another. Missing and out-of-company workers both come back as `null` so the
+ * caller answers 404 either way and never confirms that the id exists.
+ */
+const findCompanyWorker = (workerId: string, company: IUser["company"]) =>
+  UserModel.findOne({ _id: workerId, role: "worker", company });
 
 export const createWorker = async (req: Request, res: Response) => {
   const { name, email, siteId, occupation } = req.body;
@@ -66,8 +80,11 @@ export const getWorkers = async (req: Request, res: Response) => {
   res.status(200).json({ success: true, data: workers });
 };
 
-export const getWorker = async (req: Request, res: Response) => {
-  const worker = await UserModel.findById(req.params.id)
+export const getWorker = async (
+  req: Request<WorkerIdParam>,
+  res: Response,
+) => {
+  const worker = await findCompanyWorker(req.params.id, req.user.company)
     .select("name email occupation isActivated sites createdAt")
     .populate("sites", "name");
 
@@ -94,9 +111,12 @@ export const assignWorker = async (req: Request, res: Response) => {
   res.status(200).json({ success: true });
 };
 
-export const removeWorker = async (req: Request, res: Response) => {
+export const removeWorker = async (
+  req: Request<WorkerIdParam>,
+  res: Response,
+) => {
   const id = req.params.id;
-  const worker = await UserModel.findById(id);
+  const worker = await findCompanyWorker(id, req.user.company);
 
   if (!worker) {
     res.status(404).json({ success: false, message: "Worker not found" });
@@ -119,10 +139,13 @@ export const getArchivedWorkers = async (req: Request, res: Response) => {
   res.status(200).json({ success: true, data: workers });
 };
 
-export const restoreWorker = async (req: Request, res: Response) => {
+export const restoreWorker = async (
+  req: Request<WorkerIdParam>,
+  res: Response,
+) => {
   const id = req.params.id;
 
-  const worker = await UserModel.findById(id);
+  const worker = await findCompanyWorker(id, req.user.company);
   if (!worker) {
     res.status(404).json({ success: false, message: "Worker not found" });
     return;
@@ -131,8 +154,11 @@ export const restoreWorker = async (req: Request, res: Response) => {
   res.status(200).json({ success: true, message: "Worker restored" });
 };
 
-export const sendInvite = async (req: Request, res: Response) => {
-  const user = await UserModel.findById(req.params.id);
+export const sendInvite = async (
+  req: Request<WorkerIdParam>,
+  res: Response,
+) => {
+  const user = await findCompanyWorker(req.params.id, req.user.company);
 
   if (!user) {
     res.status(404).json({ success: false, message: "Worker not found" });
@@ -157,7 +183,10 @@ export const sendInvite = async (req: Request, res: Response) => {
   res.status(200).json({ success: true, message: "Invite sent" });
 };
 
-export const updateWorker = async (req: Request, res: Response) => {
+export const updateWorker = async (
+  req: Request<WorkerIdParam>,
+  res: Response,
+) => {
   const id = req.params.id;
   const { name, email, occupation } = req.body;
 
@@ -166,8 +195,8 @@ export const updateWorker = async (req: Request, res: Response) => {
     res.status(409).json({ success: false, message: "Email already in use" });
     return;
   }
-  const workerUpdated = await UserModel.findByIdAndUpdate(
-    id,
+  const workerUpdated = await UserModel.findOneAndUpdate(
+    { _id: id, role: "worker", company: req.user.company },
     {
       name,
       email,
@@ -177,6 +206,11 @@ export const updateWorker = async (req: Request, res: Response) => {
   )
     .select("name email occupation isActivated sites createdAt")
     .populate("sites", "name");
+
+  if (!workerUpdated) {
+    res.status(404).json({ success: false, message: "Worker not found" });
+    return;
+  }
 
   res.status(200).json({ success: true, data: workerUpdated });
 };
