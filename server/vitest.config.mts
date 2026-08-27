@@ -11,6 +11,9 @@ export default defineConfig({
     hookTimeout: 120_000,
     coverage: {
       provider: "v8",
+      // `text` for a human reading CI output, `lcov` for SonarCloud, which
+      // reads no other format and reports 0% coverage without it.
+      reporter: ["text", "lcov"],
       // Set just under what the suite covers today. The point is not the
       // number but the ratchet: a change that drops coverage fails CI instead
       // of being noticed months later.
