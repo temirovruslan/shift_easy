@@ -67,3 +67,17 @@ export const createTenant = async (label: string) => {
 export type Tenant = Awaited<ReturnType<typeof createTenant>>;
 
 export const bearer = (token: string) => `Bearer ${token}`;
+
+/**
+ * A fresh client address for each call.
+ *
+ * The rate limiters keep their counters in memory for the life of the
+ * process, so tests sharing an address would inherit each other's tally.
+ * `trust proxy` is on because the API runs behind one in production, which is
+ * what makes X-Forwarded-For the address the limiter counts.
+ */
+let addressCounter = 0;
+export const newClientAddress = () => {
+  addressCounter += 1;
+  return `203.0.113.${addressCounter % 250}`;
+};

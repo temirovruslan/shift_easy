@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
 import morgan from "morgan";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./swagger.json";
@@ -18,6 +19,12 @@ const allowedOrigins = [
   "http://localhost:8082",
   "http://localhost:5173",
 ].filter((o): o is string => Boolean(o));
+// Render terminates TLS in front of the API, so the client address arrives in
+// X-Forwarded-For. Without this the rate limiters would see one proxy address
+// for everybody and throttle all users together.
+app.set("trust proxy", 1);
+
+app.use(helmet());
 app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
 // Request logging is noise in the test suite, where the useful output is the

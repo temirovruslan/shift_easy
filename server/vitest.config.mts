@@ -15,10 +15,10 @@ export default defineConfig({
       // number but the ratchet: a change that drops coverage fails CI instead
       // of being noticed months later.
       thresholds: {
-        statements: 60,
-        branches: 55,
-        functions: 45,
-        lines: 60,
+        statements: 70,
+        branches: 65,
+        functions: 55,
+        lines: 70,
       },
       include: ["src/**/*.ts"],
       exclude: ["src/tests/**", "src/**/*.d.ts", "src/server.ts"],

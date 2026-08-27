@@ -10,6 +10,22 @@ import Site from "../models/Site.model";
 import { generateToken } from "../utils/jwt.utils";
 
 
+/**
+ * A throwaway bcrypt hash, computed once, compared against when the address in
+ * a sign-in attempt does not exist.
+ *
+ * Without it an unknown address returns as fast as the database can answer
+ * while a known one waits for bcrypt, and that difference reports whether an
+ * account exists no matter how careful the message is.
+ */
+let decoyHash: string | null = null;
+const getDecoyHash = async () => {
+    if (!decoyHash) {
+        decoyHash = await hashPassword(crypto.randomBytes(32).toString("hex"))
+    }
+    return decoyHash
+}
+
 export const checkEmail = asyncHandler(async (req: Request, res: Response) => {
     const { email } = req.body
     const exists = await User.findOne({ email })
@@ -52,6 +68,7 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
     const { email, password } = req.body
     const user = await User.findOne({ email })
     if (!user) {
+        await comparePassword(password, await getDecoyHash())
         throw new AppError("Wrong credentials", 401)
     }
 
@@ -72,10 +89,20 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
 
 export const forgotPassword = asyncHandler(async (req: Request, res: Response) => {
     const { email } = req.body
+
+    // The same body on both paths. The previous version answered
+    // { success, message } for an unknown address and { success } for a known
+    // one, so the presence of `message` alone told a caller which addresses
+    // are registered — the leak this generic wording was meant to prevent.
+    const acknowledgement = {
+        success: true,
+        message: 'If that email exists, a reset link has been sent',
+    }
+
     const user = await User.findOne({ email })
 
     if (!user) {
-        res.status(200).json({ success: true, message: 'If that email exists, a reset link has been sent' })
+        res.status(200).json(acknowledgement)
         return
     }
 
@@ -89,7 +116,7 @@ export const forgotPassword = asyncHandler(async (req: Request, res: Response) =
     })
     const resetLink = `${process.env.CLIENT_URL}/reset-password/${rawToken}`
     await sendPasswordResetEmail(user.email, resetLink)
-    res.status(200).json({ success: true })
+    res.status(200).json(acknowledgement)
 }
 )
 
