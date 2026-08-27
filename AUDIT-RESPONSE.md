@@ -1,6 +1,6 @@
 # Response to the ShiftEasy audit
 
-Thirty-three commits across seven branches, in priority order. Every branch builds
+Thirty-four commits across seven branches, in priority order. Every branch builds
 on the previous one, so they are reviewed and merged in the order listed.
 
 `npm run verify` at the repository root typechecks all three applications,
@@ -14,7 +14,7 @@ lints the client and runs 90 tests. It passes on every commit.
 | 4 | `ci/add-pipeline` | 3 | No checks on pull requests, ungated OTA release |
 | 5 | `fix/auth-hardening` | 3 | No rate limiting, account enumeration |
 | 6 | `refactor/config-and-error-handling` | 2 | Settings compiled into source, 500s for client mistakes |
-| 7 | `chore/repo-hygiene` | 16 | Root commands, contributor guide, server lint, dead code, advisories, release path |
+| 7 | `chore/repo-hygiene` | 17 | Root commands, contributor guide, server lint, dead code, advisories, release path |
 
 ## The order, and why
 
