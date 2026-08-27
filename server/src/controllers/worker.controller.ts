@@ -10,7 +10,6 @@ import {
   CreateWorkerBody,
   UpdateWorkerBody,
 } from "../schemas/worker.schema";
-import { success } from "zod";
 
 type WorkerIdParam = { id: string };
 type SiteIdParam = { siteId: string };

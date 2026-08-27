@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import AppError from '../errors/AppError'
 
-const requireManager = (req: Request, res: Response, next: NextFunction) => { // [1]
+const requireManager = (req: Request, _res: Response, next: NextFunction) => { // [1]
     if (req.user?.role !== 'manager') { // [2]
         throw new AppError('Access denied. Managers only.', 403)
     }

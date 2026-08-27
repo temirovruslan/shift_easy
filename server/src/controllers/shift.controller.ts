@@ -1,8 +1,6 @@
-import { Request, Response, NextFunction } from "express";
 import asyncHandler from "../utils/asyncHandler";
 import ShiftModel from "../models/Shift.model";
 import AppError from "../errors/AppError";
-import CompanyModel from "../models/Company.model";
 
 export const startShift = asyncHandler(async (req, res) => {
   const { siteId } = req.body;
@@ -84,7 +82,6 @@ export const getAllShifts = asyncHandler(async (req, res) => {
 
 export const getShift = asyncHandler(async (req, res) => {
   const manager = req.user;
-  const dat = req.params;
 
   const findShift = await ShiftModel.findOne({
     _id: req.params.id,

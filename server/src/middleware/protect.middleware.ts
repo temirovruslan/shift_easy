@@ -5,7 +5,7 @@ import User from '../models/User.model'
 import asyncHandler from '../utils/asyncHandler'
 import AppError from '../errors/AppError'
 
-export const protect = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+export const protect = asyncHandler(async (req: Request, _res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization 
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) { 
