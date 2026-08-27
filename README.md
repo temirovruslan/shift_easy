@@ -27,21 +27,29 @@ Shift management and time tracking for construction teams. Managers create sites
 | Auth | JWT with bcrypt password hashing, role-based access control |
 | Mobile | React Native (Expo) |
 | Email | Brevo transactional email for invites and password resets |
-| Testing | Vitest, React Testing Library |
+| Testing | Vitest, React Testing Library, Supertest, mongodb-memory-server |
+| CI | GitHub Actions — typecheck, lint, test and build on every pull request |
 
 ## Architecture
 
 ```
 client/     React web app (managers + workers)
 server/     Express REST API
-mobile/     React Native app (Expo)
+mobile/     React Native app (Expo) — prototype, not released
 ```
 
 The API is organised in layers: routes → middleware (auth, role guard, Zod validation) → controllers → Mongoose models. Every request is validated at the schema level before reaching business logic, and errors funnel through a single handler so responses stay consistent.
 
 ## Getting Started
 
-**Prerequisites:** Node.js 18+, a MongoDB database
+**Prerequisites:** Node.js (see `.nvmrc`), a MongoDB database
+
+```bash
+npm run install:all   # install every application
+npm run verify        # typecheck all three, lint, run every test
+```
+
+Individual applications:
 
 ```bash
 # Backend
@@ -74,13 +82,18 @@ The client needs `VITE_API_URL` pointing at the API, e.g. `http://localhost:5000
 ## Testing
 
 ```bash
-cd client
-npm test              # run once
-npm run test:watch    # watch mode
-npm run test:coverage # with coverage
+npm test                          # server and client
+npm --prefix server test          # 53 tests
+npm --prefix client test          # 27 tests
 ```
 
-Covers authentication and session persistence, route guards, API interceptors, and shared UI components.
+The server suite runs against an in-memory MongoDB, so it needs no running
+database and no Docker. It covers company isolation across every manager
+endpoint, the shift lifecycle, invite and registration flows, rate limiting
+and error handling. The client suite covers authentication, session
+persistence, route guards, API interceptors and shared UI components.
+
+Coverage thresholds are enforced: `npm --prefix server run test:coverage`.
 
 ## API
 
@@ -93,6 +106,23 @@ Interactive Swagger docs are served at `/api/docs` when the server is running.
 | `/api/site` | Construction site management |
 | `/api/worker` | Worker invites and assignment |
 | `/api/user` | Current user profile |
+
+## Documentation
+
+| Document | What it covers |
+|---|---|
+| [Setup and deployment](documentation/SETUP.md) | Running locally, environment variables, deployment targets |
+| [Releasing and rolling back](documentation/RELEASING.md) | Tagging a release, promoting each component, rolling back |
+| [Email](documentation/email-setup.md) | How invite and reset mail is sent, and what to check when it stops |
+| [Design documentation](documentation/design-documentation.html) | Screens and visual language |
+| [Registration flow](documentation/registration-flow.html) | The sign-up journey, step by step |
+| [Data model](documentation/data-model.drawio.xml) | Entity diagram, opens in [draw.io](https://app.diagrams.net) |
+
+## Contributing
+
+`CONTRIBUTING.md` documents the layout, how to verify a change, and the rules that
+are easy to break by accident — company scoping, request validation and
+configuration.
 
 ## License
 

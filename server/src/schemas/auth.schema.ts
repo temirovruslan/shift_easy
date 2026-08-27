@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { password } from './common'
 
 // WHY ZOD:
 //   never trust what the client sends. Zod checks req.body
@@ -7,9 +8,7 @@ import { z } from 'zod'
 export const registerSchema = z.object({
     name: z.string().min(2, 'Name must be at least 2 characters'),
     email: z.string().email('Invalid email address'),
-    password: z.string()
-        .min(8, 'Password must be at least 8 characters')
-        .regex(/\d/, 'Password must contain at least one number'),
+    password,
     companyName: z.string().min(2, 'Company name must be at least 2 characters'),
     siteName: z.string().min(2, 'Site name must be at least 2 characters'),
     siteAddress: z.string().min(5, 'Please enter a full address'),
@@ -26,7 +25,7 @@ export const forgotPasswordSchema = z.object({
 })
 
 export const resetPasswordSchema = z.object({
-    password: z.string().min(8).regex(/\d/, "Password must contain at least one number"),
+    password,
     confirmPassword: z.string(),
 }).refine(data => data.password === data.confirmPassword, { // [2]
     message: 'Passwords do not match',
@@ -40,10 +39,11 @@ export const activateSchema = resetPasswordSchema // [4]
 //     itself server-side so a weak/missing one is rejected with a clean 400
 //     instead of blowing up deeper in the request.
 export const setPasswordSchema = z.object({
-    password: z.string()
-        .min(8, 'Password must be at least 8 characters')
-        .regex(/\d/, 'Password must contain at least one number'),
+    password,
 })
+
+export type SetPasswordBody = z.infer<typeof setPasswordSchema>
+export type TokenParam = { token: string }
 
 // ─── NOTES ───────────────────────────────────────────────────────────────────
 

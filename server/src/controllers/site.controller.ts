@@ -29,7 +29,7 @@ export const getSite = async (req: Request, res: Response) => {
     _id,
     company: manager.company,
   }).populate("workers", "name");
-  if (!singleSite) throw new AppError("Not founed site", 400);
+  if (!singleSite) throw new AppError("Site not found", 404);
   res.status(200).json({ success: true, data: singleSite });
 };
 
@@ -69,7 +69,7 @@ export const archiveSite = async (req: Request, res: Response) => {
     { new: true },
   );
 
-  if(!updateSite) throw new AppError("Something went wrong", 400)
+  if (!updateSite) throw new AppError("Site not found", 404);
   res.status(200).json({ success: true, data: { updateSite } });
 };
 
@@ -83,6 +83,6 @@ export const activateSite = async (req: Request, res: Response) => {
     { new: true },
   );
 
-  if(!updateSite) throw new AppError("Something went wrong", 400)
+  if (!updateSite) throw new AppError("Site not found", 404);
   res.status(200).json({ success: true, data: { updateSite } });
 };

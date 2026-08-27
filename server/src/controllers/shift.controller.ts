@@ -1,10 +1,9 @@
-import { Request, Response, NextFunction } from "express";
 import asyncHandler from "../utils/asyncHandler";
 import ShiftModel from "../models/Shift.model";
 import AppError from "../errors/AppError";
-import CompanyModel from "../models/Company.model";
+import { StartShiftBody, StopShiftBody } from "../schemas/shift.schema";
 
-export const startShift = asyncHandler(async (req, res) => {
+export const startShift = asyncHandler<never, unknown, StartShiftBody>(async (req, res) => {
   const { siteId } = req.body;
   const worker = req.user; // [1]
   const workerShift = await ShiftModel.findOne({
@@ -32,7 +31,7 @@ export const startShift = asyncHandler(async (req, res) => {
   });
 });
 
-export const stopShift = asyncHandler(async (req, res) => {
+export const stopShift = asyncHandler<never, unknown, StopShiftBody>(async (req, res) => {
   const { notes, materials } = req.body;
 
   const worker = req.user;
@@ -84,7 +83,6 @@ export const getAllShifts = asyncHandler(async (req, res) => {
 
 export const getShift = asyncHandler(async (req, res) => {
   const manager = req.user;
-  const dat = req.params;
 
   const findShift = await ShiftModel.findOne({
     _id: req.params.id,
@@ -107,7 +105,6 @@ export const exportShifts = asyncHandler(async (req, res) => {
     .populate("site", "name")
     .sort({ startTime: -1 });
 
-  console.log(`[exportShifts] manager: ${manager.name} | shifts found: ${shifts.length}`);
 
   res.status(200).json({ success: true, count: shifts.length, data: shifts });
 });

@@ -1,0 +1,91 @@
+name: Release
+
+# A release is a named, traceable point in history. Pushing a tag is the
+# deliberate act; everything after it is automatic, and nothing is published
+# unless the same checks a pull request must pass are green on that tag.
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    name: Verify
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version-file: .nvmrc
+
+      - name: Cache mongodb-memory-server binary
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: ~/.cache/mongodb-binaries
+          key: mongodb-binaries-${{ runner.os }}
+
+      - name: Install
+        run: npm run install:all
+
+      - name: Verify
+        run: npm run verify
+
+  release:
+    name: Publish release
+    needs: verify
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version-file: .nvmrc
+
+      - name: Build the deployable bundles
+        run: |
+          npm run install:all
+          npm run build
+
+      # The artefacts are what was actually tested at this tag. Keeping them
+      # attached to the release means a rollback does not depend on being able
+      # to rebuild an old commit months later.
+      - name: Package the bundles
+        run: |
+          tar -czf server-dist-${{ github.ref_name }}.tar.gz -C server dist
+          tar -czf client-dist-${{ github.ref_name }}.tar.gz -C client dist
+
+      - name: Write the release notes
+        id: notes
+        run: |
+          PREVIOUS=$(git describe --tags --abbrev=0 "${{ github.ref_name }}^" 2>/dev/null || echo "")
+          {
+            echo "notes<<EOF"
+            if [ -n "$PREVIOUS" ]; then
+              echo "### Changes since $PREVIOUS"
+              echo
+              git log --no-merges --pretty="- %s" "$PREVIOUS..${{ github.ref_name }}"
+              echo
+              echo "**Rollback:** redeploy \`$PREVIOUS\`. See [documentation/RELEASING.md](documentation/RELEASING.md)."
+            else
+              echo "### First tagged release"
+              echo
+              git log --no-merges --pretty="- %s" -20
+            fi
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create the GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ github.ref_name }}" \
+            --title "${{ github.ref_name }}" \
+            --notes "${{ steps.notes.outputs.notes }}" \
+            server-dist-${{ github.ref_name }}.tar.gz \
+            client-dist-${{ github.ref_name }}.tar.gz

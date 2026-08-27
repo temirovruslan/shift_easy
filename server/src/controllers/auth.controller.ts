@@ -3,12 +3,13 @@ import crypto from 'crypto'
 import User from "../models/User.model";
 import Company from "../models/Company.model";
 import AppError from "../errors/AppError";
-import { Request, Response, NextFunction } from 'express'
+import { Request, Response } from 'express'
 import asyncHandler from "../utils/asyncHandler";
 import { comparePassword, hashPassword } from '../utils/hash.utils'
 import Site from "../models/Site.model";
 import { generateToken } from "../utils/jwt.utils";
 import { env } from "../config/env";
+import { SetPasswordBody, TokenParam } from "../schemas/auth.schema";
 
 
 /**
@@ -33,7 +34,7 @@ export const checkEmail = asyncHandler(async (req: Request, res: Response) => {
     res.status(200).json({ available: !exists })
 })
 
-export const register = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+export const register = asyncHandler(async (req: Request, res: Response) => {
     const { name, email, password, companyName, siteName, siteAddress } = req.body
 
     const isEmailExist = await User.findOne({ email })
@@ -50,7 +51,7 @@ export const register = asyncHandler(async (req: Request, res: Response, next: N
         company: newCompany._id,
         isActivated: true
     })
-    const newSite = await Site.create({
+    await Site.create({
         name: siteName,
         address: siteAddress,
         company: newCompany._id,
@@ -110,7 +111,6 @@ export const forgotPassword = asyncHandler(async (req: Request, res: Response) =
 
     const rawToken = crypto.randomBytes(32).toString('hex')
     const hashedToken = crypto.createHash("sha256").update(rawToken).digest("hex")
-    // changed code here
     await User.findOneAndUpdate({ _id: user._id }, {
         inviteToken: hashedToken,
         inviteTokenExpires: new Date(Date.now() + 15 * 60 * 1000)
@@ -123,9 +123,9 @@ export const forgotPassword = asyncHandler(async (req: Request, res: Response) =
 
 
 
-export const resetPassword = asyncHandler(async (req, res) => {
+export const resetPassword = asyncHandler<TokenParam, unknown, SetPasswordBody>(async (req, res) => {
     const { password } = req.body
-    const token = req.params.token as string
+    const token = req.params.token
     const hashedToken = crypto.createHash("sha256").update(token).digest('hex')
     const user = await User.findOne({
         inviteToken: hashedToken,
@@ -149,9 +149,9 @@ export const resetPassword = asyncHandler(async (req, res) => {
 
 
 
-export const activate = asyncHandler(async (req, res) => {
+export const activate = asyncHandler<TokenParam, unknown, SetPasswordBody>(async (req, res) => {
     const { password } = req.body
-    const token = req.params.token as string
+    const token = req.params.token
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex")
 
 

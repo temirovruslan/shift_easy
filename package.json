@@ -1,0 +1,13 @@
+{
+  "name": "shifteasy",
+  "private": true,
+  "description": "Shift management and time tracking for construction teams",
+  "scripts": {
+    "install:all": "npm --prefix server ci && npm --prefix client ci && npm --prefix mobile ci",
+    "typecheck": "npm --prefix server run typecheck && npm --prefix client run typecheck && npm --prefix mobile run typecheck",
+    "lint": "npm --prefix server run lint && npm --prefix client run lint",
+    "test": "npm --prefix server test && npm --prefix client test",
+    "build": "npm --prefix server run build && npm --prefix client run build",
+    "verify": "npm run typecheck && npm run lint && npm run test"
+  }
+}
