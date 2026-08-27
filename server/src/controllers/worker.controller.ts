@@ -7,6 +7,7 @@ import crypto from "crypto";
 import {
   AssignWorkersBody,
   CreateWorkerBody,
+  UpdateWorkerBody,
 } from "../schemas/worker.schema";
 import { success } from "zod";
 
@@ -229,7 +230,7 @@ export const sendInvite = async (
 };
 
 export const updateWorker = async (
-  req: Request<WorkerIdParam>,
+  req: Request<WorkerIdParam, unknown, UpdateWorkerBody>,
   res: Response,
 ) => {
   const id = req.params.id;
