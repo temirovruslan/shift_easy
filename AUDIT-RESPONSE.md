@@ -1,6 +1,6 @@
 # Response to the ShiftEasy audit
 
-Twenty-eight commits across seven branches, in priority order. Every branch builds
+Thirty-one commits across seven branches, in priority order. Every branch builds
 on the previous one, so they are reviewed and merged in the order listed.
 
 `npm run verify` at the repository root typechecks all three applications,
@@ -14,7 +14,7 @@ lints the client and runs 90 tests. It passes on every commit.
 | 4 | `ci/add-pipeline` | 3 | No checks on pull requests, ungated OTA release |
 | 5 | `fix/auth-hardening` | 3 | No rate limiting, account enumeration |
 | 6 | `refactor/config-and-error-handling` | 2 | Settings compiled into source, 500s for client mistakes |
-| 7 | `chore/repo-hygiene` | 11 | Root commands, agent guide, dead code, client advisories, asset cleanup |
+| 7 | `chore/repo-hygiene` | 14 | Root commands, contributor guide, server lint, dead code, advisories, release path |
 
 ## The order, and why
 
@@ -155,6 +155,10 @@ dangerous part — the automatic pipeline — was removed instead of the code.
   filters, modal state and rendering. Splitting it is a real piece of work and
   a poor thing to attempt without the end-to-end tests that would prove it
   still behaves.
+- **No staging environment.** Promotion goes from a tagged release straight to
+  production for all three components. RELEASING.md documents the path and the
+  rollback for each; a staging tier is a hosting decision, not a repository
+  one.
 - **Existing files were not renormalised to LF.** `.gitattributes` stops the
   mixture spreading. Renormalising is one command and would have buried every
   other change under a whitespace commit.
