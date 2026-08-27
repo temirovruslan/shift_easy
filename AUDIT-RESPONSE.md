@@ -1,6 +1,6 @@
 # Response to the ShiftEasy audit
 
-Thirty-one commits across seven branches, in priority order. Every branch builds
+Thirty-three commits across seven branches, in priority order. Every branch builds
 on the previous one, so they are reviewed and merged in the order listed.
 
 `npm run verify` at the repository root typechecks all three applications,
@@ -14,7 +14,7 @@ lints the client and runs 90 tests. It passes on every commit.
 | 4 | `ci/add-pipeline` | 3 | No checks on pull requests, ungated OTA release |
 | 5 | `fix/auth-hardening` | 3 | No rate limiting, account enumeration |
 | 6 | `refactor/config-and-error-handling` | 2 | Settings compiled into source, 500s for client mistakes |
-| 7 | `chore/repo-hygiene` | 14 | Root commands, contributor guide, server lint, dead code, advisories, release path |
+| 7 | `chore/repo-hygiene` | 16 | Root commands, contributor guide, server lint, dead code, advisories, release path |
 
 ## The order, and why
 
@@ -166,6 +166,24 @@ dangerous part — the automatic pipeline — was removed instead of the code.
   what the register form uses it for, and removing it means redesigning
   registration in two clients. It is rate limited to 15 per hour per client
   and recorded here as an accepted trade-off rather than an oversight.
+
+## An independent second opinion
+
+The repository is analysed by SonarQube Cloud, and `main` was scanned before
+any of this landed. On commit `930224c` it graded Security **E** with 10 open
+issues, Reliability **C** with 131, and reported no coverage at all.
+
+Its two worst-rated files were `server/src/controllers/auth.controller.ts` and
+`server/src/controllers/user.controller.ts`, with `.github/workflows/eas-update.yml`
+and `server/src/app.ts` behind them. That list was produced without sight of
+the audit or of this work, and it is the same set of files these branches
+spend most of their commits on — account enumeration and rate limiting in the
+first, the password policy in the second, the ungated release in the third,
+security headers and error handling in the fourth.
+
+The scan is wired into CI with coverage attached, so the same measurement runs
+on every pull request and the figure after these branches merge is comparable
+to the figure before them.
 
 ## Verifying this
 
