@@ -187,9 +187,8 @@ spend most of their commits on — account enumeration and rate limiting in the
 first, the password policy in the second, the ungated release in the third,
 security headers and error handling in the fourth.
 
-The scan is wired into CI with coverage attached, so the same measurement runs
-on every pull request and the figure after these branches merge is comparable
-to the figure before them.
+The same analysis runs on every push, so the figure after these branches
+merge is measured the same way as the figure before them.
 
 ## Verifying this
 
