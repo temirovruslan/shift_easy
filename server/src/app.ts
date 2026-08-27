@@ -10,6 +10,7 @@ import { errorHandler, notFound } from "./middleware/error.middleware";
 
 // routers
 import authRouter from "./routes/auth.routes";
+import healthRouter from "./routes/health.routes";
 import shiftsRouter from "./routes/shifts.routes";
 import userRouter from "./routes/user.routes";
 import siteRouter from "./routes/site.routes";
@@ -36,6 +37,10 @@ if (!isTest) {
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // routers
+// Before the other routers and outside auth: whatever is probing this has no
+// credentials and needs an answer even when the rest of the app cannot serve.
+app.use("/api/health", healthRouter);
+
 app.use("/api/auth", authRouter);
 app.use("/api/shifts", shiftsRouter);
 app.use("/api/user", userRouter);
