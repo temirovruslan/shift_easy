@@ -1,13 +1,37 @@
 import { Request, Response } from "express";
 import { hashPassword } from "../utils/hash.utils";
-import UserModel from "../models/User.model";
+import UserModel, { IUser } from "../models/User.model";
 import SiteModel from "../models/Site.model";
 import { sendInviteEmail } from "../utils/email.utils";
 import crypto from "crypto";
+import {
+  AssignWorkersBody,
+  CreateWorkerBody,
+  UpdateWorkerBody,
+} from "../schemas/worker.schema";
 import { success } from "zod";
 
-export const createWorker = async (req: Request, res: Response) => {
+type WorkerIdParam = { id: string };
+type SiteIdParam = { siteId: string };
+
+/**
+ * Loads a worker that belongs to the requesting manager's company.
+ *
+ * Every manager-facing worker route must go through this. `requireManager`
+ * only proves the caller is *a* manager, not that the worker in the URL is
+ * theirs, so looking a worker up by id alone lets one company reach into
+ * another. Missing and out-of-company workers both come back as `null` so the
+ * caller answers 404 either way and never confirms that the id exists.
+ */
+const findCompanyWorker = (workerId: string, company: IUser["company"]) =>
+  UserModel.findOne({ _id: workerId, role: "worker", company });
+
+export const createWorker = async (
+  req: Request<unknown, unknown, CreateWorkerBody>,
+  res: Response,
+) => {
   const { name, email, siteId, occupation } = req.body;
+  const company = req.user.company;
 
   const existing = await UserModel.findOne({ email });
   if (existing) {
@@ -15,6 +39,14 @@ export const createWorker = async (req: Request, res: Response) => {
       success: false,
       message: "A user with this email already exists",
     });
+    return;
+  }
+
+  // Resolved before anything is written: a site that belongs to someone else,
+  // or to nobody, must not leave a half-created worker behind.
+  const site = siteId ? await SiteModel.findOne({ _id: siteId, company }) : null;
+  if (siteId && !site) {
+    res.status(404).json({ success: false, message: "Site not found" });
     return;
   }
 
@@ -33,18 +65,19 @@ export const createWorker = async (req: Request, res: Response) => {
     email,
     password: tempPassword,
     role: "worker",
-    company: req.user.company,
-    sites: siteId ? [siteId] : [],
+    company,
+    sites: site ? [site._id] : [],
     isActivated: false,
     occupation,
     inviteToken: hashedToken,
     inviteTokenExpires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
   });
 
-  if (siteId) {
-    await SiteModel.findByIdAndUpdate(siteId, {
-      $push: { workers: worker._id },
-    });
+  if (site) {
+    await SiteModel.updateOne(
+      { _id: site._id },
+      { $push: { workers: worker._id } }, // [1]
+    );
   }
 
   const inviteLink = `${process.env.CLIENT_URL}/activate/${rawToken}`;
@@ -66,8 +99,11 @@ export const getWorkers = async (req: Request, res: Response) => {
   res.status(200).json({ success: true, data: workers });
 };
 
-export const getWorker = async (req: Request, res: Response) => {
-  const worker = await UserModel.findById(req.params.id)
+export const getWorker = async (
+  req: Request<WorkerIdParam>,
+  res: Response,
+) => {
+  const worker = await findCompanyWorker(req.params.id, req.user.company)
     .select("name email occupation isActivated sites createdAt")
     .populate("sites", "name");
 
@@ -79,24 +115,54 @@ export const getWorker = async (req: Request, res: Response) => {
   res.status(200).json({ success: true, data: worker });
 };
 
-export const assignWorker = async (req: Request, res: Response) => {
-  const { workerIds } = req.body;
-  const siteId = req.params.siteId;
+export const assignWorker = async (
+  req: Request<SiteIdParam, unknown, AssignWorkersBody>,
+  res: Response,
+) => {
+  const { siteId } = req.params;
+  const company = req.user.company;
+  const requestedIds = [...new Set(req.body.workerIds)];
+
+  const site = await SiteModel.findOne({ _id: siteId, company });
+  if (!site) {
+    res.status(404).json({ success: false, message: "Site not found" });
+    return;
+  }
+
+  // Both sides of the link have to be ours: the site above, and every worker
+  // below. Anything else is either a typo or one company reaching into
+  // another, and neither should be applied halfway.
+  const workers = await UserModel.find({
+    _id: { $in: requestedIds },
+    role: "worker",
+    company,
+  }).select("_id");
+
+  if (workers.length !== requestedIds.length) {
+    res.status(404).json({ success: false, message: "Worker not found" });
+    return;
+  }
+
+  const workerIds = workers.map((worker) => worker._id);
 
   await UserModel.updateMany(
     { _id: { $in: workerIds } },
-    { $addToSet: { sites: siteId } },
+    { $addToSet: { sites: site._id } },
   ); // [3]
-  await SiteModel.findByIdAndUpdate(siteId, {
-    $addToSet: { workers: { $each: workerIds } },
-  });
+  await SiteModel.updateOne(
+    { _id: site._id },
+    { $addToSet: { workers: { $each: workerIds } } },
+  );
 
   res.status(200).json({ success: true });
 };
 
-export const removeWorker = async (req: Request, res: Response) => {
+export const removeWorker = async (
+  req: Request<WorkerIdParam>,
+  res: Response,
+) => {
   const id = req.params.id;
-  const worker = await UserModel.findById(id);
+  const worker = await findCompanyWorker(id, req.user.company);
 
   if (!worker) {
     res.status(404).json({ success: false, message: "Worker not found" });
@@ -119,10 +185,13 @@ export const getArchivedWorkers = async (req: Request, res: Response) => {
   res.status(200).json({ success: true, data: workers });
 };
 
-export const restoreWorker = async (req: Request, res: Response) => {
+export const restoreWorker = async (
+  req: Request<WorkerIdParam>,
+  res: Response,
+) => {
   const id = req.params.id;
 
-  const worker = await UserModel.findById(id);
+  const worker = await findCompanyWorker(id, req.user.company);
   if (!worker) {
     res.status(404).json({ success: false, message: "Worker not found" });
     return;
@@ -131,8 +200,11 @@ export const restoreWorker = async (req: Request, res: Response) => {
   res.status(200).json({ success: true, message: "Worker restored" });
 };
 
-export const sendInvite = async (req: Request, res: Response) => {
-  const user = await UserModel.findById(req.params.id);
+export const sendInvite = async (
+  req: Request<WorkerIdParam>,
+  res: Response,
+) => {
+  const user = await findCompanyWorker(req.params.id, req.user.company);
 
   if (!user) {
     res.status(404).json({ success: false, message: "Worker not found" });
@@ -157,7 +229,10 @@ export const sendInvite = async (req: Request, res: Response) => {
   res.status(200).json({ success: true, message: "Invite sent" });
 };
 
-export const updateWorker = async (req: Request, res: Response) => {
+export const updateWorker = async (
+  req: Request<WorkerIdParam, unknown, UpdateWorkerBody>,
+  res: Response,
+) => {
   const id = req.params.id;
   const { name, email, occupation } = req.body;
 
@@ -166,8 +241,8 @@ export const updateWorker = async (req: Request, res: Response) => {
     res.status(409).json({ success: false, message: "Email already in use" });
     return;
   }
-  const workerUpdated = await UserModel.findByIdAndUpdate(
-    id,
+  const workerUpdated = await UserModel.findOneAndUpdate(
+    { _id: id, role: "worker", company: req.user.company },
     {
       name,
       email,
@@ -177,6 +252,11 @@ export const updateWorker = async (req: Request, res: Response) => {
   )
     .select("name email occupation isActivated sites createdAt")
     .populate("sites", "name");
+
+  if (!workerUpdated) {
+    res.status(404).json({ success: false, message: "Worker not found" });
+    return;
+  }
 
   res.status(200).json({ success: true, data: workerUpdated });
 };

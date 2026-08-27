@@ -4,7 +4,7 @@ import { assignWorker, createWorker, getArchivedWorkers, getWorker, getWorkers, 
 import { protect } from "../middleware/protect.middleware";
 import requireManager from "../middleware/role.middleware";
 import validate from "../middleware/validate.middleware";
-import { workerSchema } from "../schemas/worker.schema";
+import { assignWorkersSchema, updateWorkerSchema, workerSchema } from "../schemas/worker.schema";
 
 
 const router = Router();
@@ -13,9 +13,10 @@ router.post("/", protect, requireManager, validate(workerSchema), asyncHandler(c
 router.get("/", protect, requireManager, asyncHandler(getWorkers));
 router.get("/archived", protect, requireManager, asyncHandler(getArchivedWorkers));
 router.get("/:id", protect, requireManager, asyncHandler(getWorker));
+router.put("/:id", protect, requireManager, validate(updateWorkerSchema), asyncHandler(updateWorker));
 router.delete("/:id", protect, requireManager, asyncHandler(removeWorker));
 router.patch("/restore/:id", protect, requireManager, asyncHandler(restoreWorker));
-router.post("/assign/:siteId", protect, requireManager, asyncHandler(assignWorker));
+router.post("/assign/:siteId", protect, requireManager, validate(assignWorkersSchema), asyncHandler(assignWorker));
 router.post("/:id/invite", protect, requireManager, asyncHandler(sendInvite));
 
 

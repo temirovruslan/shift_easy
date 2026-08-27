@@ -1,36 +1,71 @@
-name: EAS Update (OTA)
+name: Mobile OTA update
 
+# Publishing an OTA update changes the app already installed on people's
+# phones. That is a release, so it is triggered deliberately rather than by
+# any push that happens to touch mobile/.
 on:
-  push:
-    branches: [main]
-    paths:
-      - "mobile/**"
+  workflow_dispatch:
+    inputs:
+      message:
+        description: "Message recorded with the update in EAS"
+        required: false
+        default: "Manual OTA update"
+
+permissions:
+  contents: read
 
 jobs:
-  update:
-    name: Push OTA update to users
-    runs-on: ubuntu-latest
+  verify:
+    name: Verify
+    runs-on: ubuntu-24.04
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+
+      # `npm ci` installs exactly what the lockfile pins and fails if the
+      # manifest and lockfile disagree. `npm install` was free to resolve a
+      # newer version at publish time, in the same job that holds EXPO_TOKEN.
+      - name: Install
+        working-directory: mobile
+        run: npm ci
+
+      - name: Typecheck
+        working-directory: mobile
+        run: npm run typecheck
+
+  publish:
+    name: Publish
+    needs: verify
+    runs-on: ubuntu-24.04
+    # Requires a `mobile-production` environment in repository settings, so
+    # the token lives behind an approval rather than in the job itself.
+    environment: mobile-production
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
           cache: npm
           cache-dependency-path: mobile/package-lock.json
 
       - name: Setup EAS
         uses: expo/expo-github-action@v8
         with:
-          eas-version: latest
+          eas-version: 22.6.0
           token: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Install dependencies
+      # `--ignore-scripts` keeps third party lifecycle scripts from running in
+      # the job that can publish to production devices.
+      - name: Install
         working-directory: mobile
-        run: npm install
+        run: npm ci --ignore-scripts
 
       - name: Publish OTA update
         working-directory: mobile
-        run: eas update --auto --branch production
+        run: eas update --branch production --message "${{ inputs.message }}"

@@ -553,6 +553,43 @@
           "404": { "description": "Worker not found" }
         }
       },
+      "put": {
+        "tags": ["Workers"],
+        "summary": "Update Worker",
+        "description": "Updates a worker's name, email and occupation. Manager only.",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "Worker ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["name", "email", "occupation"],
+                "properties": {
+                  "name": { "type": "string", "example": "John Smith" },
+                  "email": { "type": "string", "example": "john@example.com" },
+                  "occupation": { "type": "string", "example": "Electrician" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Worker updated" },
+          "400": { "description": "Validation error" },
+          "404": { "description": "Worker not found" },
+          "409": { "description": "Email already in use" }
+        }
+      },
       "delete": {
         "tags": ["Workers"],
         "summary": "Archive Worker",

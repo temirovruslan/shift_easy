@@ -1,10 +1,24 @@
-import { Request, Response, NextFunction } from "express"
+import { Request, Response, NextFunction, RequestHandler } from "express"
+import { ParamsDictionary } from "express-serve-static-core"
+import { ParsedQs } from "qs"
 
-type AsyncFn = (req: Request, res: Response, next: NextFunction) => Promise<any> 
+// [1]
+type AsyncFn<P, ResBody, ReqBody, ReqQuery> = (
+    req: Request<P, ResBody, ReqBody, ReqQuery>,
+    res: Response<ResBody>,
+    next: NextFunction,
+) => Promise<unknown>
 
 // [2]
-const asyncHandler = (fn: AsyncFn) => {
-    return (req: Request, res: Response, next: NextFunction) => {
+const asyncHandler = <
+    P = ParamsDictionary,
+    ResBody = any,
+    ReqBody = any,
+    ReqQuery = ParsedQs,
+>(
+    fn: AsyncFn<P, ResBody, ReqBody, ReqQuery>,
+): RequestHandler<P, ResBody, ReqBody, ReqQuery> => {
+    return (req, res, next) => {
         fn(req, res, next).catch(next) // [3]
     }
 }
@@ -12,6 +26,18 @@ const asyncHandler = (fn: AsyncFn) => {
 export default asyncHandler
 
 // ─── NOTES ───────────────────────────────────────────────────────────────────
+//
+// [1] WHY THE GENERICS:
+//     the old signature was `(req: Request, ...)`, which pins every wrapped
+//     controller to Express's default params type. A controller could declare
+//     `Request<{ id: string }>` all it liked — passing it through asyncHandler
+//     threw that away, so `req.params.id` stayed `string | string[]` and no
+//     route contract was ever type checked.
+//
+//     carrying P/ResBody/ReqBody/ReqQuery through means the wrapper is now
+//     transparent: whatever the controller declares survives the wrapping, and
+//     a route whose path stops matching the controller's params fails to
+//     compile instead of failing at runtime.
 //
 // [2] WHY THIS EXISTS:
 //     every controller talks to the DB — which can fail. when it fails,

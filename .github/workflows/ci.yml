@@ -1,0 +1,109 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# A burst of pushes should not queue behind itself; only the newest run of a
+# branch is worth finishing.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Nothing here publishes anything, so read access to the code is all it needs.
+permissions:
+  contents: read
+
+jobs:
+  server:
+    name: Server
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+
+      # The suite runs against an in-memory mongod. Caching the binary keeps
+      # every run from downloading it again.
+      - name: Cache mongodb-memory-server binary
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/mongodb-binaries
+          key: mongodb-binaries-${{ runner.os }}
+
+      - name: Install
+        working-directory: server
+        run: npm ci
+
+      - name: Typecheck
+        working-directory: server
+        run: npm run typecheck
+
+      - name: Test
+        working-directory: server
+        run: npm run test:coverage
+
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-coverage
+          path: server/coverage
+          retention-days: 7
+
+  client:
+    name: Web client
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install
+        working-directory: client
+        run: npm ci
+
+      - name: Lint
+        working-directory: client
+        run: npm run lint
+
+      - name: Test
+        working-directory: client
+        run: npm test
+
+      # `build` runs `tsc -b` first, so this is the typecheck as well.
+      - name: Build
+        working-directory: client
+        run: npm run build
+
+  mobile:
+    name: Mobile
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+
+      - name: Install
+        working-directory: mobile
+        run: npm ci
+
+      # The app has no test suite yet. A typecheck is cheap and still catches
+      # the breakage that matters most here: the client drifting away from an
+      # API shape the server changed.
+      - name: Typecheck
+        working-directory: mobile
+        run: npm run typecheck

@@ -20,7 +20,11 @@ const allowedOrigins = [
 ].filter((o): o is string => Boolean(o));
 app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
-app.use(morgan("dev"));
+// Request logging is noise in the test suite, where the useful output is the
+// assertion results rather than a few hundred request lines.
+if (process.env.NODE_ENV !== "test") {
+  app.use(morgan("dev"));
+}
 
 // API docs
 app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
