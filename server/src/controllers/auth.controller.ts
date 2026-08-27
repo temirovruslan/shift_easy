@@ -9,6 +9,7 @@ import { comparePassword, hashPassword } from '../utils/hash.utils'
 import Site from "../models/Site.model";
 import { generateToken } from "../utils/jwt.utils";
 import { env } from "../config/env";
+import { SetPasswordBody, TokenParam } from "../schemas/auth.schema";
 
 
 /**
@@ -122,9 +123,9 @@ export const forgotPassword = asyncHandler(async (req: Request, res: Response) =
 
 
 
-export const resetPassword = asyncHandler(async (req, res) => {
+export const resetPassword = asyncHandler<TokenParam, unknown, SetPasswordBody>(async (req, res) => {
     const { password } = req.body
-    const token = req.params.token as string
+    const token = req.params.token
     const hashedToken = crypto.createHash("sha256").update(token).digest('hex')
     const user = await User.findOne({
         inviteToken: hashedToken,
@@ -148,9 +149,9 @@ export const resetPassword = asyncHandler(async (req, res) => {
 
 
 
-export const activate = asyncHandler(async (req, res) => {
+export const activate = asyncHandler<TokenParam, unknown, SetPasswordBody>(async (req, res) => {
     const { password } = req.body
-    const token = req.params.token as string
+    const token = req.params.token
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex")
 
 

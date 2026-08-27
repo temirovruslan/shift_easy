@@ -7,10 +7,11 @@
     "dev": "nodemon",
     "build": "tsc",
     "start": "node dist/server.js",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
-    "typecheck": "tsc --noEmit"
+    "test:coverage": "vitest run --coverage"
   },
   "keywords": [],
   "author": "",
@@ -31,6 +32,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
@@ -40,11 +42,14 @@
     "@types/supertest": "^7.2.1",
     "@types/swagger-ui-express": "^4.1.8",
     "@vitest/coverage-v8": "^4.1.11",
+    "eslint": "^10.9.1",
+    "globals": "^17.11.0",
     "mongodb-memory-server": "^11.2.0",
     "nodemon": "^3.1.14",
     "supertest": "^7.2.2",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.3",
+    "typescript-eslint": "^8.68.0",
     "vitest": "^4.1.11"
   }
 }

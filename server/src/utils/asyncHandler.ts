@@ -12,8 +12,8 @@ type AsyncFn<P, ResBody, ReqBody, ReqQuery> = (
 // [2]
 const asyncHandler = <
     P = ParamsDictionary,
-    ResBody = any,
-    ReqBody = any,
+    ResBody = unknown,
+    ReqBody = unknown,
     ReqQuery = ParsedQs,
 >(
     fn: AsyncFn<P, ResBody, ReqBody, ReqQuery>,

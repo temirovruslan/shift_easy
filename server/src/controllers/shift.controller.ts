@@ -1,8 +1,9 @@
 import asyncHandler from "../utils/asyncHandler";
 import ShiftModel from "../models/Shift.model";
 import AppError from "../errors/AppError";
+import { StartShiftBody, StopShiftBody } from "../schemas/shift.schema";
 
-export const startShift = asyncHandler(async (req, res) => {
+export const startShift = asyncHandler<never, unknown, StartShiftBody>(async (req, res) => {
   const { siteId } = req.body;
   const worker = req.user; // [1]
   const workerShift = await ShiftModel.findOne({
@@ -30,7 +31,7 @@ export const startShift = asyncHandler(async (req, res) => {
   });
 });
 
-export const stopShift = asyncHandler(async (req, res) => {
+export const stopShift = asyncHandler<never, unknown, StopShiftBody>(async (req, res) => {
   const { notes, materials } = req.body;
 
   const worker = req.user;

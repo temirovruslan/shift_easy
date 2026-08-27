@@ -42,6 +42,9 @@ export const setPasswordSchema = z.object({
     password,
 })
 
+export type SetPasswordBody = z.infer<typeof setPasswordSchema>
+export type TokenParam = { token: string }
+
 // ─── NOTES ───────────────────────────────────────────────────────────────────
 
 //

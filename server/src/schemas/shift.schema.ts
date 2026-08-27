@@ -9,6 +9,10 @@ export const stopShiftSchema = z.object({
   materials: z.string().optional(),
 });
 
+// Derived from the schemas above so validation and types cannot drift apart.
+export type StartShiftBody = z.infer<typeof startShiftSchema>;
+export type StopShiftBody = z.infer<typeof stopShiftSchema>;
+
 
 
 
