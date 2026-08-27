@@ -4,9 +4,11 @@ import UserModel, { IUser } from "../models/User.model";
 import SiteModel from "../models/Site.model";
 import { sendInviteEmail } from "../utils/email.utils";
 import crypto from "crypto";
+import { AssignWorkersBody } from "../schemas/worker.schema";
 import { success } from "zod";
 
 type WorkerIdParam = { id: string };
+type SiteIdParam = { siteId: string };
 
 /**
  * Loads a worker that belongs to the requesting manager's company.
@@ -96,17 +98,44 @@ export const getWorker = async (
   res.status(200).json({ success: true, data: worker });
 };
 
-export const assignWorker = async (req: Request, res: Response) => {
-  const { workerIds } = req.body;
-  const siteId = req.params.siteId;
+export const assignWorker = async (
+  req: Request<SiteIdParam, unknown, AssignWorkersBody>,
+  res: Response,
+) => {
+  const { siteId } = req.params;
+  const company = req.user.company;
+  const requestedIds = [...new Set(req.body.workerIds)];
+
+  const site = await SiteModel.findOne({ _id: siteId, company });
+  if (!site) {
+    res.status(404).json({ success: false, message: "Site not found" });
+    return;
+  }
+
+  // Both sides of the link have to be ours: the site above, and every worker
+  // below. Anything else is either a typo or one company reaching into
+  // another, and neither should be applied halfway.
+  const workers = await UserModel.find({
+    _id: { $in: requestedIds },
+    role: "worker",
+    company,
+  }).select("_id");
+
+  if (workers.length !== requestedIds.length) {
+    res.status(404).json({ success: false, message: "Worker not found" });
+    return;
+  }
+
+  const workerIds = workers.map((worker) => worker._id);
 
   await UserModel.updateMany(
     { _id: { $in: workerIds } },
-    { $addToSet: { sites: siteId } },
+    { $addToSet: { sites: site._id } },
   ); // [3]
-  await SiteModel.findByIdAndUpdate(siteId, {
-    $addToSet: { workers: { $each: workerIds } },
-  });
+  await SiteModel.updateOne(
+    { _id: site._id },
+    { $addToSet: { workers: { $each: workerIds } } },
+  );
 
   res.status(200).json({ success: true });
 };
