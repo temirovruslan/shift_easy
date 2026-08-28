@@ -109,16 +109,23 @@ Interactive Swagger docs are served at `/api/docs` when the server is running.
 
 ## Documentation
 
-| Document | What it covers |
-|---|---|
-| [Setup and deployment](documentation/SETUP.md) | Running locally, environment variables, deployment targets |
-| [Releasing and rolling back](documentation/RELEASING.md) | Tagging a release, promoting each component, rolling back |
-| [Email](documentation/email-setup.md) | How invite and reset mail is sent, and what to check when it stops |
-| [Design documentation](documentation/design-documentation.html) | Screens and visual language |
-| [Registration flow](documentation/registration-flow.html) | The sign-up journey, step by step |
-| [Data model](documentation/data-model.drawio.xml) | Entity diagram, opens in [draw.io](https://app.diagrams.net) |
-| [Decisions](documentation/decisions/) | Why particular choices were made, and what they cost |
-| [Handoff](documentation/handoff.md) | Current state, what is unfinished, and how to confirm both |
+Each document is marked with how far it can be trusted: **current** matches
+the code, **design intent** describes what was drawn rather than what ships.
+
+| Document | Status | What it covers |
+|---|---|---|
+| [Contributing](CONTRIBUTING.md) | current | Layout, domain rules, how to verify a change — start here |
+| [Handoff](documentation/handoff.md) | current | Where things stand and what is unfinished |
+| [Setup and deployment](documentation/SETUP.md) | current | Running locally, environment variables, deployment targets |
+| [Releasing and rolling back](documentation/RELEASING.md) | current | Tagging a release, promoting each component, rolling back |
+| [Email](documentation/email-setup.md) | current | How invite and reset mail is sent, and what to check when it stops |
+| [Decisions](documentation/decisions/) | current | Why particular choices were made, and what they cost |
+| [Data model](documentation/data-model.drawio.xml) | current | Entity diagram, opens in [draw.io](https://app.diagrams.net) |
+| [Design documentation](documentation/design-documentation.html) | design intent | Screens and visual language. Not everything drawn is built — see the known defects in [CONTRIBUTING.md](CONTRIBUTING.md), particularly site selection for a worker assigned to several sites |
+| [Registration flow](documentation/registration-flow.html) | design intent | The sign-up journey as designed |
+
+The API contract is served at `/api/docs` while the server runs and lives in
+`server/src/swagger.json`.
 
 ## Contributing
 

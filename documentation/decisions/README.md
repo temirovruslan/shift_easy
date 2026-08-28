@@ -14,6 +14,7 @@ They are not documentation of how the code works — that is
 | [2](0002-freeze-lint-debt-rather-than-clear-it.md) | Freeze the existing lint debt instead of clearing or ignoring it |
 | [3](0003-keep-the-mobile-app-gate-its-release.md) | Keep the mobile app, remove its automatic release |
 | [4](0004-defer-transactions.md) | Defer transactions on the two-collection writes |
+| [5](0005-first-site-until-selection-exists.md) | A multi-site worker gets their first site until selection is built |
 
 Add one when a choice will look arbitrary later, or when you rejected an
 option someone will reasonably propose again.
