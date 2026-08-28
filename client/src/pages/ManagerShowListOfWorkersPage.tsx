@@ -21,6 +21,7 @@ import {
 } from "../api/worker";
 import { getSites } from "../api/sites";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 // ─── HELPERS ──────────────────────────────────────────────────────────────────
 
@@ -306,8 +307,18 @@ const AddWorkerModal = ({
 
   const { mutate: addWorker, isPending } = useMutation({
     mutationFn: (payload: any) => createWorker(payload),
-    onSuccess: () => {
+    onSuccess: (res) => {
       queryClient.invalidateQueries({ queryKey: ["workers"] });
+      // The worker is created either way, but the invite is what lets them
+      // sign in. A silent email failure left the manager waiting on someone
+      // who never received a link, so the one case that needs saying is said.
+      if (res?.inviteSent === false) {
+        toast.error(
+          `${name.trim()} was added, but the invite email did not send. ` +
+            `Open their profile and resend it.`,
+          { duration: 8000 },
+        );
+      }
       onCreated();
       onClose();
     },

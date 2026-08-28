@@ -136,10 +136,12 @@ export const resetPassword = asyncHandler<TokenParam, unknown, SetPasswordBody>(
     }
     const hashedPassword = await hashPassword(password)
 
+    // $unset, not `undefined`. Mongoose strips undefined values out of an
+    // update object, so the previous version left the token in place and a
+    // used reset link kept working until it expired.
     await User.findByIdAndUpdate(user._id, {
-        password: hashedPassword,
-        inviteToken: undefined,
-        inviteTokenExpires: undefined
+        $set: { password: hashedPassword },
+        $unset: { inviteToken: 1, inviteTokenExpires: 1 },
     })
     res.status(200).json({
         success: true,
@@ -165,16 +167,17 @@ export const activate = asyncHandler<TokenParam, unknown, SetPasswordBody>(async
     }
 
     const hashedPassword = await hashPassword(password)
+    // Same as reset: the token has to be removed, not set to undefined.
+    // An invite is valid for thirty days, so a link that survived being used
+    // let anyone holding it take the account over for a month.
     await User.findByIdAndUpdate(user._id, {
-        password: hashedPassword,
-        inviteToken: undefined,
-        inviteTokenExpires: undefined,
-        isActivated: true
+        $set: { password: hashedPassword, isActivated: true },
+        $unset: { inviteToken: 1, inviteTokenExpires: 1 },
     })
 
     res.status(200).json({
         success: true,
-        message: "Password sent"
+        message: "Account activated"
     })
 })
 // asyncHandler — any async controller must be wrapped so errors are caught automatically.

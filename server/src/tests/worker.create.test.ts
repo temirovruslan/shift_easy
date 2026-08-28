@@ -105,3 +105,55 @@ describe("creating a worker", () => {
     expect(res.status).toBe(409);
   });
 });
+
+/**
+ * Creating a worker and inviting them are separate outcomes. The invite goes
+ * through an external provider that fails on its own — a rejected key, an
+ * unverified sender, an outage — and reporting only the creation turned a
+ * silent failure into an apparent success.
+ */
+describe("invite delivery is reported separately from creation", () => {
+  let acme: Tenant;
+
+  beforeEach(async () => {
+    acme = await createTenant("Acme");
+  });
+
+  it("says the invite was sent when it was", async () => {
+    const res = await request(app)
+      .post("/api/worker")
+      .set("Authorization", bearer(acme.managerToken))
+      .send(newWorker);
+
+    expect(res.status).toBe(201);
+    expect(res.body.inviteSent).toBe(true);
+  });
+
+  it("still creates the worker when the invite fails, and says so", async () => {
+    const { sendInviteEmail } = await import("../utils/email.utils");
+    vi.mocked(sendInviteEmail).mockRejectedValueOnce(new Error("provider down"));
+
+    const res = await request(app)
+      .post("/api/worker")
+      .set("Authorization", bearer(acme.managerToken))
+      .send(newWorker);
+
+    // The worker exists — losing them because an email bounced would be worse.
+    expect(res.status).toBe(201);
+    expect(res.body.inviteSent).toBe(false);
+    expect(await UserModel.findOne({ email: newWorker.email })).not.toBeNull();
+  });
+
+  it("reports a failed resend as a failure, not a success", async () => {
+    const { sendInviteEmail } = await import("../utils/email.utils");
+    vi.mocked(sendInviteEmail).mockRejectedValueOnce(new Error("provider down"));
+
+    const res = await request(app)
+      .post(`/api/worker/${acme.worker._id}/invite`)
+      .set("Authorization", bearer(acme.managerToken));
+
+    // Here sending the invite is the entire operation, so 200 would be a lie.
+    expect(res.status).toBe(502);
+    expect(res.body.success).toBe(false);
+  });
+});
