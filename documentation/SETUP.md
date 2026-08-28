@@ -38,14 +38,6 @@ npm run dev             # http://localhost:5173
 
 Needs `VITE_API_URL` pointing at the API, e.g. `http://localhost:5000/api`.
 
-### Mobile (Expo)
-
-```bash
-cd mobile
-npm install
-npx expo start
-```
-
 ---
 
 ## Troubleshooting
@@ -65,7 +57,6 @@ Put it in `MONGO_URI`; no code change is required.
 |---|---|---|
 | API | Render | Render → Service → Environment |
 | Web client | Vercel | Vercel → Project → Environment Variables |
-| Mobile | Expo EAS | `mobile/eas.json` and EAS secrets |
 | Database | MongoDB Atlas | Atlas → Database Access / Network Access |
 | Transactional email | Brevo | `BREVO_API_KEY` on the API host |
 | Domain and DNS | Registrar of record | Registrar control panel |

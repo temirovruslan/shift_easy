@@ -9,10 +9,10 @@ this when you leave work in a state someone else has to pick up.
 
 ```bash
 npm run install:all
-npm run verify        # typecheck ×3, lint, 90 tests
+npm run verify        # typecheck, lint, 100 tests
 ```
 
-At the time of writing: 63 server tests, 27 client tests, 83% statement
+At the time of writing: 66 server tests, 34 client tests, 83% statement
 coverage on the server, no known vulnerabilities in either application, no
 lint errors. CI runs the same three jobs on every pull request.
 
@@ -28,7 +28,7 @@ areas it touched:
 | `server/src/config/`, `server/src/middleware/` | Environment validated at startup; error handling moved out of `app.ts` |
 | `server/src/routes/auth.routes.ts` | Rate limiting; responses no longer reveal which addresses are registered |
 | `server/src/tests/` | The suite, from nothing to 63 tests |
-| `.github/workflows/` | Checks on every pull request; releases by tag; mobile publishing behind a gate |
+| `.github/workflows/` | Checks on every pull request; releases by tag |
 
 ## Unfinished, in the order I would pick it up
 
@@ -44,7 +44,6 @@ areas it touched:
    `client/package.json` only moves down.
 5. **No transactions** on the two-collection writes — see
    [decision 4](decisions/0004-defer-transactions.md).
-6. **The mobile app has no tests** and is not released to anyone.
 
 ## Before changing anything
 
@@ -55,6 +54,5 @@ lint budget.
 
 ## Outside the repository
 
-Two settings are not in version control and have to stay switched on: branch
-protection requiring the three checks on `main`, and the `mobile-production`
-environment the OTA workflow publishes through.
+One setting is not in version control and has to stay switched on: branch
+protection on `main`, requiring the Server and Web client checks.

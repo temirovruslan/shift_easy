@@ -97,26 +97,3 @@ jobs:
           name: client-dist
           path: client/dist
           retention-days: 7
-
-  mobile:
-    name: Mobile
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
-
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
-        with:
-          node-version-file: .nvmrc
-          cache: npm
-          cache-dependency-path: mobile/package-lock.json
-
-      - name: Install
-        working-directory: mobile
-        run: npm ci
-
-      # The app has no test suite yet. A typecheck is cheap and still catches
-      # the breakage that matters most here: the client drifting away from an
-      # API shape the server changed.
-      - name: Typecheck
-        working-directory: mobile
-        run: npm run typecheck

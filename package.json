@@ -6,8 +6,8 @@
     "node": ">=24"
   },
   "scripts": {
-    "install:all": "npm --prefix server ci && npm --prefix client ci && npm --prefix mobile ci",
-    "typecheck": "npm --prefix server run typecheck && npm --prefix client run typecheck && npm --prefix mobile run typecheck",
+    "install:all": "npm --prefix server ci && npm --prefix client ci",
+    "typecheck": "npm --prefix server run typecheck && npm --prefix client run typecheck",
     "lint": "npm --prefix server run lint && npm --prefix client run lint",
     "test": "npm --prefix server test && npm --prefix client test",
     "build": "npm --prefix server run build && npm --prefix client run build",
