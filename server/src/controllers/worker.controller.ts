@@ -80,12 +80,21 @@ export const createWorker = async (
     );
   }
 
+  // Creating the worker and inviting them are two outcomes, and the second
+  // one fails on its own — a rejected API key, an unverified sender, a
+  // provider outage. Reporting only the first made a silent failure look like
+  // success: the manager saw the worker appear and never learned the email
+  // had not gone. The worker is created either way; the response says whether
+  // the invite left, and the UI can offer to resend.
   const inviteLink = `${env.CLIENT_URL}/activate/${rawToken}`;
-  sendInviteEmail(worker.email, worker.name, inviteLink).catch((err) =>
-    console.error("Invite email failed:", err),
-  );
+  const inviteSent = await sendInviteEmail(worker.email, worker.name, inviteLink)
+    .then(() => true)
+    .catch((err) => {
+      console.error("Invite email failed:", err);
+      return false;
+    });
 
-  res.status(201).json({ success: true, data: worker });
+  res.status(201).json({ success: true, data: worker, inviteSent });
 };
 
 export const getWorkers = async (req: Request, res: Response) => {
@@ -222,10 +231,21 @@ export const sendInvite = async (
     inviteTokenExpires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
   });
 
+  // Unlike creating a worker, sending the invite is the whole operation here.
+  // Answering 200 when the provider refused it would be a lie, so this one
+  // reports the failure as a failure.
   const inviteLink = `${env.CLIENT_URL}/activate/${rawToken}`;
-  sendInviteEmail(user.email, user.name, inviteLink).catch((err) =>
-    console.error("Invite email failed:", err),
-  );
+  try {
+    await sendInviteEmail(user.email, user.name, inviteLink);
+  } catch (err) {
+    console.error("Invite email failed:", err);
+    res.status(502).json({
+      success: false,
+      message: "Could not send the invite email. Please try again.",
+    });
+    return;
+  }
+
   res.status(200).json({ success: true, message: "Invite sent" });
 };
 

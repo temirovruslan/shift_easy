@@ -135,6 +135,10 @@ Carried over from a scratch list that used to sit in `documentation/`. They
 are recorded here rather than dropped: none is fixed, and each one is
 something a user can hit.
 
+- ~~**A failed invite email looked like success.**~~ Fixed. Creating a worker
+  and inviting them are separate outcomes now: the response carries
+  `inviteSent`, the manager is told when the email did not go, and a failed
+  resend answers 502 rather than 200.
 - ~~**Hours are truncated in the worker's period total.**~~ Fixed. The
   claim as originally written was broader than the defect: per-shift and
   monthly figures always showed minutes. Only the "Total hours" card dropped
