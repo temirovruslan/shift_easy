@@ -46,7 +46,16 @@ If you touched the server and are unsure whether a client depends on it,
 assume it does and run everything.
 
 The server suite runs against an in-memory MongoDB, so it needs no running
-database and no Docker. First run downloads a mongod binary.
+database and no Docker. First run downloads a mongod binary; CI caches it.
+Nothing else is required — no environment file, no external service. The
+email provider is mocked, and `src/tests/setup.ts` supplies the environment
+the application validates at startup.
+
+`journey.test.ts` is the one that matters most. It walks the entire product
+in the order a real company lives it: a manager registers, invites a worker,
+the worker activates from the emailed link, works a shift, and the hours
+appear in the manager's export. Every step depends on the one before, so a
+break anywhere fails it even when the individual endpoints still pass.
 
 ## Rules that matter here
 

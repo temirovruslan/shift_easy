@@ -25,6 +25,17 @@ export default defineConfig({
       provider: 'v8',
       // lcov is the only format SonarCloud reads.
       reporter: ['text', 'lcov'],
+      // A floor, not a target. It is low because most of this application is
+      // page components with no tests, and stating that plainly is more useful
+      // than a number that flatters. What it buys is a ratchet: coverage
+      // cannot fall below where it is today without failing the build. Raise
+      // it whenever a batch of components gains tests.
+      thresholds: {
+        statements: 3.5,
+        branches: 55,
+        functions: 30,
+        lines: 3.5,
+      },
       include: ['src/**/*.{ts,tsx}'],
       exclude: ['src/test/**', 'src/**/*.test.{ts,tsx}', 'src/main.tsx'],
     },
