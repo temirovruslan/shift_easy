@@ -5,15 +5,9 @@ import { useAuth } from "../context/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { getAllShifts } from "../api/shifts";
 import toast from "react-hot-toast";
+import { formatDuration as fmt } from "../lib/time";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-
-const fmt = (minutes: number) => {
-  if (minutes < 60) return `${minutes}m`;
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  return m === 0 ? `${h}h` : `${h}h ${m}m`;
-};
 
 // ─── Toast UI ─────────────────────────────────────────────────────────────────
 

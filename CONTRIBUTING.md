@@ -123,9 +123,11 @@ Carried over from a scratch list that used to sit in `documentation/`. They
 are recorded here rather than dropped: none is fixed, and each one is
 something a user can hit.
 
-- **Hours are truncated, not rounded.** The display uses `Math.floor`, so a
-  shift of 7h50m reads as 7h. Anyone paid by the hour is short-changed by the
-  interface. This is the one to fix first.
+- ~~**Hours are truncated in the worker's period total.**~~ Fixed. The
+  claim as originally written was broader than the defect: per-shift and
+  monthly figures always showed minutes. Only the "Total hours" card dropped
+  them, and only because five copies of the same formatting had drifted apart.
+  There is one now, in `client/src/lib/time.ts`, with tests.
 - **A worker assigned to several sites sees the wrong one.**
   `WorkerHomePage.tsx` shows the first site in the array rather than the one
   they are currently working.

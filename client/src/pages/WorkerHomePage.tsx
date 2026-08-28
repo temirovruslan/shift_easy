@@ -8,6 +8,7 @@ import type { Shift } from "../types";
 import Loader from "../components/Loader";
 import { useNavigate } from "react-router-dom";
 import NavBarWorker from "../components/NavBar";
+import { formatDuration } from "../lib/time";
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 
@@ -30,12 +31,6 @@ const formatDate = (dateStr: string) => {
     day: "numeric",
     month: "short",
   });
-};
-
-const formatDuration = (minutes: number) => {
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  return m > 0 ? `${h}h ${m}m` : `${h}h`;
 };
 
 const formatElapsed = (seconds: number) => {
