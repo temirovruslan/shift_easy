@@ -44,6 +44,22 @@ The mobile app is deliberately the strictest of the three: an OTA update
 changes software already installed on someone's phone, and it cannot be
 recalled the way a server deploy can.
 
+## Confirming a deploy
+
+Every component answers the same question differently, but the API has a
+check built for it:
+
+```bash
+curl -s -o /dev/null -w '%{http_code}\n' https://<api-host>/api/health
+```
+
+`200` means the process is up **and** reached the database. `503` means it
+started but cannot serve — the failure a port check would miss. Anything else
+means the deploy did not land.
+
+Point the host's own health check at the same path so a bad deploy is caught
+without anyone watching.
+
 ## Rolling back
 
 Roll back first, diagnose afterwards. Every path below returns to a version

@@ -89,6 +89,15 @@ jobs:
         working-directory: client
         run: npm run build
 
+      # The bundle this commit produces, kept so a reviewer can inspect what a
+      # change actually ships rather than rebuilding it themselves.
+      - name: Upload the bundle
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: client-dist
+          path: client/dist
+          retention-days: 7
+
   mobile:
     name: Mobile
     runs-on: ubuntu-24.04

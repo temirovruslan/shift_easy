@@ -37,6 +37,17 @@
     }
   },
   "paths": {
+    "/api/health": {
+      "get": {
+        "tags": ["Health"],
+        "summary": "Health Check",
+        "description": "Liveness and readiness. Answers 503 when the database is unreachable, so a deploy that starts but cannot serve fails its own check. No authentication.",
+        "responses": {
+          "200": { "description": "Service healthy and connected to the database" },
+          "503": { "description": "Service running but the database is unreachable" }
+        }
+      }
+    },
     "/api/auth/register": {
       "post": {
         "tags": ["Auth"],
