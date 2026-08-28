@@ -59,3 +59,49 @@ describe("auth endpoints do not reveal which emails are registered", () => {
     expect(res.body.data.token).toBeTruthy();
   });
 });
+
+/**
+ * check-email was the only auth route mounted without a schema. Mongoose
+ * treats an object as a set of query operators rather than a malformed
+ * string, so `{ $ne: null }` was a valid query that matched the first user in
+ * the collection — an unvalidated operator reaching the database.
+ */
+describe("check-email rejects query operators", () => {
+  it("refuses an object where an email address belongs", async () => {
+    await createTenant("Acme");
+
+    const res = await request(app)
+      .post("/api/auth/check-email")
+      .set("X-Forwarded-For", newClientAddress())
+      .send({ email: { $ne: null } });
+
+    expect(res.status).toBe(400);
+    expect(res.body.errors.email).toBeDefined();
+  });
+
+  it("refuses an array as well", async () => {
+    const res = await request(app)
+      .post("/api/auth/check-email")
+      .set("X-Forwarded-For", newClientAddress())
+      .send({ email: ["a@b.test"] });
+
+    expect(res.status).toBe(400);
+  });
+
+  it("still answers a real address", async () => {
+    const acme = await createTenant("Acme");
+
+    const taken = await request(app)
+      .post("/api/auth/check-email")
+      .set("X-Forwarded-For", newClientAddress())
+      .send({ email: acme.manager.email });
+    expect(taken.status).toBe(200);
+    expect(taken.body.available).toBe(false);
+
+    const free = await request(app)
+      .post("/api/auth/check-email")
+      .set("X-Forwarded-For", newClientAddress())
+      .send({ email: "nobody@nowhere.test" });
+    expect(free.body.available).toBe(true);
+  });
+});

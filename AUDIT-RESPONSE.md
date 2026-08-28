@@ -188,6 +188,25 @@ security headers and error handling in the fourth.
 The same analysis runs on every push, so the figure after these branches
 merge is measured the same way as the figure before them.
 
+## Three tools, checked independently
+
+The dependency and security findings are not self-reported. Three scanners
+with separate vulnerability databases were pointed at this repository:
+
+| Tool | Before | Now |
+|---|---|---|
+| `npm audit` | 6 in the server, 9 in the client, 24 in mobile | 0 in the server, 0 in the client |
+| SonarQube Cloud | Security **E**, 10 issues; Reliability **C**, 131 issues | Quality Gate passing |
+| Snyk | not connected | 0 issues across the three manifests it imported |
+
+Two caveats worth stating rather than leaving for someone to notice. Snyk did
+not import `mobile/package.json`, so its result covers the server and the web
+client — which is what remains after the mobile app was removed, but it is not
+a statement about the repository as it stood when it imported. And SonarQube's
+automatic analysis reads the code without coverage, so its verdict is about
+issues rather than how much of the code is exercised; the coverage numbers in
+this document come from the suites themselves.
+
 ## Verifying this
 
 ```bash

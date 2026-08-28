@@ -24,6 +24,13 @@ export const forgotPasswordSchema = z.object({
     email: z.string().email(),
 })
 
+// The register form asks whether an address is taken. Without this the value
+// reached Mongoose unchecked, and an object like { $ne: null } is a valid
+// query rather than a malformed email — the one auth route that had no schema.
+export const checkEmailSchema = z.object({
+    email: z.string().email(),
+})
+
 // [5] the reset-password and activate pages send only { password } — the
 //     "passwords match" check happens in the UI. This validates the password
 //     itself server-side so a weak/missing one is rejected with a clean 400

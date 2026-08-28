@@ -55,21 +55,30 @@ jobs:
       # The artefacts are what was actually tested at this tag. Keeping them
       # attached to the release means a rollback does not depend on being able
       # to rebuild an old commit months later.
+      # Values reach the shell through the environment, never by string
+      # interpolation. A tag name is attacker-controlled input as far as this
+      # job is concerned, and `${{ }}` inside `run:` is substituted before the
+      # shell sees it — a tag containing shell syntax would execute here, in a
+      # job that can write releases.
       - name: Package the bundles
+        env:
+          TAG: ${{ github.ref_name }}
         run: |
-          tar -czf server-dist-${{ github.ref_name }}.tar.gz -C server dist
-          tar -czf client-dist-${{ github.ref_name }}.tar.gz -C client dist
+          tar -czf "server-dist-$TAG.tar.gz" -C server dist
+          tar -czf "client-dist-$TAG.tar.gz" -C client dist
 
       - name: Write the release notes
         id: notes
+        env:
+          TAG: ${{ github.ref_name }}
         run: |
-          PREVIOUS=$(git describe --tags --abbrev=0 "${{ github.ref_name }}^" 2>/dev/null || echo "")
+          PREVIOUS=$(git describe --tags --abbrev=0 "$TAG^" 2>/dev/null || echo "")
           {
             echo "notes<<EOF"
             if [ -n "$PREVIOUS" ]; then
               echo "### Changes since $PREVIOUS"
               echo
-              git log --no-merges --pretty="- %s" "$PREVIOUS..${{ github.ref_name }}"
+              git log --no-merges --pretty="- %s" "$PREVIOUS..$TAG"
               echo
               echo "**Rollback:** redeploy \`$PREVIOUS\`. See [documentation/RELEASING.md](documentation/RELEASING.md)."
             else
@@ -83,9 +92,11 @@ jobs:
       - name: Create the GitHub release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+          NOTES: ${{ steps.notes.outputs.notes }}
         run: |
-          gh release create "${{ github.ref_name }}" \
-            --title "${{ github.ref_name }}" \
-            --notes "${{ steps.notes.outputs.notes }}" \
-            server-dist-${{ github.ref_name }}.tar.gz \
-            client-dist-${{ github.ref_name }}.tar.gz
+          gh release create "$TAG" \
+            --title "$TAG" \
+            --notes "$NOTES" \
+            "server-dist-$TAG.tar.gz" \
+            "client-dist-$TAG.tar.gz"
