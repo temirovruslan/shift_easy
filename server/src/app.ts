@@ -34,7 +34,16 @@ if (!isTest) {
 }
 
 // API docs
-app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+// The OpenAPI file cannot know which host it is being served from, so the
+// server list is filled in here rather than committed pointing at localhost.
+app.use(
+  "/api/docs",
+  swaggerUi.serve,
+  swaggerUi.setup({
+    ...swaggerDocument,
+    servers: [{ url: env.PUBLIC_API_URL, description: "This server" }],
+  }),
+);
 
 // routers
 // Before the other routers and outside auth: whatever is probing this has no

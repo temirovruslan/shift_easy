@@ -3,9 +3,16 @@ import { env } from "../config/env";
 
 const getClient = () => new BrevoClient({ apiKey: env.BREVO_API_KEY });
 
+/**
+ * Written out at each send site before, so changing the address meant finding
+ * every copy. Brevo rejects a sender it has not verified, which makes this a
+ * value that differs per environment rather than a constant.
+ */
+const sender = { name: "ShiftEasy", email: env.EMAIL_FROM };
+
 export const sendPasswordResetEmail = async (to: string, resetLink: string) => {
   await getClient().transactionalEmails.sendTransacEmail({
-    sender: { name: "ShiftEasy", email: "noreply@shifteasy.site" },
+    sender,
     to: [{ email: to }],
     subject: "Reset your ShiftEasy password",
     htmlContent: `
@@ -39,7 +46,7 @@ export const sendPasswordResetEmail = async (to: string, resetLink: string) => {
 
 export const sendInviteEmail = async (to: string, name: string, inviteLink: string) => {
   await getClient().transactionalEmails.sendTransacEmail({
-    sender: { name: "ShiftEasy", email: "noreply@shifteasy.site" },
+    sender,
     to: [{ email: to }],
     subject: "You've been invited to ShiftEasy",
     htmlContent: `
