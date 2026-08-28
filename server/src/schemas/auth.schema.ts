@@ -24,16 +24,6 @@ export const forgotPasswordSchema = z.object({
     email: z.string().email(),
 })
 
-export const resetPasswordSchema = z.object({
-    password,
-    confirmPassword: z.string(),
-}).refine(data => data.password === data.confirmPassword, { // [2]
-    message: 'Passwords do not match',
-    path: ['confirmPassword'], // [3]
-})
-
-export const activateSchema = resetPasswordSchema // [4]
-
 // [5] the reset-password and activate pages send only { password } — the
 //     "passwords match" check happens in the UI. This validates the password
 //     itself server-side so a weak/missing one is rejected with a clean 400
@@ -47,20 +37,6 @@ export type TokenParam = { token: string }
 
 // ─── NOTES ───────────────────────────────────────────────────────────────────
 
-//
-// [2] normally you check one field at a time — is email valid? is password long enough?
-//     but here you need to check two fields against each other: do they match?
-//     .refine() does that. it runs after all fields pass, then compares password vs confirmPassword.
-//     if they don't match → user sees "Passwords do not match" on the screen immediately.
-//     → "abc123" vs "abc999" → fails → error shows up, form doesn't submit
-//
-// [3] path: ['confirmPassword'] — pins the error to the confirmPassword input box.
-//     you COULD do this manually with if (password !== confirmPassword) throw new AppError(...)
-//     but then you get a general error with no field attached.
-//     with path — frontend knows exactly which input to highlight red. no extra work needed.
-
-// [4] activateSchema = same as resetPasswordSchema.
-//     worker clicks invite link → sets password + confirm password. same rules, no need to rewrite.
 //
 // USAGE:
 //   const parsed = registerSchema.safeParse(req.body)
