@@ -4,7 +4,7 @@ Thirty-six commits across seven branches, in priority order. Every branch builds
 on the previous one, so they are reviewed and merged in the order listed.
 
 `npm run verify` at the repository root typechecks all three applications,
-lints the client and runs 90 tests. It passes on every commit.
+lints the client and runs 100 tests. It passes on every commit.
 
 | # | Branch | Commits | What it addresses |
 |---|---|---|---|
@@ -50,7 +50,7 @@ array. Fixed in `6ddf75a`, with a regression test that ends by starting a
 shift as the new worker.
 
 **`PUT /api/worker/:id` did not exist.**
-`client/src/api/worker.ts` and `mobile/src/api/manager.ts` both call it, and
+`client/src/api/worker.ts` called it, and
 the web client has a complete edit form behind it. The route was never
 registered and the endpoint was absent from the OpenAPI document. Editing a
 worker was broken in both clients, and the failure was invisible because
@@ -131,15 +131,15 @@ run and can only shrink, since one more `any` fails the build. The single
 genuine error was fixed rather than capped. The cap belongs at zero and comes
 down as batches are cleared.
 
-**OTA publishing is manual now.** The workflow released to installed apps on
-every push touching `mobile/`, with no test, no typecheck and nobody deciding.
-It is `workflow_dispatch`, behind a verify job and an environment gate, with
-`npm ci`, `--ignore-scripts` and a pinned EAS version. Publishing to someone's
-phone is a release; a release is something a person starts.
-
-**The mobile app stays.** It is a working prototype with no released users.
-Deleting it would raise every score in the audit and remove real work, so the
-dangerous part — the automatic pipeline — was removed instead of the code.
+**The mobile app was gated, then removed.** It published an over-the-air
+update to installed apps on every push touching `mobile/`, with no test, no
+typecheck and nobody deciding — so the pipeline was put behind a manual
+trigger, a verify job and an environment approval. It was removed afterwards,
+for a different reason: it is not part of the product, it shipped to nobody,
+and every remaining advisory in this repository came from its toolchain,
+unclearable without downgrading Expo ten major versions. Both decisions are
+recorded, the second superseding the first, because reversing a published
+decision should be visible.
 
 ## What I did not do
 
@@ -149,8 +149,6 @@ dangerous part — the automatic pipeline — was removed instead of the code.
   reconfiguring. Closing the access hole mattered more within the time.
 - **No end-to-end tests.** The suites cover the API and client units. Nothing
   drives a browser through a full manager and worker journey.
-- **No mobile tests.** Covering three surfaces properly was not achievable
-  here. Mobile is typechecked in CI and nothing more.
 - **`ManagerShiftsPage.tsx` is still about 1100 lines.** It mixes queries,
   filters, modal state and rendering. Splitting it is a real piece of work and
   a poor thing to attempt without the end-to-end tests that would prove it
@@ -238,5 +236,6 @@ I would defend in review:
 - 404 rather than 403, so a refusal never confirms a record exists.
 - Capping the linter at today's warning count rather than clearing 101
   violations or ignoring them.
-- Keeping the mobile app and removing its automatic pipeline, rather than
-  deleting an application to raise a score.
+- Gating the mobile release rather than deleting the application to raise a
+  score, and later removing the application for a reason that was not the
+  score.

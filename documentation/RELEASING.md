@@ -1,6 +1,6 @@
 # Releasing and rolling back
 
-Three components ship independently. The tag is what ties them together: it
+Two components ship independently. The tag is what ties them together: it
 names one commit that all three were built and tested from, so "which version
 is in production" has an answer.
 
@@ -38,11 +38,6 @@ separately, and each promotion requires the release to exist.
 |---|---|---|
 | API (Render) | Deploy the tagged commit from the Render dashboard | Release workflow green |
 | Web client (Vercel) | Promote the build for the tagged commit | Release workflow green |
-| Mobile (Expo) | Run the Mobile OTA workflow manually | Its own verify job, plus the `mobile-production` environment approval |
-
-The mobile app is deliberately the strictest of the three: an OTA update
-changes software already installed on someone's phone, and it cannot be
-recalled the way a server deploy can.
 
 ## Confirming a deploy
 
@@ -62,7 +57,7 @@ without anyone watching.
 
 ## Rolling back
 
-Roll back first, diagnose afterwards. Every path below returns to a version
+Roll back first, diagnose afterwards. Both paths below return to a version
 that was verified when it was built.
 
 **API.** Render keeps previous deploys. Open the service, find the last
@@ -72,11 +67,6 @@ configuration is a third state that was never tested.
 
 **Web client.** Vercel keeps every deployment. Promote the previous one to
 production from the dashboard.
-
-**Mobile.** OTA updates cannot be recalled, only replaced. Publish the
-previous release again through the Mobile OTA workflow; devices pick it up on
-next launch. There is no way to reach a device that never launches the app
-again, which is the reason the OTA gate exists.
 
 **Database.** Migrations are not automated and no release performs one. If a
 release needs a schema change, that change must be written so the previous

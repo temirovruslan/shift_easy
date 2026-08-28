@@ -1,5 +1,10 @@
 # 3. Keep the mobile app, remove its automatic release
 
+> **Superseded by [decision 6](0006-remove-the-mobile-app.md).** The app was
+> later removed for a different reason: it is not part of the product. The
+> argument below — that deleting software to improve a score is the wrong
+> trade — still stands.
+
 ## Context
 
 The mobile app has no tests, hardcoded configuration and no released users.

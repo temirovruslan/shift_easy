@@ -25,7 +25,6 @@ Shift management and time tracking for construction teams. Managers create sites
 | Frontend | React 19, TypeScript, Vite, Tailwind CSS, TanStack Query, React Router |
 | Backend | Node.js, Express 5, TypeScript, MongoDB (Mongoose), Zod |
 | Auth | JWT with bcrypt password hashing, role-based access control |
-| Mobile | React Native (Expo) |
 | Email | Brevo transactional email for invites and password resets |
 | Testing | Vitest, React Testing Library, Supertest, mongodb-memory-server |
 | CI | GitHub Actions — typecheck, lint, test and build on every pull request |
@@ -35,7 +34,6 @@ Shift management and time tracking for construction teams. Managers create sites
 ```
 client/     React web app (managers + workers)
 server/     Express REST API
-mobile/     React Native app (Expo) — prototype, not released
 ```
 
 The API is organised in layers: routes → middleware (auth, role guard, Zod validation) → controllers → Mongoose models. Every request is validated at the schema level before reaching business logic, and errors funnel through a single handler so responses stay consistent.

@@ -9,11 +9,9 @@ workers; workers clock in and out from their phone. Live at
 ```
 server/     Express REST API, MongoDB via Mongoose      — the source of truth
 client/     React web app for managers and workers      — the product people use
-mobile/     React Native (Expo) app                     — prototype, unreleased
 ```
 
-`server/` decides what is allowed. The two clients are separate consumers of
-the same API, so an API change is a change to both.
+`server/` decides what is allowed. `client/` is its only consumer.
 
 ## Verify a change
 
@@ -29,7 +27,6 @@ Per application:
 |---|---|---|---|
 | server | `npm --prefix server run typecheck` | — | `npm --prefix server test` |
 | client | `npm --prefix client run typecheck` | `npm --prefix client run lint` | `npm --prefix client test` |
-| mobile | `npm --prefix mobile run typecheck` | — | none yet |
 
 CI runs exactly these. A change is not done until `npm run verify` passes.
 
@@ -41,7 +38,6 @@ CI runs exactly these. A change is not done until `npm run verify` passes.
 |---|---|---|
 | Web client only | `npm --prefix client run lint && npm --prefix client test && npm --prefix client run build` | `build` typechecks first |
 | Server only | `npm --prefix server run lint && npm --prefix server run typecheck && npm --prefix server test` | |
-| Mobile only | `npm --prefix mobile run typecheck` | No suite exists yet |
 | A schema, route or response shape | `npm run verify` | Two clients consume this API; a server change is a change to both |
 | Anything in `.github/` | `npm run verify`, then watch the run on the pull request | Workflow behaviour cannot be checked locally |
 | Dependencies | `npm run verify` and `npm audit` in the app you changed | |
@@ -116,8 +112,8 @@ each component are documented in
 
 Choices that will look arbitrary without their reasoning are recorded in
 [`documentation/decisions/`](documentation/decisions/) — company scoping and
-the 404, the frozen lint budget, keeping the mobile app while removing its
-automatic release, and deferring transactions. Read the relevant one before
+the 404, the frozen lint budget, removing the mobile app, and deferring
+transactions. Read the relevant one before
 undoing something that looks odd.
 
 Picking the project up after someone else? Start with
@@ -127,8 +123,6 @@ Picking the project up after someone else? Start with
 
 - `client/` carries 101 linter warnings, capped in `package.json` so the count
   can only fall. Do not raise the cap.
-- `mobile/` has no tests and is not released to anyone. OTA publishing is
-  manual and gated.
 - `assignWorker` and `createWorker` write to two collections without a
   transaction.
 - `client/src/pages/ManagerShiftsPage.tsx` is about 1100 lines and mixes

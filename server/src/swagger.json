@@ -52,7 +52,7 @@
       "post": {
         "tags": ["Auth"],
         "summary": "Register Manager",
-        "description": "Creates a new **manager** account along with a company and first site.\n\n> ⚠️ **This registers you as a MANAGER — not a worker.**\n\n**As a manager you can:**\n- ✅ Create and manage sites\n- ✅ Invite workers by email\n- ✅ View the live dashboard\n- ✅ See all shifts and hours\n\n**Workers are invited by the manager** — they receive an email with a link to activate their account. Workers can then start and stop shifts from the mobile app.\n\n> To test worker endpoints (`Start Shift`, `Stop Shift`) you need to invite a worker first and log in as that worker.",
+        "description": "Creates a new **manager** account along with a company and first site.\n\n> ⚠️ **This registers you as a MANAGER — not a worker.**\n\n**As a manager you can:**\n- ✅ Create and manage sites\n- ✅ Invite workers by email\n- ✅ View the live dashboard\n- ✅ See all shifts and hours\n\n**Workers are invited by the manager** — they receive an email with a link to activate their account. Workers can then start and stop shifts from their phone.\n\n> To test worker endpoints (`Start Shift`, `Stop Shift`) you need to invite a worker first and log in as that worker.",
         "requestBody": {
           "required": true,
           "content": {
