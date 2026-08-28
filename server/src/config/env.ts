@@ -46,6 +46,15 @@ const schema = z.object({
   TRUST_PROXY: z.coerce.number().int().min(0).default(1),
 
   BREVO_API_KEY: z.string().min(1),
+
+  // The address invite and reset mail is sent from. Brevo refuses to send on
+  // behalf of an address it has not verified, so this changes per environment.
+  EMAIL_FROM: z.string().email().default("noreply@shifteasy.site"),
+
+  // Advertised in the API documentation as the server to try requests
+  // against. Hardcoded to localhost in the OpenAPI file before, which made
+  // the published docs point at the reader's own machine.
+  PUBLIC_API_URL: z.string().url().default("http://localhost:5000"),
 });
 
 const parsed = schema.safeParse(process.env);

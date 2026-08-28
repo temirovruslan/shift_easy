@@ -3,9 +3,19 @@ import axios from "axios";
 // Create a custom axios instance with a base URL from .env
 // Instead of writing the full URL every time (http://localhost:5000/api/shifts),
 // you just write: api.get('/shifts')
-const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL, // set in client/.env as VITE_API_URL=http://localhost:5000/api
-});
+// Checked here rather than left undefined. An unset variable does not fail:
+// axios falls back to relative URLs, every request goes to whatever host is
+// serving the page, and the app looks broken for a reason nothing states.
+const baseURL = import.meta.env.VITE_API_URL;
+
+if (!baseURL) {
+    throw new Error(
+        "VITE_API_URL is not set. Copy client/.env.example to client/.env and " +
+            "point it at the API, e.g. http://localhost:5000/api",
+    );
+}
+
+const api = axios.create({ baseURL });
 
 // Interceptor = runs automatically before EVERY request this instance makes
 // Think of it like a security guard that checks your bag before you enter —
