@@ -15,6 +15,7 @@ import {
   emailLookupLimiter,
 } from "../middleware/rateLimit.middleware";
 import {
+  checkEmailSchema,
   registerSchema,
   loginSchema,
   forgotPasswordSchema,
@@ -24,7 +25,12 @@ import {
 // tighter limit below.
 router.use(authLimiter);
 
-router.post("/check-email", emailLookupLimiter, checkEmail);
+router.post(
+  "/check-email",
+  emailLookupLimiter,
+  validate(checkEmailSchema),
+  checkEmail,
+);
 router.post("/register", validate(registerSchema), register);
 router.post("/login", credentialsLimiter, validate(loginSchema), login);
 router.post(

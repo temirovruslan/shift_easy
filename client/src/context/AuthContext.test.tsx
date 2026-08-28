@@ -101,3 +101,122 @@ describe("AuthContext", () => {
     expect(Number(localStorage.getItem("loginAt"))).toBeGreaterThan(tenDaysAgo);
   });
 });
+
+/**
+ * Only a known shape is allowed into localStorage, and only a known shape is
+ * accepted back out of it.
+ *
+ * Writing whatever the API returned means trusting a remote response with
+ * something the app later reads as its own state. Reading it back with a bare
+ * `JSON.parse` was the worse half: a corrupted entry threw inside the effect
+ * that restores the session, so the app rendered nothing and the user could
+ * not even sign out to clear it.
+ */
+describe("session storage only accepts a known shape", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  const fresh = () => String(Date.now());
+
+  it("recovers from a corrupted stored user instead of rendering nothing", () => {
+    localStorage.setItem("user", "{not json");
+    localStorage.setItem("token", "tok-123");
+    localStorage.setItem("loginAt", fresh());
+
+    render(
+      <AuthProvider>
+        <Consumer />
+      </AuthProvider>,
+    );
+
+    expect(screen.getByTestId("user")).toHaveTextContent("none");
+    // And it clears the remains, so the next load does not repeat this.
+    expect(localStorage.getItem("token")).toBeNull();
+  });
+
+  it("rejects a stored user carrying an unknown role", () => {
+    localStorage.setItem(
+      "user",
+      JSON.stringify({ name: "Mallory", role: "admin" }),
+    );
+    localStorage.setItem("token", "tok-123");
+    localStorage.setItem("loginAt", fresh());
+
+    render(
+      <AuthProvider>
+        <Consumer />
+      </AuthProvider>,
+    );
+
+    expect(screen.getByTestId("user")).toHaveTextContent("none");
+  });
+
+  it("rejects a stored user with no name", () => {
+    localStorage.setItem("user", JSON.stringify({ role: "manager" }));
+    localStorage.setItem("token", "tok-123");
+    localStorage.setItem("loginAt", fresh());
+
+    render(
+      <AuthProvider>
+        <Consumer />
+      </AuthProvider>,
+    );
+
+    expect(screen.getByTestId("user")).toHaveTextContent("none");
+  });
+
+  it("stores only name and role, dropping anything else the API returned", async () => {
+    const user = userEvent.setup();
+
+    function ExtraFieldConsumer() {
+      const { login } = useAuth();
+      return (
+        <button
+          onClick={() =>
+            login(
+              {
+                name: "Ruslan",
+                role: "manager",
+                // Not part of the type. A response carrying it must not have
+                // it persisted alongside the session.
+                isAdmin: true,
+              } as never,
+              "tok-123",
+            )
+          }
+        >
+          login
+        </button>
+      );
+    }
+
+    render(
+      <AuthProvider>
+        <ExtraFieldConsumer />
+      </AuthProvider>,
+    );
+    await user.click(screen.getByRole("button", { name: "login" }));
+
+    const stored = JSON.parse(localStorage.getItem("user") ?? "{}");
+    expect(stored).toEqual({ name: "Ruslan", role: "manager" });
+  });
+
+  it("restores a session that is intact", () => {
+    localStorage.setItem(
+      "user",
+      JSON.stringify({ name: "Ruslan", role: "manager" }),
+    );
+    localStorage.setItem("token", "tok-123");
+    localStorage.setItem("loginAt", fresh());
+
+    render(
+      <AuthProvider>
+        <Consumer />
+      </AuthProvider>,
+    );
+
+    expect(screen.getByTestId("user")).toHaveTextContent("Ruslan");
+    expect(screen.getByTestId("token")).toHaveTextContent("tok-123");
+  });
+});
