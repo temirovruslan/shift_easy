@@ -6,6 +6,7 @@ import Loader from "../components/Loader";
 import { getAllShifts } from "../api/shifts";
 import { getAllWorkers } from "../api/worker";
 import { getSites } from "../api/sites";
+import { formatDuration } from "../lib/time";
 
 const POLL_INTERVAL = 10_000;
 
@@ -54,13 +55,6 @@ const getWeekDays = (): Date[] => {
     d.setDate(monday.getDate() + i);
     return d;
   });
-};
-
-const formatDuration = (minutes: number) => {
-  if (minutes < 60) return `${minutes}m`;
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  return m === 0 ? `${h}h` : `${h}h ${m}m`;
 };
 
 const formatTime = (date: string) =>

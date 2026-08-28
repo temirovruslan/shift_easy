@@ -16,6 +16,7 @@ import { getSites } from "../api/sites";
 import { getAllWorkers } from "../api/worker";
 import Loader from "../components/Loader";
 import { Pagination } from "../components/ui/Pagination";
+import { formatDuration } from "../lib/time";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -25,13 +26,6 @@ const getMondayMidnight = () => {
   d.setDate(d.getDate() - diff);
   d.setHours(0, 0, 0, 0);
   return d;
-};
-
-const formatDuration = (minutes: number) => {
-  if (minutes < 60) return `${minutes}m`;
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  return m === 0 ? `${h}h` : `${h}h ${m}m`;
 };
 
 const formatTime = (date: string) =>

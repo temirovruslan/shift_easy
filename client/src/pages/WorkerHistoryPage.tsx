@@ -5,6 +5,7 @@ import type { Shift } from "../types";
 import Loader from "../components/Loader";
 import { ChevronDown } from "lucide-react";
 import NavBarWorker from "../components/NavBar";
+import { splitDuration } from "../lib/time";
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
 
@@ -38,8 +39,8 @@ const totalMinutes = (shifts: Shift[]) =>
 const avgMinutes = (shifts: Shift[]) =>
   shifts.length > 0 ? Math.round(totalMinutes(shifts) / shifts.length) : 0;
 
-const toHours = (minutes: number) => Math.floor(minutes / 60);
-const toMins = (minutes: number) => Math.round(minutes % 60);
+const toHours = (minutes: number) => splitDuration(minutes).hours;
+const toMins = (minutes: number) => splitDuration(minutes).minutes;
 
 const durationPct = (duration: number) =>
   Math.min(Math.round((duration / 480) * 100), 100);
@@ -206,7 +207,8 @@ const WorkerHistoryPage = () => {
         <div className="grid grid-cols-3 gap-2 mb-6">
           <div className="bg-bg3 border border-border rounded-2xl p-4">
             <p className="text-xl font-bold text-blue">
-              {toHours(tabTotalMinutes)}h
+              {toHours(tabTotalMinutes)}h{" "}
+              <span className="text-red">{toMins(tabTotalMinutes)}m</span>
             </p>
             <p className="text-xs text-text2 mt-1">Total hours</p>
           </div>
@@ -506,8 +508,10 @@ export default WorkerHistoryPage;
 // formatDate()      → Date object → "Monday, 6 May"
 // totalMinutes()    → adds up all shift durations in an array
 // avgMinutes()      → totalMinutes / shift count
-// toHours()         → minutes → whole hours (510 → 8)
-// toMins()          → leftover minutes after hours (510 → 30)
+// toHours()         → whole hours from splitDuration (510 → 8)
+// toMins()          → leftover minutes from splitDuration (510 → 30)
+//                     Both read the shared helper in lib/time so the totals
+//                     on this page cannot drift from the rest of the app.
 // durationPct()     → duration as % of 8h day (480 min) for progress bar
 // getMondayMidnight()→ returns this Monday at 00:00:00 for weekly filter
 //
