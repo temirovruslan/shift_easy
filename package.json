@@ -2,6 +2,7 @@
   "name": "shifteasy",
   "private": true,
   "description": "Shift management and time tracking for construction teams",
+  "license": "ISC",
   "engines": {
     "node": ">=24"
   },

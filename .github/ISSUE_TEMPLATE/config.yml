@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/temirovruslan/shift_easy/security/advisories/new
+    about: Report privately through the Security tab, not as a public issue.
+  - name: How to work on this code
+    url: https://github.com/temirovruslan/shift_easy/blob/main/CONTRIBUTING.md
+    about: Layout, domain rules, and which checks a change needs.
