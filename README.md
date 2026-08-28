@@ -133,4 +133,10 @@ configuration.
 
 ## License
 
-ISC
+ISC — see [LICENSE](LICENSE).
+
+## Security
+
+Report vulnerabilities privately through the
+[Security tab](https://github.com/temirovruslan/shift_easy/security/advisories/new),
+not as a public issue. Details in [SECURITY.md](SECURITY.md).
