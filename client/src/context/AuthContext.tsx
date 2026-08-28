@@ -17,6 +17,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 const ROLES = ["worker", "manager"] as const;
+const MAX_NAME = 100;
 
 /**
  * The only shape allowed into browser storage, and the only one accepted back
@@ -38,7 +39,11 @@ const asUser = (value: unknown): User | null => {
   if (typeof name !== "string" || name.length === 0) return null;
   if (!ROLES.includes(role as User["role"])) return null;
 
-  return { name, role: role as User["role"] };
+  // Capped rather than filtered. A person's name is arbitrary text — letters
+  // from any script, apostrophes, hyphens — and stripping characters would
+  // corrupt real ones. What a length limit buys is that nothing large ends up
+  // in storage; what keeps the content safe is React escaping it on render.
+  return { name: name.slice(0, MAX_NAME), role: role as User["role"] };
 };
 
 const readStoredUser = (raw: string | null): User | null => {
