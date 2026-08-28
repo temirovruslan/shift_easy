@@ -77,6 +77,24 @@ adding it to the schema and to `.env.example`.
 `server/src/middleware/error.middleware.ts` turns it into a response. Do not
 build error responses in controllers.
 
+## Domain rules
+
+Rules the product depends on. Each is enforced in one place and proved by a
+test — if you change the rule, the test tells you what else assumed it.
+
+| Rule | Enforced in | Proved by |
+|---|---|---|
+| A worker has at most one shift running at a time | `shift.controller.ts` `startShift` | `refuses a second active shift` |
+| A shift can only start on a site the worker is assigned to | `shift.controller.ts` `startShift` | `refuses a site the worker is not assigned to` |
+| Start and end times come from the server, never from the request | `shift.controller.ts` `startShift` / `stopShift` | `completes the shift and records its duration` |
+| Stopping a shift requires notes of at least ten characters | `shift.schema.ts` `stopShiftSchema` | `rejects a stop without usable notes` |
+| Nothing is deleted — workers are archived, sites change status, shift history survives | `worker.controller.ts`, `site.controller.ts` | `refuses to archive another company's worker` and the site round-trip |
+| Every record belongs to a company, and any lookup by id is scoped by it | `findCompanyWorker`, `site.controller.ts` | `worker.isolation.test.ts`, `site.isolation.test.ts` |
+| A password must be at least eight characters and contain a digit, everywhere one is set | `schemas/common.ts` `password` | `user.profile.test.ts` |
+
+Changing one of these is a product decision, not a refactor. Record it in
+[`documentation/decisions/`](documentation/decisions/).
+
 ## Conventions
 
 - Conventional Commits: `type(scope): imperative subject`. The body says why,
