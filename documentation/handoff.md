@@ -3,16 +3,16 @@
 Where the project stands, what is unfinished, and how to confirm both. Update
 this when you leave work in a state someone else has to pick up.
 
-**Last updated:** 2026-08-27, after the audit response.
+**Last updated:** 2026-08-29, at release `v1.1.0`.
 
 ## Confirming the state yourself
 
 ```bash
 npm run install:all
-npm run verify        # typecheck, lint, 100 tests
+npm run verify        # typecheck, lint, 116 tests
 ```
 
-At the time of writing: 66 server tests, 34 client tests, 83% statement
+At the time of writing: 77 server tests, 39 client tests, 92% statement
 coverage on the server, no known vulnerabilities in either application, no
 lint errors. CI runs the same three jobs on every pull request.
 

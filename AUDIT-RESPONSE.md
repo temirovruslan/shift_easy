@@ -1,20 +1,25 @@
 # Response to the ShiftEasy audit
 
-Thirty-six commits across seven branches, in priority order. Every branch builds
-on the previous one, so they are reviewed and merged in the order listed.
+Fifty-two commits, delivered as seventeen pull requests and released as
+[`v1.1.0`](https://github.com/temirovruslan/shift_easy/releases/tag/v1.1.0).
+Each pull request carried one theme and built on the one before it, so the
+reasoning is legible in order rather than as a single drop.
 
-`npm run verify` at the repository root typechecks all three applications,
-lints the client and runs 100 tests. It passes on every commit.
+`npm run verify` at the repository root typechecks both applications, lints
+them and runs 116 tests. It passes on every commit.
 
-| # | Branch | Commits | What it addresses |
-|---|---|---|---|
-| 1 | `docs/scrub-operational-details` | 2 | Operational data in tracked documentation |
-| 2 | `fix/worker-company-scope` | 5 | Cross-company access, two bugs the audit did not find |
-| 3 | `test/server-integration-suite` | 1 | No server tests at all |
-| 4 | `ci/add-pipeline` | 3 | No checks on pull requests, ungated OTA release |
-| 5 | `fix/auth-hardening` | 3 | No rate limiting, account enumeration |
-| 6 | `refactor/config-and-error-handling` | 2 | Settings compiled into source, 500s for client mistakes |
-| 7 | `chore/repo-hygiene` | 19 | Root commands, contributor guide, server lint, dead code, advisories, release path |
+| Theme | What it addressed |
+|---|---|
+| Operational data in documentation | Account owners, dashboard identifiers and infrastructure hostnames in a tracked file |
+| Cross-company access | Five worker endpoints loading records by id alone, plus two defects the audit did not find |
+| The server test suite | No server tests existed |
+| Continuous integration | Nothing ran on pull requests; the mobile release was ungated |
+| Authentication | No rate limiting, responses that confirmed which addresses are registered |
+| Configuration and errors | Settings compiled into the source, client mistakes reported as 500s |
+| Repository hygiene | Root commands, contributor guide, server linting, dead code, advisories, a release path |
+| Removing the mobile app | An unreleased application whose toolchain carried every remaining advisory |
+| End to end | One test walking the whole product, and the account takeover it found |
+| Independent findings | Three issues SonarQube rated High and above, none of them previously reported |
 
 ## The order, and why
 
@@ -220,13 +225,17 @@ that carries the test dependencies are taken across; every source file stays
 as it was:
 
 ```bash
-git checkout main
-git checkout test/server-integration-suite -- \
+git checkout 930224c1dec59e31f2de6c98ecfe8a94192efc1e
+git checkout e7df3bd -- \
   server/src/tests server/vitest.config.mts \
   server/package.json server/package-lock.json
 npm --prefix server ci
 npm --prefix server test
 ```
+
+`930224c` is the commit the audit reviewed and `e7df3bd` is the one that
+introduced the suite. The branches were deleted after merging, so both are
+named by commit.
 
 ```
 Tests  12 failed | 17 passed (29)
@@ -236,7 +245,7 @@ Eight failures are cross-company access — GET, PUT, DELETE, restore, invite
 and both directions of assign. Four are the dropped `siteId`, including the
 one that ends by starting a shift as the newly created worker.
 
-The same files, unchanged, pass on branch 2. That is the whole argument: the
+The same files, unchanged, pass once the scoping fixes land. That is the whole argument: the
 tests were written to fail first.
 
 ## Judgement calls worth naming
