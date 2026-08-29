@@ -36,9 +36,12 @@ jobs:
           path: ~/.cache/mongodb-binaries
           key: mongodb-binaries-${{ runner.os }}
 
+      # A package's install script runs arbitrary code from a third party on
+      # the runner. Nothing here needs one — verified by installing and
+      # building both applications without them — so nothing gets to run.
       - name: Install
         working-directory: server
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Lint
         working-directory: server
@@ -74,7 +77,7 @@ jobs:
 
       - name: Install
         working-directory: client
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Lint
         working-directory: client

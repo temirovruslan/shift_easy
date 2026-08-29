@@ -16,6 +16,7 @@ They are not documentation of how the code works — that is
 | [4](0004-defer-transactions.md) | Defer transactions on the two-collection writes |
 | [5](0005-first-site-until-selection-exists.md) | A multi-site worker gets their first site until selection is built |
 | [6](0006-remove-the-mobile-app.md) | Remove the mobile app from this repository |
+| [7](0007-accept-the-browser-storage-taint-finding.md) | Accept SonarQube's browser storage finding rather than contort the code |
 
 Add one when a choice will look arbitrary later, or when you rejected an
 option someone will reasonably propose again.
